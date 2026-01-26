@@ -25,7 +25,7 @@ const UK_CONFIG = {
         zone2: { min: 3, max: 6, price: 5.99 }
     },
     maxDeliveryDistance: 6,
-    currency: '£'
+    currency: 'Â£'
 };
 
 
@@ -89,19 +89,19 @@ function resetSelectedData() {
     const resetMenu = document.getElementById('resetMenu')?.checked;
     
     if (!resetUsers && !resetOrders && !resetDrivers && !resetFavorites && !resetMenu) {
-        alert('⚠️ Please select at least one option to reset');
+        alert('âš ï¸ Please select at least one option to reset');
         return;
     }
     
     let message = 'This will reset:\n';
-    if (resetUsers) message += '• All user accounts & reviews\n';
-    if (resetOrders) message += '• All order history\n';
-    if (resetDrivers) message += '• All driver data\n';
-    if (resetFavorites) message += '• All favorites & notifications\n';
-    if (resetMenu) message += '• Menu to default\n';
+    if (resetUsers) message += 'â€¢ All user accounts & reviews\n';
+    if (resetOrders) message += 'â€¢ All order history\n';
+    if (resetDrivers) message += 'â€¢ All driver data\n';
+    if (resetFavorites) message += 'â€¢ All favorites & notifications\n';
+    if (resetMenu) message += 'â€¢ Menu to default\n';
     message += '\nThis cannot be undone!';
     
-    if (!confirm('⚠️ ' + message)) return;
+    if (!confirm('âš ï¸ ' + message)) return;
     
     // Reset selected items
     if (resetUsers) {
@@ -144,7 +144,7 @@ function resetSelectedData() {
     }
     
     closeModal('resetOptionsModal');
-    alert('✅ Selected data has been reset!');
+    alert('âœ… Selected data has been reset!');
     location.reload();
 }
 
@@ -196,16 +196,16 @@ function isStrongPassword(password) {
 let menuData = {
     // GRILL WRAPS
     grill_wraps: [
-        { id: 101, name: 'Mix Grill Wrap', price: 9.00, icon: '🌯', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
+        { id: 101, name: 'Mix Grill Wrap', price: 9.00, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
             { name: 'Extra Meat', price: 2.00 },
             { name: 'Extra Cheese', price: 1.00 },
             { name: 'Spicy Sauce', price: 0.50 }
         ]},
-        { id: 102, name: 'Chicken Grill Wrap', price: 7.50, icon: '🌯', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 102, name: 'Chicken Grill Wrap', price: 7.50, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Chicken', price: 2.00 },
             { name: 'Extra Cheese', price: 1.00 }
         ]},
-        { id: 103, name: 'Lamb Grill Wrap', price: 9.50, icon: '🌯', image: '', available: true, desc: 'Served with salad and sauce & naan. LAMB BACK STRAP FILLET', options: [
+        { id: 103, name: 'Lamb Grill Wrap', price: 9.50, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad and sauce & naan. LAMB BACK STRAP FILLET', options: [
             { name: 'Extra Lamb', price: 2.50 },
             { name: 'Extra Cheese', price: 1.00 }
         ]}
@@ -213,15 +213,15 @@ let menuData = {
     
     // GRILL PORTIONS (Boneless pieces)
     grill_portions: [
-        { id: 201, name: 'Grill Mix Chicken & Lamb Portion', price: 11.90, icon: '🍖', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan', popular: true, options: [
+        { id: 201, name: 'Grill Mix Chicken & Lamb Portion', price: 11.90, icon: 'ðŸ–', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan', popular: true, options: [
             { name: 'Extra Naan', price: 1.00 },
             { name: 'Extra Salad', price: 1.50 }
         ]},
-        { id: 202, name: 'Grill Chicken Portion', price: 10.00, icon: '🍖', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan', options: [
+        { id: 202, name: 'Grill Chicken Portion', price: 10.00, icon: 'ðŸ–', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan', options: [
             { name: 'Extra Naan', price: 1.00 },
             { name: 'Extra Chicken', price: 2.00 }
         ]},
-        { id: 203, name: 'Grill Lamb Portion', price: 12.50, icon: '🍖', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan. LAMB BACK STRAP FILLET', options: [
+        { id: 203, name: 'Grill Lamb Portion', price: 12.50, icon: 'ðŸ–', image: '', available: true, desc: 'Boneless pieces served with salad, sauce & naan. LAMB BACK STRAP FILLET', options: [
             { name: 'Extra Naan', price: 1.00 },
             { name: 'Extra Lamb', price: 3.00 }
         ]}
@@ -229,15 +229,15 @@ let menuData = {
     
     // SHAWARMA WITH CHIPS
     shawarma_chips: [
-        { id: 301, name: 'Mix Shawarma Portions Chips', price: 8.90, icon: '🍟', image: '', available: true, desc: 'Served with sauce, salad and chips', options: [
+        { id: 301, name: 'Mix Shawarma Portions Chips', price: 8.90, icon: 'ðŸŸ', image: '', available: true, desc: 'Served with sauce, salad and chips', options: [
             { name: 'Large Chips', price: 1.50 },
             { name: 'Cheese on Chips', price: 1.00 }
         ]},
-        { id: 302, name: 'Chicken Shawarma Portions Chips', price: 8.50, icon: '🍟', image: '', available: true, desc: 'Served with sauce, salad and chips', popular: true, options: [
+        { id: 302, name: 'Chicken Shawarma Portions Chips', price: 8.50, icon: 'ðŸŸ', image: '', available: true, desc: 'Served with sauce, salad and chips', popular: true, options: [
             { name: 'Large Chips', price: 1.50 },
             { name: 'Cheese on Chips', price: 1.00 }
         ]},
-        { id: 303, name: 'Lamb Shawarma Portions Chips', price: 9.50, icon: '🍟', image: '', available: true, desc: 'Served with sauce, salad and chips', options: [
+        { id: 303, name: 'Lamb Shawarma Portions Chips', price: 9.50, icon: 'ðŸŸ', image: '', available: true, desc: 'Served with sauce, salad and chips', options: [
             { name: 'Large Chips', price: 1.50 },
             { name: 'Cheese on Chips', price: 1.00 }
         ]}
@@ -245,179 +245,179 @@ let menuData = {
     
     // SHAWARMA WITH RICE
     shawarma_rice: [
-        { id: 401, name: 'Chicken Shawarma Portions Rice', price: 8.50, icon: '🍚', image: '', available: true, desc: 'Served with sauce, salad and rice', popular: true, options: [
+        { id: 401, name: 'Chicken Shawarma Portions Rice', price: 8.50, icon: 'ðŸš', image: '', available: true, desc: 'Served with sauce, salad and rice', popular: true, options: [
             { name: 'Extra Rice', price: 1.50 },
             { name: 'Extra Meat', price: 2.00 }
         ]},
-        { id: 402, name: 'Mix Shawarma Portions Rice', price: 8.90, icon: '🍚', image: '', available: true, desc: 'Served with sauce, salad and rice', options: [
+        { id: 402, name: 'Mix Shawarma Portions Rice', price: 8.90, icon: 'ðŸš', image: '', available: true, desc: 'Served with sauce, salad and rice', options: [
             { name: 'Extra Rice', price: 1.50 }
         ]},
-        { id: 403, name: 'Lamb Shawarma Portions Rice', price: 9.50, icon: '🍚', image: '', available: true, desc: 'Served with sauce, salad and rice', options: [
+        { id: 403, name: 'Lamb Shawarma Portions Rice', price: 9.50, icon: 'ðŸš', image: '', available: true, desc: 'Served with sauce, salad and rice', options: [
             { name: 'Extra Rice', price: 1.50 }
         ]}
     ],
     
     // SHAWARMA WITH NAAN
     shawarma_naan: [
-        { id: 501, name: 'Chicken Shawarma Portions with Naan', price: 8.00, icon: '🫓', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
+        { id: 501, name: 'Chicken Shawarma Portions with Naan', price: 8.00, icon: 'ðŸ«“', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
             { name: 'Extra Naan', price: 1.00 },
             { name: 'Extra Chicken', price: 2.00 }
         ]},
-        { id: 502, name: 'Mix Shawarma Portions with Naan', price: 8.80, icon: '🫓', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 502, name: 'Mix Shawarma Portions with Naan', price: 8.80, icon: 'ðŸ«“', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Naan', price: 1.00 }
         ]},
-        { id: 503, name: 'Lamb Shawarma Portions with Naan', price: 9.00, icon: '🫓', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 503, name: 'Lamb Shawarma Portions with Naan', price: 9.00, icon: 'ðŸ«“', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Naan', price: 1.00 }
         ]}
     ],
     
     // SHAWARMA WITH TURKISH BREAD
     shawarma_turkish: [
-        { id: 601, name: 'Chicken Shawarma with Turkish Bread', price: 8.00, icon: '🥖', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
+        { id: 601, name: 'Chicken Shawarma with Turkish Bread', price: 8.00, icon: 'ðŸ¥–', image: '', available: true, desc: 'Served with salad and sauce', popular: true, options: [
             { name: 'Extra Bread', price: 1.00 },
             { name: 'Extra Chicken', price: 2.00 }
         ]},
-        { id: 602, name: 'Mix Shawarma with Turkish Bread', price: 8.80, icon: '🥖', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 602, name: 'Mix Shawarma with Turkish Bread', price: 8.80, icon: 'ðŸ¥–', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Bread', price: 1.00 }
         ]},
-        { id: 603, name: 'Lamb Shawarma with Turkish Bread', price: 9.00, icon: '🥖', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 603, name: 'Lamb Shawarma with Turkish Bread', price: 9.00, icon: 'ðŸ¥–', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Bread', price: 1.00 }
         ]}
     ],
     
     // FALAFEL
     falafel: [
-        { id: 701, name: '6 Falafel Portions', price: 6.00, icon: '🧆', image: '', available: true, desc: 'Served with mix salad and yoghurt sauce', options: [
+        { id: 701, name: '6 Falafel Portions', price: 6.00, icon: 'ðŸ§†', image: '', available: true, desc: 'Served with mix salad and yoghurt sauce', options: [
             { name: 'Extra Falafel (3)', price: 2.00 },
             { name: 'Hummus', price: 1.50 }
         ]},
-        { id: 702, name: 'Falafel Wrap', price: 5.80, icon: '🌯', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 702, name: 'Falafel Wrap', price: 5.80, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Falafel', price: 1.50 }
         ]},
-        { id: 703, name: 'Falafel Sandwich', price: 5.80, icon: '🥪', image: '', available: true, desc: 'Served with salad and sauce', options: [
+        { id: 703, name: 'Falafel Sandwich', price: 5.80, icon: 'ðŸ¥ª', image: '', available: true, desc: 'Served with salad and sauce', options: [
             { name: 'Extra Falafel', price: 1.50 }
         ]},
-        { id: 704, name: 'Portion Halloumi With Salad', price: 6.50, icon: '🧀', image: '', available: true, desc: '4 large grill halloumi', options: [
+        { id: 704, name: 'Portion Halloumi With Salad', price: 6.50, icon: 'ðŸ§€', image: '', available: true, desc: '4 large grill halloumi', options: [
             { name: 'Extra Halloumi (2)', price: 2.00 }
         ]}
     ],
     
     // SHAWARMA WRAPS
     shawarma_wraps: [
-        { id: 801, name: 'Chicken Shawarma Wrap', price: 6.50, icon: '🌯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
+        { id: 801, name: 'Chicken Shawarma Wrap', price: 6.50, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
             { name: 'Extra Chicken', price: 2.00 },
             { name: 'Cheese', price: 1.00 }
         ]},
-        { id: 802, name: 'Lamb Shawarma Wrap', price: 7.00, icon: '🌯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
+        { id: 802, name: 'Lamb Shawarma Wrap', price: 7.00, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
             { name: 'Extra Lamb', price: 2.50 },
             { name: 'Cheese', price: 1.00 }
         ]},
-        { id: 803, name: 'Mix Shawarma Wrap', price: 6.80, icon: '🌯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
+        { id: 803, name: 'Mix Shawarma Wrap', price: 6.80, icon: 'ðŸŒ¯', image: '', available: true, desc: 'Served with salad, sauce, and naan bread', options: [
             { name: 'Extra Meat', price: 2.00 }
         ]}
     ],
     
     // SHAWARMA SANDWICH
     shawarma_sandwich: [
-        { id: 901, name: 'Chicken Shawarma Sandwich', price: 6.50, icon: '🥪', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
+        { id: 901, name: 'Chicken Shawarma Sandwich', price: 6.50, icon: 'ðŸ¥ª', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
             { name: 'Extra Chicken', price: 2.00 },
             { name: 'Cheese', price: 1.00 }
         ]},
-        { id: 902, name: 'Mix Shawarma Sandwich', price: 6.80, icon: '🥪', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
+        { id: 902, name: 'Mix Shawarma Sandwich', price: 6.80, icon: 'ðŸ¥ª', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
             { name: 'Extra Meat', price: 2.00 }
         ]},
-        { id: 903, name: 'Lamb Shawarma Sandwich', price: 7.00, icon: '🥪', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
+        { id: 903, name: 'Lamb Shawarma Sandwich', price: 7.00, icon: 'ðŸ¥ª', image: '', available: true, desc: 'Served with salad, sauce and Turkish bread', options: [
             { name: 'Extra Lamb', price: 2.50 }
         ]}
     ],
     
     // PIZZA
     pizza: [
-        { id: 1001, name: 'Cheese and Tomato', price: 5.50, icon: '🍕', image: '', available: true, desc: 'Fresh cheese and tomato on a delicious base', options: [
+        { id: 1001, name: 'Cheese and Tomato', price: 5.50, icon: 'ðŸ•', image: '', available: true, desc: 'Fresh cheese and tomato on a delicious base', options: [
             { name: 'Extra Cheese', price: 1.00 }
         ]},
-        { id: 1002, name: 'Cheese and Tomato with 2 Toppings', price: 6.50, icon: '🍕', image: '', available: true, desc: 'Melted cheese and fresh tomato with your choice of two toppings', options: [
+        { id: 1002, name: 'Cheese and Tomato with 2 Toppings', price: 6.50, icon: 'ðŸ•', image: '', available: true, desc: 'Melted cheese and fresh tomato with your choice of two toppings', options: [
             { name: 'Extra Topping', price: 1.00 }
         ]},
-        { id: 1003, name: 'Cheese and Tomato with 3 Toppings', price: 7.00, icon: '🍕', image: '', available: true, desc: 'Melted cheese and fresh tomato with your choice of three toppings', options: [
+        { id: 1003, name: 'Cheese and Tomato with 3 Toppings', price: 7.00, icon: 'ðŸ•', image: '', available: true, desc: 'Melted cheese and fresh tomato with your choice of three toppings', options: [
             { name: 'Extra Topping', price: 1.00 }
         ]},
-        { id: 1004, name: 'Antalya Special Pizza', price: 8.00, icon: '🍕', image: '', available: true, desc: 'A bit of everything - various ingredients combined', popular: true },
-        { id: 1005, name: 'Mediterranean Pizza', price: 7.00, icon: '🍕', image: '', available: true, desc: 'Jalapeño, fresh tomato, onion, green pepper, olives' },
-        { id: 1006, name: 'Tuna Sweet Corn Pizza', price: 6.50, icon: '🍕', image: '', available: true, desc: 'Tuna and sweet corn pizza topping' }
+        { id: 1004, name: 'Antalya Special Pizza', price: 8.00, icon: 'ðŸ•', image: '', available: true, desc: 'A bit of everything - various ingredients combined', popular: true },
+        { id: 1005, name: 'Mediterranean Pizza', price: 7.00, icon: 'ðŸ•', image: '', available: true, desc: 'JalapeÃ±o, fresh tomato, onion, green pepper, olives' },
+        { id: 1006, name: 'Tuna Sweet Corn Pizza', price: 6.50, icon: 'ðŸ•', image: '', available: true, desc: 'Tuna and sweet corn pizza topping' }
     ],
     
     // FATAYER PIE
     fatayer: [
-        { id: 1101, name: 'Chicken Cheese Fatayer', price: 6.00, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad', options: [
+        { id: 1101, name: 'Chicken Cheese Fatayer', price: 6.00, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad', options: [
             { name: 'Extra Cheese', price: 1.00 }
         ]},
-        { id: 1102, name: 'Spicy Lamb Cheese Fatayer', price: 6.00, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
-        { id: 1103, name: 'Spicy Lamb and Chicken Cheese Fatayer', price: 6.50, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
-        { id: 1104, name: 'Antalya Special Fatayer', price: 7.00, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad', popular: true },
-        { id: 1105, name: 'Spinach And Lamb Fatayer', price: 6.50, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
-        { id: 1106, name: 'Cheese Fatayer', price: 5.50, icon: '🥟', image: '', available: true, desc: 'Folded pizza with cheese. Served with salad' },
-        { id: 1107, name: 'Chicken Spinach Cheese Fatayer', price: 6.50, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
-        { id: 1108, name: 'Spinach Cheese Fatayer', price: 6.00, icon: '🥟', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
-        { id: 1109, name: 'Tuna Cheese Fatayer', price: 6.00, icon: '🥟', image: '', available: true, desc: 'Tuna and cheese filled pastry' }
+        { id: 1102, name: 'Spicy Lamb Cheese Fatayer', price: 6.00, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
+        { id: 1103, name: 'Spicy Lamb and Chicken Cheese Fatayer', price: 6.50, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
+        { id: 1104, name: 'Antalya Special Fatayer', price: 7.00, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad', popular: true },
+        { id: 1105, name: 'Spinach And Lamb Fatayer', price: 6.50, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
+        { id: 1106, name: 'Cheese Fatayer', price: 5.50, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza with cheese. Served with salad' },
+        { id: 1107, name: 'Chicken Spinach Cheese Fatayer', price: 6.50, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
+        { id: 1108, name: 'Spinach Cheese Fatayer', price: 6.00, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Folded pizza topped with cheese. Served with salad' },
+        { id: 1109, name: 'Tuna Cheese Fatayer', price: 6.00, icon: 'ðŸ¥Ÿ', image: '', available: true, desc: 'Tuna and cheese filled pastry' }
     ],
     
     // MEZZE STARTER / SIDES
     mezze: [
-        { id: 1201, name: 'Peri-Peri Chips Salt', price: 3.00, icon: '🍟', image: '', available: true, desc: 'Spicy flavoured chips seasoned with peri-peri salt', popular: true, options: [
+        { id: 1201, name: 'Peri-Peri Chips Salt', price: 3.00, icon: 'ðŸŸ', image: '', available: true, desc: 'Spicy flavoured chips seasoned with peri-peri salt', popular: true, options: [
             { name: 'Cheese', price: 1.00 }
         ]},
-        { id: 1202, name: 'Garlic Bread with Cheese', price: 5.50, icon: '🧄', image: '', available: true, desc: 'Freshly baked bread infused with garlic and melted cheese' },
-        { id: 1203, name: 'Chips', price: 3.00, icon: '🍟', image: '', available: true, desc: 'Crispy fried potato strips served as a side dish', options: [
+        { id: 1202, name: 'Garlic Bread with Cheese', price: 5.50, icon: 'ðŸ§„', image: '', available: true, desc: 'Freshly baked bread infused with garlic and melted cheese' },
+        { id: 1203, name: 'Chips', price: 3.00, icon: 'ðŸŸ', image: '', available: true, desc: 'Crispy fried potato strips served as a side dish', options: [
             { name: 'Cheese', price: 1.00 },
             { name: 'Peri-Peri Salt', price: 0.50 }
         ]},
-        { id: 1204, name: 'Cheese Chips', price: 4.00, icon: '🍟', image: '', available: true, desc: 'Crispy chips smothered in melted cheese' },
-        { id: 1205, name: 'Spicy Potatoes', price: 4.00, icon: '🥔', image: '', available: true, desc: 'Crunchy potatoes with a spicy kick' },
-        { id: 1206, name: 'Garlic Bread', price: 4.50, icon: '🧄', image: '', available: true, desc: 'Freshly baked bread infused with aromatic garlic' },
-        { id: 1207, name: 'Turkish Mix Salad', price: 4.50, icon: '🥗', image: '', available: true, desc: 'A mix of fresh vegetables and herbs with Turkish flair' },
-        { id: 1208, name: 'Hummus', price: 4.00, icon: '🫘', image: '', available: true, desc: 'Traditional Middle Eastern dip made from chickpeas' },
-        { id: 1209, name: 'Salsa Salad', price: 4.00, icon: '🥗', image: '', available: true, desc: 'Fresh salsa style salad portion' },
-        { id: 1210, name: 'Tzatziki (Cacik)', price: 4.00, icon: '🥛', image: '', available: true, desc: 'Diced cucumbers, garlic, mint in yogurt' },
-        { id: 1211, name: 'Rice', price: 4.00, icon: '🍚', image: '', available: true, desc: 'Plain white rice' },
-        { id: 1212, name: 'Red Cabbage', price: 3.00, icon: '🥬', image: '', available: true, desc: 'Crisp red cabbage, a light mezze accompaniment' },
-        { id: 1213, name: 'Jalapeno', price: 3.00, icon: '🌶️', image: '', available: true, desc: 'Jalapeno chilli pepper with a spicy kick' },
-        { id: 1214, name: 'Lettuce', price: 3.00, icon: '🥬', image: '', available: true, desc: 'Crisp lettuce leaves, a light mezze starter' }
+        { id: 1204, name: 'Cheese Chips', price: 4.00, icon: 'ðŸŸ', image: '', available: true, desc: 'Crispy chips smothered in melted cheese' },
+        { id: 1205, name: 'Spicy Potatoes', price: 4.00, icon: 'ðŸ¥”', image: '', available: true, desc: 'Crunchy potatoes with a spicy kick' },
+        { id: 1206, name: 'Garlic Bread', price: 4.50, icon: 'ðŸ§„', image: '', available: true, desc: 'Freshly baked bread infused with aromatic garlic' },
+        { id: 1207, name: 'Turkish Mix Salad', price: 4.50, icon: 'ðŸ¥—', image: '', available: true, desc: 'A mix of fresh vegetables and herbs with Turkish flair' },
+        { id: 1208, name: 'Hummus', price: 4.00, icon: 'ðŸ«˜', image: '', available: true, desc: 'Traditional Middle Eastern dip made from chickpeas' },
+        { id: 1209, name: 'Salsa Salad', price: 4.00, icon: 'ðŸ¥—', image: '', available: true, desc: 'Fresh salsa style salad portion' },
+        { id: 1210, name: 'Tzatziki (Cacik)', price: 4.00, icon: 'ðŸ¥›', image: '', available: true, desc: 'Diced cucumbers, garlic, mint in yogurt' },
+        { id: 1211, name: 'Rice', price: 4.00, icon: 'ðŸš', image: '', available: true, desc: 'Plain white rice' },
+        { id: 1212, name: 'Red Cabbage', price: 3.00, icon: 'ðŸ¥¬', image: '', available: true, desc: 'Crisp red cabbage, a light mezze accompaniment' },
+        { id: 1213, name: 'Jalapeno', price: 3.00, icon: 'ðŸŒ¶ï¸', image: '', available: true, desc: 'Jalapeno chilli pepper with a spicy kick' },
+        { id: 1214, name: 'Lettuce', price: 3.00, icon: 'ðŸ¥¬', image: '', available: true, desc: 'Crisp lettuce leaves, a light mezze starter' }
     ],
     
     // KIDS
     kids: [
-        { id: 1301, name: '6 Chicken Nuggets', price: 6.00, icon: '🍗', image: '', available: true, desc: 'Served with chips and side drink', options: [
+        { id: 1301, name: '6 Chicken Nuggets', price: 6.00, icon: 'ðŸ—', image: '', available: true, desc: 'Served with chips and side drink', options: [
             { name: 'Extra Nuggets (3)', price: 2.00 }
         ]}
     ],
     
     // EXTRAS / SAUCES
     extras: [
-        { id: 1401, name: 'Turkish Bread with Sesame Seeds (Samoon)', price: 1.00, icon: '🥖', image: '', available: true, desc: 'Soft, crusty bread topped with sesame seeds' },
-        { id: 1402, name: 'Amba Sauce', price: 0.45, icon: '🥫', image: '', available: true, desc: 'Tangy and sweet mango pickle sauce' },
-        { id: 1403, name: 'Sweet Chilli', price: 0.45, icon: '🌶️', image: '', available: true, desc: 'Sweet Chilli Dipping Sauce - rich blend of red chillies and garlic' },
-        { id: 1404, name: 'Sriracha Mayonnaise', price: 0.50, icon: '🥫', image: '', available: true, desc: 'Spicy mayo blending heat of chillies with coolness of mayo. Vegan & Gluten Free' },
-        { id: 1405, name: 'Garlic Mayo', price: 0.45, icon: '🧄', image: '', available: true, desc: 'Rich and creamy mayonnaise infused with garlic' },
-        { id: 1406, name: 'Chilli Sauce', price: 0.45, icon: '🌶️', image: '', available: true, desc: 'Spicy condiment to add flavour to your meal' },
-        { id: 1407, name: 'Yoghurt Sauce', price: 0.45, icon: '🥛', image: '', available: true, desc: 'Tangy and creamy accompaniment to your meal' },
-        { id: 1408, name: 'Naan', price: 1.00, icon: '🫓', image: '', available: true, desc: 'Soft, lightly leavened Indian flatbread' },
-        { id: 1409, name: 'Fresh Green Chilli with Garlic', price: 0.45, icon: '🌶️', image: '', available: true, desc: 'Fresh green chilli infused with garlic' },
-        { id: 1410, name: 'BBQ Sauce', price: 0.45, icon: '🥫', image: '', available: true, desc: 'Sweet and tangy condiment to enhance your meal' }
+        { id: 1401, name: 'Turkish Bread with Sesame Seeds (Samoon)', price: 1.00, icon: 'ðŸ¥–', image: '', available: true, desc: 'Soft, crusty bread topped with sesame seeds' },
+        { id: 1402, name: 'Amba Sauce', price: 0.45, icon: 'ðŸ¥«', image: '', available: true, desc: 'Tangy and sweet mango pickle sauce' },
+        { id: 1403, name: 'Sweet Chilli', price: 0.45, icon: 'ðŸŒ¶ï¸', image: '', available: true, desc: 'Sweet Chilli Dipping Sauce - rich blend of red chillies and garlic' },
+        { id: 1404, name: 'Sriracha Mayonnaise', price: 0.50, icon: 'ðŸ¥«', image: '', available: true, desc: 'Spicy mayo blending heat of chillies with coolness of mayo. Vegan & Gluten Free' },
+        { id: 1405, name: 'Garlic Mayo', price: 0.45, icon: 'ðŸ§„', image: '', available: true, desc: 'Rich and creamy mayonnaise infused with garlic' },
+        { id: 1406, name: 'Chilli Sauce', price: 0.45, icon: 'ðŸŒ¶ï¸', image: '', available: true, desc: 'Spicy condiment to add flavour to your meal' },
+        { id: 1407, name: 'Yoghurt Sauce', price: 0.45, icon: 'ðŸ¥›', image: '', available: true, desc: 'Tangy and creamy accompaniment to your meal' },
+        { id: 1408, name: 'Naan', price: 1.00, icon: 'ðŸ«“', image: '', available: true, desc: 'Soft, lightly leavened Indian flatbread' },
+        { id: 1409, name: 'Fresh Green Chilli with Garlic', price: 0.45, icon: 'ðŸŒ¶ï¸', image: '', available: true, desc: 'Fresh green chilli infused with garlic' },
+        { id: 1410, name: 'BBQ Sauce', price: 0.45, icon: 'ðŸ¥«', image: '', available: true, desc: 'Sweet and tangy condiment to enhance your meal' }
     ],
     
     // DRINKS
     drinks: [
-        { id: 1501, name: 'Coca-Cola', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Classic cola beverage' },
-        { id: 1502, name: 'Rio', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Freshly brewed tropical drink' },
-        { id: 1503, name: 'Rubicon Mango', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Fresh mango drink with a sweet and tangy twist' },
-        { id: 1504, name: 'Pepsi Max', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Crisp, refreshing cola with zero sugar' },
-        { id: 1505, name: 'Fanta', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Fizzy orange flavoured soft drink' },
-        { id: 1506, name: 'Pepsi', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Refreshing fizzy drink' },
-        { id: 1507, name: 'Water', price: 1.00, icon: '💧', image: '', available: true, desc: 'Refreshing and thirst-quenching' },
-        { id: 1508, name: 'Sprite', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Lemon-lime soft drink' },
-        { id: 1509, name: 'Fruitshoot (Apple & Blackcurrant)', price: 1.00, icon: '🧃', image: '', available: true, desc: 'Refreshing drink blending apple and blackcurrant flavours' },
-        { id: 1510, name: 'Irn Bru', price: 1.70, icon: '🥤', image: '', available: true, desc: 'Scottish soft drink' }
+        { id: 1501, name: 'Coca-Cola', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Classic cola beverage' },
+        { id: 1502, name: 'Rio', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Freshly brewed tropical drink' },
+        { id: 1503, name: 'Rubicon Mango', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Fresh mango drink with a sweet and tangy twist' },
+        { id: 1504, name: 'Pepsi Max', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Crisp, refreshing cola with zero sugar' },
+        { id: 1505, name: 'Fanta', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Fizzy orange flavoured soft drink' },
+        { id: 1506, name: 'Pepsi', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Refreshing fizzy drink' },
+        { id: 1507, name: 'Water', price: 1.00, icon: 'ðŸ’§', image: '', available: true, desc: 'Refreshing and thirst-quenching' },
+        { id: 1508, name: 'Sprite', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Lemon-lime soft drink' },
+        { id: 1509, name: 'Fruitshoot (Apple & Blackcurrant)', price: 1.00, icon: 'ðŸ§ƒ', image: '', available: true, desc: 'Refreshing drink blending apple and blackcurrant flavours' },
+        { id: 1510, name: 'Irn Bru', price: 1.70, icon: 'ðŸ¥¤', image: '', available: true, desc: 'Scottish soft drink' }
     ]
 };
 
@@ -425,21 +425,21 @@ let menuData = {
 // CATEGORY NAMES & ICONS
 // ========================================
 let categories = {
-    grill_wraps: { name: 'Grill Wraps', icon: '🌯', image: '' },
-    grill_portions: { name: 'Grill Portions (Boneless)', icon: '🍖', image: '' },
-    shawarma_chips: { name: 'Shawarma with Chips', icon: '🍟', image: '' },
-    shawarma_rice: { name: 'Shawarma with Rice', icon: '🍚', image: '' },
-    shawarma_naan: { name: 'Shawarma with Naan', icon: '🫓', image: '' },
-    shawarma_turkish: { name: 'Shawarma Turkish Bread', icon: '🥖', image: '' },
-    falafel: { name: 'Falafel', icon: '🧆', image: '' },
-    shawarma_wraps: { name: 'Shawarma Wraps', icon: '🌯', image: '' },
-    shawarma_sandwich: { name: 'Shawarma Sandwich', icon: '🥪', image: '' },
-    pizza: { name: 'Pizza', icon: '🍕', image: '' },
-    fatayer: { name: 'Fatayer Pie', icon: '🥟', image: '' },
-    mezze: { name: 'Mezze Starter', icon: '🥗', image: '' },
-    kids: { name: 'Kids', icon: '🍗', image: '' },
-    extras: { name: 'Extras', icon: '🧄', image: '' },
-    drinks: { name: 'Drinks', icon: '🥤', image: '' }
+    grill_wraps: { name: 'Grill Wraps', icon: 'ðŸŒ¯', image: '' },
+    grill_portions: { name: 'Grill Portions (Boneless)', icon: 'ðŸ–', image: '' },
+    shawarma_chips: { name: 'Shawarma with Chips', icon: 'ðŸŸ', image: '' },
+    shawarma_rice: { name: 'Shawarma with Rice', icon: 'ðŸš', image: '' },
+    shawarma_naan: { name: 'Shawarma with Naan', icon: 'ðŸ«“', image: '' },
+    shawarma_turkish: { name: 'Shawarma Turkish Bread', icon: 'ðŸ¥–', image: '' },
+    falafel: { name: 'Falafel', icon: 'ðŸ§†', image: '' },
+    shawarma_wraps: { name: 'Shawarma Wraps', icon: 'ðŸŒ¯', image: '' },
+    shawarma_sandwich: { name: 'Shawarma Sandwich', icon: 'ðŸ¥ª', image: '' },
+    pizza: { name: 'Pizza', icon: 'ðŸ•', image: '' },
+    fatayer: { name: 'Fatayer Pie', icon: 'ðŸ¥Ÿ', image: '' },
+    mezze: { name: 'Mezze Starter', icon: 'ðŸ¥—', image: '' },
+    kids: { name: 'Kids', icon: 'ðŸ—', image: '' },
+    extras: { name: 'Extras', icon: 'ðŸ§„', image: '' },
+    drinks: { name: 'Drinks', icon: 'ðŸ¥¤', image: '' }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -478,7 +478,7 @@ if (savedCategories) {
             }
         });
     } catch (e) {
-        console.warn('⚠️ Bad category data, resetting...');
+        console.warn('âš ï¸ Bad category data, resetting...');
         localStorage.removeItem('categories');
     }
 }
@@ -687,11 +687,11 @@ function updateDistanceInfo() {
     }
     
     if (distance > 6) {
-        distanceInfo.innerHTML = `⚠️ ${distance.toFixed(1)} miles - TOO FAR FOR DELIVERY`;
+        distanceInfo.innerHTML = `âš ï¸ ${distance.toFixed(1)} miles - TOO FAR FOR DELIVERY`;
         distanceInfo.style.borderColor = '#ef4444';
         distanceInfo.style.background = 'rgba(239, 68, 68, 0.2)';
     } else {
-        distanceInfo.innerHTML = `📍 ${distance.toFixed(1)} miles away  ⏱️ ${time} min delivery`;
+        distanceInfo.innerHTML = `ðŸ“ ${distance.toFixed(1)} miles away  â±ï¸ ${time} min delivery`;
         distanceInfo.style.borderColor = 'rgba(16, 185, 129, 0.5)';
         distanceInfo.style.background = 'rgba(10, 10, 10, 0.95)';
     }
@@ -717,7 +717,7 @@ async function sendVerificationEmail(email, code, type = 'verification') {
     
     if (timeSinceLastSend < 90000) {
         const waitTime = Math.ceil((90000 - timeSinceLastSend) / 1000);
-        alert(`⏱️ Please wait ${waitTime} seconds before requesting a new code.`);
+        alert(`â±ï¸ Please wait ${waitTime} seconds before requesting a new code.`);
         return false;
     }
     
@@ -743,12 +743,12 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         };
         
         startOTPCountdown(email);
-        console.log('✅ Verification email sent successfully');
-        alert('📧 Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.'); // ADD THIS
+        console.log('âœ… Verification email sent successfully');
+        alert('ðŸ“§ Code sent! Check your email.\n\nâ° May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.'); // ADD THIS
         return true;
     } catch (error) {
-        console.error('❌ EmailJS Error:', error);
-        alert('❌ Failed to send verification email. Please try again.');
+        console.error('âŒ EmailJS Error:', error);
+        alert('âŒ Failed to send verification email. Please try again.');
         return false;
     }
 }
@@ -773,7 +773,7 @@ function startOTPCountdown(email) {
             countdownElement.textContent = 'You can now request a new code';
             if (resendBtn) {
                 resendBtn.disabled = false;
-                resendBtn.textContent = '📧 Resend Code';
+                resendBtn.textContent = 'ðŸ“§ Resend Code';
             }
             clearInterval(timer.interval);
         }
@@ -807,7 +807,7 @@ function isValidEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     
     if (!emailRegex.test(email)) {
-        return { valid: false, message: '❌ Invalid email format' };
+        return { valid: false, message: 'âŒ Invalid email format' };
     }
     
     if (email.endsWith('@gmail.com')) {
@@ -1032,7 +1032,7 @@ function displayMenu(category) {
     
     if (!menuGrid) return;
     
-    const catInfo = categories[category] || { name: category, icon: '🍽️' };
+    const catInfo = categories[category] || { name: category, icon: 'ðŸ½ï¸' };
     if (menuTitle) menuTitle.textContent = catInfo.name;
     
     menuGrid.innerHTML = '';
@@ -1054,7 +1054,7 @@ function displayMenu(category) {
         const unavailable = item.available === false;
         
         // Get category image/icon for fallback
-        const categoryIcon = catInfo.icon || '🍽️';
+        const categoryIcon = catInfo.icon || 'ðŸ½ï¸';
         const categoryImage = catInfo.image || '';
         
         // Image display - use item image, then category image, then icon
@@ -1085,12 +1085,12 @@ function displayMenu(category) {
                     <div style="width: 110px; height: 110px; background: #f5f5f5; border-radius: 12px; overflow: hidden; position: relative; ${unavailable ? 'filter: grayscale(50%);' : ''}">
                         ${imageDisplay}
                         <button onclick="toggleFavorite(${item.id}, event)" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.6); border: none; width: 30px; height: 30px; min-width: 30px; min-height: 30px; max-width: 30px; max-height: 30px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; aspect-ratio: 1/1; box-sizing: border-box;">
-                            ${isFavorite ? '❤️' : '🤍'}
+                            ${isFavorite ? 'â¤ï¸' : 'ðŸ¤'}
                         </button>
                     </div>
                     ${!unavailable ? `
                         <button onclick="openFoodModal(${item.id})" style="background: rgba(255, 220, 220, 0.95); color: #e63946; border: 2px solid rgba(230, 57, 70, 0.2); padding: 0.5rem 1.8rem; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">Add</button>
-                    ` : '<span style="color: #666; font-size: 0.8rem; font-weight: 500;">—</span>'}
+                    ` : '<span style="color: #666; font-size: 0.8rem; font-weight: 500;">â€”</span>'}
                 </div>
             `;
         } else {
@@ -1109,12 +1109,12 @@ function displayMenu(category) {
                     <div style="width: 120px; height: 120px; background: #f5f5f5; border-radius: 12px; overflow: hidden; position: relative; ${unavailable ? 'filter: grayscale(50%);' : ''}">
                         ${imageDisplay}
                         <button onclick="toggleFavorite(${item.id}, event)" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.6); border: none; width: 30px; height: 30px; min-width: 30px; min-height: 30px; max-width: 30px; max-height: 30px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; aspect-ratio: 1/1; box-sizing: border-box;">
-                            ${isFavorite ? '❤️' : '🤍'}
+                            ${isFavorite ? 'â¤ï¸' : 'ðŸ¤'}
                         </button>
                     </div>
                     ${!unavailable ? `
                         <button onclick="openFoodModal(${item.id})" style="background: rgba(255, 220, 220, 0.95); color: #e63946; border: 2px solid rgba(230, 57, 70, 0.2); padding: 0.5rem 1.8rem; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.background='#e63946'; this.style.color='white';" onmouseout="this.style.background='rgba(255, 220, 220, 0.95)'; this.style.color='#e63946';">Add</button>
-                    ` : '<span style="color: #666; font-size: 0.8rem; font-weight: 500;">—</span>'}
+                    ` : '<span style="color: #666; font-size: 0.8rem; font-weight: 500;">â€”</span>'}
                 </div>
             `;
         }
@@ -1185,7 +1185,7 @@ function openFoodModal(foodId) {
     
     // Check if food is available
     if (selectedFood.available === false) {
-        alert('❌ Sorry, this item is currently not available.');
+        alert('âŒ Sorry, this item is currently not available.');
         return;
     }
     
@@ -1286,7 +1286,7 @@ function updateTotalPrice() {
 
 function addToCart() {
     if (!currentUser) {
-        alert('⚠️ Please login to add items to cart');
+        alert('âš ï¸ Please login to add items to cart');
         showLogin();
         return;
     }
@@ -1335,7 +1335,7 @@ function addToCart() {
     closeModal('foodModal');
     
     playNotificationSound();
-    alert(`✅ Added to cart!\n\n${quantity}x ${selectedFood.name}\n${extras.length > 0 ? 'Extras: ' + extras.join(', ') : ''}`);
+    alert(`âœ… Added to cart!\n\n${quantity}x ${selectedFood.name}\n${extras.length > 0 ? 'Extras: ' + extras.join(', ') : ''}`);
 }
 
 // ========================================
@@ -1345,7 +1345,7 @@ function toggleFavorite(foodId, event) {
     event.stopPropagation();
     
     if (!currentUser) {
-        alert('⚠️ Please login to add favorites');
+        alert('âš ï¸ Please login to add favorites');
         showLogin();
         return;
     }
@@ -1359,11 +1359,11 @@ function toggleFavorite(foodId, event) {
     
     if (index > -1) {
         favorites.splice(index, 1);
-        event.target.innerHTML = '🤍';
+        event.target.innerHTML = 'ðŸ¤';
         event.target.classList.remove('active');
     } else {
         favorites.push(foodId);
-        event.target.innerHTML = '❤️';
+        event.target.innerHTML = 'â¤ï¸';
         event.target.classList.add('active');
     }
     
@@ -1373,7 +1373,7 @@ function toggleFavorite(foodId, event) {
 
 function showFavorites() {
     if (!currentUser) {
-        alert('⚠️ Please login to view favorites');
+        alert('âš ï¸ Please login to view favorites');
         showLogin();
         return;
     }
@@ -1407,9 +1407,9 @@ function showFavorites() {
     if (favItems.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 4rem;">💔</div>
+                <div style="font-size: 4rem;">ðŸ’”</div>
                 <p>No favorites yet</p>
-                <p style="font-size: 0.9rem;">Tap ❤️ on items to add them here</p>
+                <p style="font-size: 0.9rem;">Tap â¤ï¸ on items to add them here</p>
             </div>
         `;
     } else {
@@ -1447,7 +1447,7 @@ function showFavorites() {
 // ========================================
 function showCart() {
     if (!currentUser) {
-        alert('⚠️ Please login to view cart');
+        alert('âš ï¸ Please login to view cart');
         showLogin();
         return;
     }
@@ -1461,12 +1461,12 @@ function showCart() {
     if (cart.length === 0) {
         cartItems.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 4rem;">🛒</div>
+                <div style="font-size: 4rem;">ðŸ›’</div>
                 <p>Your cart is empty</p>
                 <p style="font-size: 0.9rem;">Add some delicious items!</p>
             </div>
         `;
-        if (cartTotal) cartTotal.textContent = '£0.00';
+        if (cartTotal) cartTotal.textContent = 'Â£0.00';
     } else {
         let total = 0;
         cartItems.innerHTML = cart.map((item, index) => {
@@ -1483,7 +1483,7 @@ function showCart() {
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
                         <button onclick="updateCartItem(${index}, -1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">-</button>
                         <button onclick="updateCartItem(${index}, 1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">+</button>
-                        <button onclick="removeCartItem(${index})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; margin-left: auto;">🗑️ Remove</button>
+                        <button onclick="removeCartItem(${index})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; margin-left: auto;">ðŸ—‘ï¸ Remove</button>
                     </div>
                 </div>
             `;
@@ -1516,19 +1516,19 @@ function removeCartItem(index) {
 
 function proceedToCheckout() {
     if (cart.length === 0) {
-        alert('❌ Your cart is empty!');
+        alert('âŒ Your cart is empty!');
         return;
     }
     
     // Check if restaurant is open
     const status = getRestaurantStatus();
     if (!status.open) {
-        alert(`⚠️ Sorry, we're not accepting orders right now.\n\n${status.message}\n\nOpening hours: 11:00 - 23:00\nLast orders: 22:30`);
+        alert(`âš ï¸ Sorry, we're not accepting orders right now.\n\n${status.message}\n\nOpening hours: 11:00 - 23:00\nLast orders: 22:30`);
         return;
     }
     
     if (!currentUser) {
-        alert('❌ Please login first');
+        alert('âŒ Please login first');
         showLogin();
         return;
     }
@@ -1540,12 +1540,12 @@ function proceedToCheckout() {
     );
     
     if (activeOrder) {
-        alert(`⚠️ You already have an active order!\n\nOrder #${activeOrder.id}\nStatus: ${activeOrder.status.replace('_', ' ').toUpperCase()}\n\nPlease wait until your current order is delivered before placing a new one.`);
+        alert(`âš ï¸ You already have an active order!\n\nOrder #${activeOrder.id}\nStatus: ${activeOrder.status.replace('_', ' ').toUpperCase()}\n\nPlease wait until your current order is delivered before placing a new one.`);
         return;
     }
     
     if (!currentUser.address && !selectedLocation) {
-        alert('❌ Please set your delivery address first');
+        alert('âŒ Please set your delivery address first');
         pickLocation();
         return;
     }
@@ -1659,7 +1659,7 @@ function handlePayment(event) {
     const paymentMethod = document.getElementById('paymentMethod').value;
     
     if (!paymentMethod) {
-        alert('❌ Please select a payment method');
+        alert('âŒ Please select a payment method');
         return false;
     }
     
@@ -1670,19 +1670,19 @@ function handlePayment(event) {
         const cvv = document.getElementById('paymentCVV').value;
         
         if (!isValidCardNumber(cardNumber)) {
-            alert('❌ Invalid card number');
+            alert('âŒ Invalid card number');
             return false;
         }
         if (!cardName || cardName.length < 2) {
-            alert('❌ Please enter name on card');
+            alert('âŒ Please enter name on card');
             return false;
         }
         if (!isValidExpiry(expiry)) {
-            alert('❌ Invalid expiry date');
+            alert('âŒ Invalid expiry date');
             return false;
         }
         if (!isValidCVV(cvv)) {
-            alert('❌ Invalid CVV');
+            alert('âŒ Invalid CVV');
             return false;
         }
     }
@@ -1728,7 +1728,7 @@ function handlePayment(event) {
     // Add notification
     addNotification(currentUser.email, {
         type: 'order_placed',
-        title: '📦 Order Placed!',
+        title: 'ðŸ“¦ Order Placed!',
         message: `Your order #${orderId} has been placed successfully.`,
         orderId: orderId
     });
@@ -1750,7 +1750,7 @@ function handlePayment(event) {
     
     playNotificationSound();
     
-    alert(`✅ Order Placed Successfully!\n\nOrder ID: ${orderId}\nTotal: ${formatPrice(order.total)}\n\nYou will receive updates on your order status.`);
+    alert(`âœ… Order Placed Successfully!\n\nOrder ID: ${orderId}\nTotal: ${formatPrice(order.total)}\n\nYou will receive updates on your order status.`);
     
     return false;
 }
@@ -1776,7 +1776,7 @@ function addNotification(userId, notification) {
 
 function showNotifications() {
     if (!currentUser) {
-        alert('⚠️ Please login to view notifications');
+        alert('âš ï¸ Please login to view notifications');
         showLogin();
         return;
     }
@@ -1796,7 +1796,7 @@ function showNotifications() {
     if (notifications.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 4rem;">🔔</div>
+                <div style="font-size: 4rem;">ðŸ””</div>
                 <p>No notifications yet</p>
             </div>
         `;
@@ -1813,7 +1813,7 @@ function showNotifications() {
                     // Order already delivered - show simple completed message
                     return `
                         <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 0.8rem; border-left: 3px solid #10b981;">
-                            <div style="font-weight: 600; margin-bottom: 0.3rem;">✅ Order Delivered</div>
+                            <div style="font-weight: 600; margin-bottom: 0.3rem;">âœ… Order Delivered</div>
                             <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Your order #${n.orderId} has been delivered.</div>
                             <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.5rem;">${new Date(n.createdAt).toLocaleString()}</div>
                         </div>
@@ -1823,12 +1823,12 @@ function showNotifications() {
                     <div style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2)); padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; border: 2px solid rgba(16,185,129,0.4);">
                         <div style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; color: #10b981;">${n.title}</div>
                         <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem;">
-                            <div style="margin-bottom: 0.5rem;">🚗 <strong>${n.driverName || 'Driver'}</strong></div>
-                            ${n.driverPhone ? `<div style="margin-bottom: 0.5rem;">📞 <a href="tel:${n.driverPhone}" style="color: #3b82f6;">${n.driverPhone}</a></div>` : ''}
-                            ${n.estimatedTime ? `<div style="color: #f59e0b; font-weight: 600; font-size: 1.1rem;">⏱️ Arriving in ~${n.estimatedTime} minutes</div>` : ''}
+                            <div style="margin-bottom: 0.5rem;">ðŸš— <strong>${n.driverName || 'Driver'}</strong></div>
+                            ${n.driverPhone ? `<div style="margin-bottom: 0.5rem;">ðŸ“ž <a href="tel:${n.driverPhone}" style="color: #3b82f6;">${n.driverPhone}</a></div>` : ''}
+                            ${n.estimatedTime ? `<div style="color: #f59e0b; font-weight: 600; font-size: 1.1rem;">â±ï¸ Arriving in ~${n.estimatedTime} minutes</div>` : ''}
                         </div>
                         <button onclick="trackDriver('${n.orderId}'); closeModal('notificationsModal');" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem;">
-                            📍 Track Driver Live
+                            ðŸ“ Track Driver Live
                         </button>
                         <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.5rem;">${new Date(n.createdAt).toLocaleString()}</div>
                     </div>
@@ -1841,7 +1841,7 @@ function showNotifications() {
                     <div style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(37,99,235,0.2)); padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; border: 2px solid rgba(59,130,246,0.4);">
                         <div style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.1rem; color: #3b82f6;">${n.title}</div>
                         <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">${n.message}</div>
-                        ${isAlreadyRated ? `<div style="color: #f59e0b; font-size: 0.85rem;">⭐ You rated this delivery ${order.driverRating}/5</div>` : ''}
+                        ${isAlreadyRated ? `<div style="color: #f59e0b; font-size: 0.85rem;">â­ You rated this delivery ${order.driverRating}/5</div>` : ''}
                         <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.5rem;">${new Date(n.createdAt).toLocaleString()}</div>
                     </div>
                 `;
@@ -1886,7 +1886,7 @@ function showAccount() {
     // Profile picture display
     const profilePic = currentUser.profilePicture 
         ? `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">`
-        : '👤';
+        : 'ðŸ‘¤';
     
     content.innerHTML = `
         <div style="background: linear-gradient(135deg, #e63946, #c1121f); padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem;">
@@ -1912,15 +1912,15 @@ function showAccount() {
         <!-- User Details -->
         <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1.2rem; border: 1px solid rgba(255,255,255,0.1);">
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📞 Phone</span>
+                <span style="color: rgba(255,255,255,0.6);">ðŸ“ž Phone</span>
                 <span>${currentUser.phone || 'Not set'}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📍 Address</span>
+                <span style="color: rgba(255,255,255,0.6);">ðŸ“ Address</span>
                 <span style="text-align: right; max-width: 60%;">${currentUser.address || 'Not set'}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📅 Member</span>
+                <span style="color: rgba(255,255,255,0.6);">ðŸ“… Member</span>
                 <span>${currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'N/A'}</span>
             </div>
         </div>
@@ -1928,7 +1928,7 @@ function showAccount() {
         <!-- Active Deliveries -->
         ${activeOrders.length > 0 ? `
             <div style="background: linear-gradient(135deg, rgba(42,157,143,0.2), rgba(42,157,143,0.1)); padding: 1rem; border-radius: 12px; margin-bottom: 1.2rem; border: 2px solid rgba(42,157,143,0.4);">
-                <h4 style="margin: 0 0 0.8rem 0; color: #2a9d8f; font-size: 0.95rem;">🚗 Active Delivery</h4>
+                <h4 style="margin: 0 0 0.8rem 0; color: #2a9d8f; font-size: 0.95rem;">ðŸš— Active Delivery</h4>
                 ${activeOrders.map(o => `
                     <div style="background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem;">
                         <div style="font-weight: 600; margin-bottom: 0.3rem;">#${o.id}</div>
@@ -1936,7 +1936,7 @@ function showAccount() {
                         ${o.estimatedTime ? `<div style="font-size: 0.85rem; color: #f4a261;">ETA: ~${o.estimatedTime} mins</div>` : ''}
                     </div>
                     <button onclick="trackDriver('${o.id}')" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.9rem;">
-                        📍 Track Driver Live
+                        ðŸ“ Track Driver Live
                     </button>
                 `).join('')}
             </div>
@@ -1945,24 +1945,24 @@ function showAccount() {
         <!-- Action Buttons -->
         <div style="display: grid; gap: 0.6rem;">
             <button onclick="openEditProfile()" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                ✏️ Edit Profile
+                âœï¸ Edit Profile
             </button>
             <button onclick="openChangeEmail()" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                📧 Change Email
+                ðŸ“§ Change Email
             </button>
             <button onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                🔒 Change Password
+                ðŸ”’ Change Password
             </button>
         </div>
         
         <button onclick="logout()" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 2px solid #ef4444; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 1rem; font-size: 0.95rem;">
-            🚪 Logout
+            ðŸšª Logout
         </button>
         
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; text-align: center; margin-bottom: 0.8rem;">Danger Zone</p>
             <button onclick="confirmDeleteAccount()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem;">
-                🗑️ Delete My Account
+                ðŸ—‘ï¸ Delete My Account
             </button>
         </div>
     `;
@@ -1994,7 +1994,7 @@ function showOrderHistory() {
     if (allOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">ðŸ“‹</div>
                 <p>No orders yet</p>
                 <p style="font-size: 0.85rem; margin-top: 0.5rem;">Your order history will appear here</p>
             </div>
@@ -2007,7 +2007,7 @@ function showOrderHistory() {
                                o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
-            const paymentIcon = o.paymentMethod === 'cash' ? '💷' : o.paymentMethod === 'applepay' ? '🍎' : '💳';
+            const paymentIcon = o.paymentMethod === 'cash' ? 'ðŸ’·' : o.paymentMethod === 'applepay' ? 'ðŸŽ' : 'ðŸ’³';
             
             // Get driver info for active deliveries only
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
@@ -2033,29 +2033,29 @@ function showOrderHistory() {
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${paymentIcon} ${o.paymentMethod || 'N/A'}</span>
                     </div>
                     
-                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5 ${o.driverRatingComment ? '- "' + o.driverRatingComment + '"' : ''}</div>` : ''}
+                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">â­ Rated ${o.driverRating}/5 ${o.driverRatingComment ? '- "' + o.driverRatingComment + '"' : ''}</div>` : ''}
                     
                     ${o.status === 'out_for_delivery' && driver ? `
                         <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
-                            ${driver.profilePic ? `<img src="${driver.profilePic}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">` : '<div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🚗</div>'}
+                            ${driver.profilePic ? `<img src="${driver.profilePic}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">` : '<div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">ðŸš—</div>'}
                             <div style="flex: 1;">
                                 <div style="font-weight: 600; font-size: 0.9rem;">${driver.name || o.driverName || 'Driver'}</div>
                                 <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">On the way to you</div>
                             </div>
                         </div>
                         <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
-                            📍 Track Driver Live
+                            ðŸ“ Track Driver Live
                         </button>
                     ` : ''}
                     
                     ${o.status === 'completed' && o.driverId && !o.driverRated ? `
                         <button onclick="openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.9rem;">
-                            ⭐ Rate Driver
+                            â­ Rate Driver
                         </button>
                     ` : ''}
                     
                     <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
-                        🔄 Reorder
+                        ðŸ”„ Reorder
                     </button>
                 </div>
             `;
@@ -2085,7 +2085,7 @@ let reorderData = null;
 function reorderFromHistory(orderId) {
     const order = orderHistory.find(o => o.id === orderId);
     if (!order) {
-        alert('❌ Order not found');
+        alert('âŒ Order not found');
         return;
     }
     
@@ -2124,7 +2124,7 @@ function confirmReorder() {
     });
     
     if (unavailableItems.length > 0) {
-        alert(`❌ Some items are no longer available:\n\n${unavailableItems.join('\n')}\n\nPlease order from the menu.`);
+        alert(`âŒ Some items are no longer available:\n\n${unavailableItems.join('\n')}\n\nPlease order from the menu.`);
         closeModal('reorderModal');
         return;
     }
@@ -2173,7 +2173,7 @@ function openEditProfile() {
     if (currentUser.profilePicture) {
         preview.innerHTML = `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">`;
     } else {
-        preview.innerHTML = '👤';
+        preview.innerHTML = 'ðŸ‘¤';
     }
     
     openModal('editProfileModal');
@@ -2204,7 +2204,7 @@ function saveProfileChanges(event) {
     const newPic = preview.dataset.newPic;
     
     if (!name) {
-        alert('❌ Name is required');
+        alert('âŒ Name is required');
         return false;
     }
     
@@ -2241,7 +2241,7 @@ function saveProfileChanges(event) {
     }
     
     // Show success and refresh account
-    alert('✅ Profile updated successfully!');
+    alert('âœ… Profile updated successfully!');
     showAccount();
     
     return false;
@@ -2280,7 +2280,7 @@ function handleChangePassword(event) {
     event.preventDefault();
     
     if (!currentUser) {
-        alert('❌ Please login first');
+        alert('âŒ Please login first');
         return;
     }
     
@@ -2290,19 +2290,19 @@ function handleChangePassword(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('❌ Current password is incorrect');
+        alert('âŒ Current password is incorrect');
         return;
     }
     
     // Validate new password
     if (newPassword.length < 6) {
-        alert('❌ New password must be at least 6 characters');
+        alert('âŒ New password must be at least 6 characters');
         return;
     }
     
     // Check match
     if (newPassword !== confirmPassword) {
-        alert('❌ New passwords do not match');
+        alert('âŒ New passwords do not match');
         return;
     }
     
@@ -2320,7 +2320,7 @@ function handleChangePassword(event) {
     saveData();
     
     closeModal('changePasswordModal');
-    alert('✅ Password changed successfully!');
+    alert('âœ… Password changed successfully!');
 }
 
 // Open forgot password from change password modal
@@ -2347,19 +2347,19 @@ function verifyAndChangeEmail(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('❌ Current password is incorrect');
+        alert('âŒ Current password is incorrect');
         return;
     }
     
     // Check email match
     if (newEmail !== confirmEmail) {
-        alert('❌ Emails do not match');
+        alert('âŒ Emails do not match');
         return;
     }
     
     // Check if email already exists
     if (userDatabase.some(u => u.email === newEmail && u.email !== currentUser.email)) {
-        alert('❌ This email is already registered');
+        alert('âŒ This email is already registered');
         return;
     }
     
@@ -2399,7 +2399,7 @@ function verifyAndChangeEmail(event) {
     closeModal('changeEmailModal');
     showAccount();
     
-    alert('✅ Email changed successfully to: ' + newEmail);
+    alert('âœ… Email changed successfully to: ' + newEmail);
 }
 
 function openChangePassword() {
@@ -2425,25 +2425,25 @@ function verifyAndChangePassword(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('❌ Current password is incorrect');
+        alert('âŒ Current password is incorrect');
         return;
     }
     
     // Check password length
     if (newPassword.length < 6) {
-        alert('❌ New password must be at least 6 characters');
+        alert('âŒ New password must be at least 6 characters');
         return;
     }
     
     // Check password match
     if (newPassword !== confirmPassword) {
-        alert('❌ New passwords do not match');
+        alert('âŒ New passwords do not match');
         return;
     }
     
     // Check if new password is same as old
     if (newPassword === currentPassword) {
-        alert('❌ New password must be different from current password');
+        alert('âŒ New password must be different from current password');
         return;
     }
     
@@ -2463,7 +2463,7 @@ function verifyAndChangePassword(event) {
     closeModal('changePasswordModal');
     showAccount();
     
-    alert('✅ Password changed successfully!');
+    alert('âœ… Password changed successfully!');
 }
 
 function logout() {
@@ -2478,7 +2478,7 @@ function logout() {
     updateNotificationBadge();
     closeModal('accountModal');
     
-    alert('✅ Logged out successfully');
+    alert('âœ… Logged out successfully');
 }
 
 // ========================================
@@ -2502,7 +2502,7 @@ function toggleAuthMode() {
     const forgotLink = document.getElementById('forgotPasswordLink');
     
     if (isSignUpMode) {
-        if (title) title.textContent = '📝 Create Account';
+        if (title) title.textContent = 'ðŸ“ Create Account';
         if (nameGroup) nameGroup.style.display = 'block';
         if (phoneGroup) phoneGroup.style.display = 'block';
         if (ageGroup) ageGroup.style.display = 'block';
@@ -2511,7 +2511,7 @@ function toggleAuthMode() {
         if (toggleText) toggleText.textContent = 'Already have an account?';
         if (forgotLink) forgotLink.style.display = 'none';
     } else {
-        if (title) title.textContent = '🔐 Login';
+        if (title) title.textContent = 'ðŸ” Login';
         if (nameGroup) nameGroup.style.display = 'none';
         if (phoneGroup) phoneGroup.style.display = 'none';
         if (ageGroup) ageGroup.style.display = 'none';
@@ -2531,11 +2531,11 @@ function showForgotPasswordSection(show) {
     if (show) {
         if (authSection) authSection.style.display = 'none';
         if (forgotSection) forgotSection.style.display = 'block';
-        if (title) title.textContent = '🔑 Reset Password';
+        if (title) title.textContent = 'ðŸ”‘ Reset Password';
     } else {
         if (authSection) authSection.style.display = 'block';
         if (forgotSection) forgotSection.style.display = 'none';
-        if (title) title.textContent = '🔐 Login';
+        if (title) title.textContent = 'ðŸ” Login';
     }
 }
 
@@ -2543,13 +2543,13 @@ function sendPasswordResetCode() {
     const email = document.getElementById('forgotPasswordEmail').value.trim();
     
     if (!email) {
-        alert('❌ Please enter your email');
+        alert('âŒ Please enter your email');
         return;
     }
     
     const user = userDatabase.find(u => u.email === email);
     if (!user) {
-        alert('❌ No account found with this email');
+        alert('âŒ No account found with this email');
         return;
     }
     
@@ -2563,12 +2563,12 @@ function sendPasswordResetCode() {
     };
     
     // Show code in console and alert (in real app, send email)
-    alert(`📧 Password reset Verification code sent to your email!`);
+    alert(`ðŸ“§ Password reset Verification code sent to your email!`);
     
     // Show code entry
     document.getElementById('forgotPasswordSection').innerHTML = `
         <div style="background: rgba(245,158,11,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-            <h3 style="color: #f59e0b;">🔑 Enter Reset Code</h3>
+            <h3 style="color: #f59e0b;">ðŸ”‘ Enter Reset Code</h3>
             <p style="color: rgba(255,255,255,0.8);">Code sent to <strong>${email}</strong></p>
         </div>
         <div class="form-group">
@@ -2583,9 +2583,9 @@ function sendPasswordResetCode() {
             <label>Confirm Password *</label>
             <input type="password" id="confirmPasswordReset" placeholder="Confirm new password">
         </div>
-        <button class="submit-btn" onclick="resetPassword()">🔐 Reset Password</button>
+        <button class="submit-btn" onclick="resetPassword()">ðŸ” Reset Password</button>
         <p style="text-align: center; margin-top: 1rem;">
-            <a href="#" onclick="location.reload(); return false;" style="color: #ff6b6b;">← Back to Login</a>
+            <a href="#" onclick="location.reload(); return false;" style="color: #ff6b6b;">â† Back to Login</a>
         </p>
     `;
 }
@@ -2596,22 +2596,22 @@ function resetPassword() {
     const confirmPassword = document.getElementById('confirmPasswordReset').value;
     
     if (!pendingVerification || pendingVerification.type !== 'password_reset') {
-        alert('❌ Invalid reset session. Please try again.');
+        alert('âŒ Invalid reset session. Please try again.');
         return;
     }
     
     if (code !== pendingVerification.code) {
-        alert('❌ Invalid code. Please check and try again.');
+        alert('âŒ Invalid code. Please check and try again.');
         return;
     }
     
     if (newPassword.length < 6) {
-        alert('❌ Password must be at least 6 characters');
+        alert('âŒ Password must be at least 6 characters');
         return;
     }
     
     if (newPassword !== confirmPassword) {
-        alert('❌ Passwords do not match');
+        alert('âŒ Passwords do not match');
         return;
     }
     
@@ -2622,7 +2622,7 @@ function resetPassword() {
         saveData();
         pendingVerification = null;
         
-        alert('✅ Password reset successfully!\n\nYou can now login with your new password.');
+        alert('âœ… Password reset successfully!\n\nYou can now login with your new password.');
         location.reload();
     }
 }
@@ -2659,13 +2659,13 @@ async function handleEmailAuth(event) {
     
     // Strong password validation
     if (password.length < 8) {
-        alert('❌ Password must be at least 8 characters');
+        alert('âŒ Password must be at least 8 characters');
         return;
     }
     
     // Check password strength for new accounts
     if (isSignUpMode && !isStrongPassword(password)) {
-        alert('❌ Password must contain:\n• Uppercase letter\n• Lowercase letter\n• Number\n• Special character (@$!%*?&#)');
+        alert('âŒ Password must contain:\nâ€¢ Uppercase letter\nâ€¢ Lowercase letter\nâ€¢ Number\nâ€¢ Special character (@$!%*?&#)');
         return;
     }
     
@@ -2676,7 +2676,7 @@ async function handleEmailAuth(event) {
             showOwnerPinEntry();
             return;
         } else {
-            alert('❌ Invalid credentials');
+            alert('âŒ Invalid credentials');
             return;
         }
     }
@@ -2701,19 +2701,19 @@ async function handleEmailAuth(event) {
     if (isSignUpMode) {
         // SIGN UP MODE
         if (!name || name.length < 2) {
-            alert('❌ Please enter your full name');
+            alert('âŒ Please enter your full name');
             return;
         }
         
         if (phone && !isValidPhone(phone)) {
-            alert('❌ Invalid UK phone number');
+            alert('âŒ Invalid UK phone number');
             return;
         }
         
         // Check if user exists
         const existingUser = userDatabase.find(u => u.email === email);
         if (existingUser) {
-            alert('❌ An account with this email already exists');
+            alert('âŒ An account with this email already exists');
             return;
         }
         
@@ -2747,12 +2747,12 @@ async function handleEmailAuth(event) {
         const user = userDatabase.find(u => u.email === email);
         
         if (!user) {
-            alert('❌ No account found with this email');
+            alert('âŒ No account found with this email');
             return;
         }
         
         if (user.password !== password) {
-            alert('❌ Incorrect password');
+            alert('âŒ Incorrect password');
             return;
         }
         
@@ -2802,9 +2802,9 @@ function showVerificationModal(email, type) {
     modal.innerHTML = `
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('verificationModal')">&times;</button>
-            <h2>🔐 Email Verification</h2>
+            <h2>ðŸ” Email Verification</h2>
             <div style="background: rgba(230,57,70,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                <p style="color: rgba(255,255,255,0.9);">📧 Verification code sent to:</p>
+                <p style="color: rgba(255,255,255,0.9);">ðŸ“§ Verification code sent to:</p>
                 <p style="color: #ff6b6b; font-weight: 600; margin-top: 0.5rem;">${email}</p>
                 <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 1rem;">${messageText}</p>
             </div>
@@ -2817,10 +2817,10 @@ function showVerificationModal(email, type) {
             <div style="text-align: center; margin: 1rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
                 <div id="otpCountdown">Initializing...</div>
             </div>
-            <button class="submit-btn" onclick="verifyEmailCode()">✅ Verify Code</button>
+            <button class="submit-btn" onclick="verifyEmailCode()">âœ… Verify Code</button>
             <button class="submit-btn" id="resendCodeBtn" onclick="resendVerificationCode()" 
                 style="background: rgba(255,255,255,0.1); margin-top: 0.5rem;">
-                📧 Resend Code
+                ðŸ“§ Resend Code
             </button>
             <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
                 Code expires in 10 minutes
@@ -2846,21 +2846,21 @@ function verifyEmailCode() {
     const enteredCode = codeInput.value.trim();
     
     if (!pendingVerification) {
-        alert('❌ No verification session found. Please try again.');
+        alert('âŒ No verification session found. Please try again.');
         closeModal('verificationModal');
         return;
     }
     
     // Check expiration
     if (Date.now() > pendingVerification.expiresAt) {
-        alert('❌ Verification code expired. Please request a new one.');
+        alert('âŒ Verification code expired. Please request a new one.');
         closeModal('verificationModal');
         pendingVerification = null;
         return;
     }
     
     if (enteredCode !== pendingVerification.code) {
-        alert('❌ Invalid code. Please check and try again.');
+        alert('âŒ Invalid code. Please check and try again.');
         codeInput.value = '';
         codeInput.focus();
         return;
@@ -2887,7 +2887,7 @@ function verifyEmailCode() {
         saveData();
         
         closeModal('verificationModal');
-        alert('✅ Account created successfully!\n\nWelcome to Antalya Shawarma! 🎉');
+        alert('âœ… Account created successfully!\n\nWelcome to Antalya Shawarma! ðŸŽ‰');
         updateAuthUI();
         
     } else if (pendingVerification.type === 'login') {
@@ -2896,7 +2896,7 @@ function verifyEmailCode() {
 saveData();
 
 closeModal('verificationModal');
-alert('✅ Login successful!\n\nWelcome back! 👋');
+alert('âœ… Login successful!\n\nWelcome back! ðŸ‘‹');
 updateAuthUI();
 updateOwnerButtonVisibility(); // ADD THIS LINE
 
@@ -2908,7 +2908,7 @@ updateOwnerButtonVisibility(); // ADD THIS LINE
 // Resend verification code
 async function resendVerificationCode() {
     if (!pendingVerification) {
-        alert('❌ No active verification session');
+        alert('âŒ No active verification session');
         return;
     }
     
@@ -2917,7 +2917,7 @@ async function resendVerificationCode() {
     if (!canResendOTP(email)) {
         const timer = otpTimers[email];
         const waitTime = Math.ceil((timer.canResendAt - Date.now()) / 1000);
-        alert(`⏱️ Please wait ${waitTime} seconds before resending`);
+        alert(`â±ï¸ Please wait ${waitTime} seconds before resending`);
         return;
     }
     
@@ -2933,7 +2933,7 @@ async function resendVerificationCode() {
         pendingVerification.code = newCode;
         pendingVerification.expiresAt = Date.now() + 600000;
         
-        alert('📧 New verification code sent!');
+        alert('ðŸ“§ New verification code sent!');
     }
 }
 
@@ -2952,12 +2952,12 @@ function verifyCode() {
     const enteredCode = document.getElementById('verificationCode').value;
     
     if (!pendingVerification) {
-        alert('❌ No verification pending');
+        alert('âŒ No verification pending');
         return;
     }
     
     if (enteredCode !== pendingVerification.code) {
-        alert('❌ Invalid verification code');
+        alert('âŒ Invalid verification code');
         return;
     }
     
@@ -3002,7 +3002,7 @@ function verifyCode() {
     
     closeModal('loginModal');
     
-    alert(`✅ Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in.`);
+    alert(`âœ… Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in.`);
 }
 
 function resendCode() {
@@ -3033,7 +3033,7 @@ function loginWithGoogle() {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
             console.log('Google One Tap not available');
             // Show clearer message
-               alert('⚠️ Google Sign-In not available\n\nPlease use Email/Password login instead.');
+               alert('âš ï¸ Google Sign-In not available\n\nPlease use Email/Password login instead.');
            }
        });
         } else {
@@ -3042,7 +3042,7 @@ function loginWithGoogle() {
         }
     } catch (error) {
         console.error('Google Sign-In Error:', error);
-        alert('❌ Google login unavailable. Please use email login.');
+        alert('âŒ Google login unavailable. Please use email login.');
     }
 }
 
@@ -3050,7 +3050,7 @@ function handleGoogleCallback(response) {
 
         if (!response || !response.credential) {
         console.error('Google login failed:', response);
-        alert('❌ Google login failed. Please try again or use email login.');
+        alert('âŒ Google login failed. Please try again or use email login.');
         return;
     }
 
@@ -3096,11 +3096,11 @@ function handleGoogleCallback(response) {
     updateHeaderForLoggedInUser();
     closeModal('loginModal');
     
-    alert(`✅ Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in with Google.`);
+    alert(`âœ… Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in with Google.`);
 }
 
 function loginWithApple() {
-    alert(`🍎 Apple Sign-In\n\nApple authentication would be configured here.\n\nFor demo, use email signup with iCloud.`);
+    alert(`ðŸŽ Apple Sign-In\n\nApple authentication would be configured here.\n\nFor demo, use email signup with iCloud.`);
 }
 
 // ========================================
@@ -3111,7 +3111,7 @@ function getDeliveryCost(distanceMiles) {
         return {
             available: false,
             cost: 0,
-            message: '⚠️ Location is outside delivery range (max 6 miles)'
+            message: 'âš ï¸ Location is outside delivery range (max 6 miles)'
         };
     }
     
@@ -3119,19 +3119,19 @@ function getDeliveryCost(distanceMiles) {
         return {
             available: true,
             cost: 0,
-            message: '✅ FREE delivery'
+            message: 'âœ… FREE delivery'
         };
     } else if (distanceMiles <= 3) {
         return {
             available: true,
             cost: 3.99,
-            message: `✅ ${formatPrice(3.99)} delivery • ${calculateTime(distanceMiles)} mins`
+            message: `âœ… ${formatPrice(3.99)} delivery â€¢ ${calculateTime(distanceMiles)} mins`
         };
     } else {
         return {
             available: true,
             cost: 5.99,
-            message: `✅ ${formatPrice(5.99)} delivery • ${calculateTime(distanceMiles)} mins`
+            message: `âœ… ${formatPrice(5.99)} delivery â€¢ ${calculateTime(distanceMiles)} mins`
         };
     }
 }
@@ -3190,7 +3190,7 @@ function initMap() {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="18" fill="#e63946" stroke="#fff" stroke-width="3"/>
-                    <text x="20" y="26" font-size="18" text-anchor="middle" fill="#fff">🌯</text>
+                    <text x="20" y="26" font-size="18" text-anchor="middle" fill="#fff">ðŸŒ¯</text>
                 </svg>
             `),
             scaledSize: new google.maps.Size(40, 40)
@@ -3248,7 +3248,7 @@ function addMarker(location) {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="18" fill="#2a9d8f" stroke="#fff" stroke-width="3"/>
-                    <text x="20" y="26" font-size="18" text-anchor="middle" fill="#fff">📍</text>
+                    <text x="20" y="26" font-size="18" text-anchor="middle" fill="#fff">ðŸ“</text>
                 </svg>
             `),
             scaledSize: new google.maps.Size(40, 40)
@@ -3269,7 +3269,7 @@ function addMarker(location) {
                 
                 // Update location display
                 document.getElementById('selectedLocationText').innerHTML = `
-                    📍 ${selectedLocation.address}<br>
+                    ðŸ“ ${selectedLocation.address}<br>
                     <span style="color: ${deliveryInfo.available ? '#2a9d8f' : '#ef4444'};">${deliveryInfo.message}</span>
                 `;
                 
@@ -3291,13 +3291,13 @@ function addMarker(location) {
 
 function getCurrentLocation() {
     if (!navigator.geolocation) {
-        alert('❌ Geolocation not supported');
+        alert('âŒ Geolocation not supported');
         return;
     }
     
     const btn = event.target;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ Finding...';
+    btn.innerHTML = 'â³ Finding...';
     btn.disabled = true;
     
     navigator.geolocation.getCurrentPosition(
@@ -3315,12 +3315,12 @@ function getCurrentLocation() {
             
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert('✅ Location found!');
+            alert('âœ… Location found!');
         },
         (error) => {
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert('❌ Could not get location');
+            alert('âŒ Could not get location');
         },
         { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -3341,7 +3341,7 @@ function confirmLocation() {
     );
     
     if (distance > 6) {
-        alert('⚠️ Sorry! You are ' + distance.toFixed(1) + ' miles away. We only deliver within 6 miles of the restaurant.');
+        alert('âš ï¸ Sorry! You are ' + distance.toFixed(1) + ' miles away. We only deliver within 6 miles of the restaurant.');
         return;
     }
 
@@ -3388,9 +3388,9 @@ function confirmLocation() {
         }
         
         openEditProfile();
-        alert(`✅ Location set!\n\n${selectedLocation.address || 'Location confirmed'}`);
+        alert(`âœ… Location set!\n\n${selectedLocation.address || 'Location confirmed'}`);
     } else {
-        alert(`✅ Location confirmed!\n\n${selectedLocation.address || 'Location set'}\n${deliveryInfo.message}`);
+        alert(`âœ… Location confirmed!\n\n${selectedLocation.address || 'Location set'}\n${deliveryInfo.message}`);
     }
 }
 
@@ -3510,7 +3510,7 @@ function toggleMobileMenu() {
     if (!nav || !btn) return;
     nav.classList.toggle('active');
     btn.classList.toggle('active');
-    btn.textContent = nav.classList.contains('active') ? '✕' : '☰';
+    btn.textContent = nav.classList.contains('active') ? 'âœ•' : 'â˜°';
 }
 
 // ========================================
@@ -3531,18 +3531,21 @@ function handleOwnerLogin() {
     if (email !== OWNER_CREDENTIALS.email || 
         password !== OWNER_CREDENTIALS.password || 
         pin !== OWNER_CREDENTIALS.pin) {
-        alert('❌ Invalid credentials');
+        alert('âŒ Invalid credentials');
         return;
     }
     
     isOwnerLoggedIn = true;
+    
+    // Re-render reviews to show "Reply as Owner" buttons
+    displayReviews();
 
     closeModal('ownerModal');
     document.getElementById('ownerDashboard').style.display = 'block';
     hideNavigation(); // Hide navigation when dashboard opens
     updateOwnerStats();
     
-    alert('✅ Owner access granted!');
+    alert('âœ… Owner access granted!');
 }
 
 
@@ -3556,8 +3559,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loadReviews(); // Load customer reviews
     
     // Debug: Check if data loaded correctly
-    console.log('📦 Categories:', Object.keys(categories).length);
-    console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
+    console.log('ðŸ“¦ Categories:', Object.keys(categories).length);
+    console.log('ðŸ½ï¸ Menu items:', Object.values(menuData).flat().length);
     
     // Render categories
     renderCategories();
@@ -3821,7 +3824,7 @@ function saveReviews() {
 // Open write review modal
 function openWriteReview() {
     if (!currentUser) {
-        alert('⚠️ Please login to write a review');
+        alert('âš ï¸ Please login to write a review');
         showLogin();
         return;
     }
@@ -3829,7 +3832,7 @@ function openWriteReview() {
     // Check if user already has a review
     const existingReview = restaurantReviews.find(r => r.userId === currentUser.email);
     if (existingReview) {
-        alert('⚠️ You have already submitted a review. Each customer can only submit one review.');
+        alert('âš ï¸ You have already submitted a review. Each customer can only submit one review.');
         return;
     }
     
@@ -3854,10 +3857,10 @@ function updateStarDisplay() {
     const stars = document.querySelectorAll('#starRating span');
     stars.forEach((star, index) => {
         if (index < selectedRating) {
-            star.textContent = '⭐';
+            star.textContent = 'â­';
             star.style.transform = 'scale(1.1)';
         } else {
-            star.textContent = '☆';
+            star.textContent = 'â˜†';
             star.style.transform = 'scale(1)';
         }
     });
@@ -3868,14 +3871,14 @@ function submitReview(event) {
     event.preventDefault();
     
     if (!currentUser) {
-        alert('❌ Please login first');
+        alert('âŒ Please login first');
         return;
     }
     
     // Check if user already has a review
     const existingReview = restaurantReviews.find(r => r.userId === currentUser.email);
     if (existingReview) {
-        alert('⚠️ You have already submitted a review.');
+        alert('âš ï¸ You have already submitted a review.');
         closeModal('writeReviewModal');
         return;
     }
@@ -3884,12 +3887,12 @@ function submitReview(event) {
     const text = document.getElementById('reviewText').value.trim();
     
     if (rating < 1 || rating > 5) {
-        alert('❌ Please select a rating (1-5 stars)');
+        alert('âŒ Please select a rating (1-5 stars)');
         return;
     }
     
     if (text.length < 10) {
-        alert('❌ Please write at least 10 characters');
+        alert('âŒ Please write at least 10 characters');
         return;
     }
     
@@ -3909,7 +3912,7 @@ function submitReview(event) {
     displayReviews();
     
     closeModal('writeReviewModal');
-    alert('✅ Thank you for your review!');
+    alert('âœ… Thank you for your review!');
 }
 
 // Display reviews
@@ -3934,7 +3937,7 @@ function displayReviews() {
     const avgRating = restaurantReviews.reduce((sum, r) => sum + r.rating, 0) / restaurantReviews.length;
     if (avgDisplay) {
         avgDisplay.innerHTML = `
-            <span style="font-size: 1.5rem;">⭐</span>
+            <span style="font-size: 1.5rem;">â­</span>
             <span style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">${avgRating.toFixed(1)}</span>
             <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">(${restaurantReviews.length} reviews)</span>
         `;
@@ -3948,7 +3951,7 @@ function displayReviews() {
             showMoreContainer.style.display = 'block';
             const btn = document.getElementById('showMoreReviewsBtn');
             if (btn) {
-                btn.textContent = showingAllReviews ? 'Show less ↑' : `Show more reviews (${restaurantReviews.length - 3} more) ↓`;
+                btn.textContent = showingAllReviews ? 'Show less â†‘' : `Show more reviews (${restaurantReviews.length - 3} more) â†“`;
             }
         } else {
             showMoreContainer.style.display = 'none';
@@ -3956,7 +3959,7 @@ function displayReviews() {
     }
     
     container.innerHTML = reviewsToShow.map(review => {
-        const stars = '⭐'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const stars = 'â­'.repeat(review.rating) + 'â˜†'.repeat(5 - review.rating);
         const timeAgo = getTimeAgo(new Date(review.date));
         const isOwn = currentUser && review.userId === currentUser.email;
         const canDelete = isOwn || isOwnerLoggedIn;
@@ -3978,10 +3981,10 @@ function displayReviews() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
                             <span style="font-size: 0.85rem;">${stars}</span>
-                            <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">• ${timeAgo}</span>
+                            <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">â€¢ ${timeAgo}</span>
                         </div>
                     </div>
-                    ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🗑️</button>` : ''}
+                    ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">ðŸ—‘ï¸</button>` : ''}
                 </div>
                 
                 <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text}</p>
@@ -3989,7 +3992,7 @@ function displayReviews() {
                 ${review.replies && review.replies.length > 0 ? `
                     <div style="margin-top: 0.5rem;">
                         <button onclick="openReplies(${review.id})" style="background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #e63946; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem;">
-                            Show replies (${review.replies.length}) ↓
+                            Show replies (${review.replies.length}) â†“
                         </button>
                     </div>
                     <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
@@ -4062,8 +4065,8 @@ function openReplies(reviewId) {
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
                                 <span style="font-weight: 700; font-size: 0.9rem; color: #f59e0b;">RESTAURANT OWNER</span>
-                                <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">• ${timeAgo}</span>
-                                ${isOwnerLoggedIn ? `<button onclick="deleteOwnerReply(${reviewId}, ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.75rem; margin-left: auto;">🗑️</button>` : ''}
+                                <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">â€¢ ${timeAgo}</span>
+                                ${isOwnerLoggedIn ? `<button onclick="deleteOwnerReply(${reviewId}, ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.75rem; margin-left: auto;">ðŸ—‘ï¸</button>` : ''}
                             </div>
                             <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0; line-height: 1.4;">${reply.text}</p>
                         </div>
@@ -4080,13 +4083,13 @@ function openReplies(reviewId) {
 // Submit owner reply
 function submitOwnerReply() {
     if (!isOwnerLoggedIn) {
-        alert('❌ Only restaurant owner can reply to reviews');
+        alert('âŒ Only restaurant owner can reply to reviews');
         return;
     }
     
     const text = document.getElementById('replyText').value.trim();
     if (text.length < 2) {
-        alert('❌ Please write a reply');
+        alert('âŒ Please write a reply');
         return;
     }
     
@@ -4107,7 +4110,7 @@ function submitOwnerReply() {
     openReplies(currentReviewId);
     displayReviews();
     
-    alert('✅ Reply posted!');
+    alert('âœ… Reply posted!');
 }
 
 // Delete review (owner or own review)
@@ -4118,7 +4121,7 @@ function deleteReview(reviewId) {
     const isOwn = currentUser && review.userId === currentUser.email;
     
     if (!isOwn && !isOwnerLoggedIn) {
-        alert('❌ You can only delete your own reviews');
+        alert('âŒ You can only delete your own reviews');
         return;
     }
     
@@ -4127,13 +4130,13 @@ function deleteReview(reviewId) {
     restaurantReviews = restaurantReviews.filter(r => r.id !== reviewId);
     saveReviews();
     displayReviews();
-    alert('✅ Review deleted');
+    alert('âœ… Review deleted');
 }
 
 // Delete owner reply
 function deleteOwnerReply(reviewId, replyIndex) {
     if (!isOwnerLoggedIn) {
-        alert('❌ Only owner can delete replies');
+        alert('âŒ Only owner can delete replies');
         return;
     }
     
@@ -4168,11 +4171,11 @@ window.closeOwnerDashboard = closeOwnerDashboard;
 
 // Quick Action Functions for Owner Dashboard
 function showAllOrders() {
-    alert('📋 All Orders\n\nTotal Orders: ' + (orderHistory.length + pendingOrders.length) + '\nPending: ' + pendingOrders.length + '\nCompleted: ' + orderHistory.length);
+    alert('ðŸ“‹ All Orders\n\nTotal Orders: ' + (orderHistory.length + pendingOrders.length) + '\nPending: ' + pendingOrders.length + '\nCompleted: ' + orderHistory.length);
 }
 
 function showAllUsers() {
-    alert('👥 All Users\n\nTotal Registered Users: ' + userDatabase.length + '\n\nUse the Reset Data Options to manage user accounts.');
+    alert('ðŸ‘¥ All Users\n\nTotal Registered Users: ' + userDatabase.length + '\n\nUse the Reset Data Options to manage user accounts.');
 }
 
 function showAllReviews() {
@@ -4186,15 +4189,15 @@ function showAllReviews() {
 function showAnalytics() {
     const totalRevenue = orderHistory.reduce((sum, o) => sum + o.total, 0);
     const avgOrder = orderHistory.length > 0 ? totalRevenue / orderHistory.length : 0;
-    alert('📊 Analytics Summary\n\n💰 Total Revenue: ' + formatPrice(totalRevenue) + '\n📦 Total Orders: ' + orderHistory.length + '\n📈 Avg Order Value: ' + formatPrice(avgOrder) + '\n👥 Total Users: ' + userDatabase.length);
+    alert('ðŸ“Š Analytics Summary\n\nðŸ’° Total Revenue: ' + formatPrice(totalRevenue) + '\nðŸ“¦ Total Orders: ' + orderHistory.length + '\nðŸ“ˆ Avg Order Value: ' + formatPrice(avgOrder) + '\nðŸ‘¥ Total Users: ' + userDatabase.length);
 }
 
 function showNotificationCenter() {
-    alert('🔔 Notification Center\n\nNo new system notifications.\n\nCustomer notifications are managed through the order system.');
+    alert('ðŸ”” Notification Center\n\nNo new system notifications.\n\nCustomer notifications are managed through the order system.');
 }
 
 function showSettings() {
-    alert('⚙️ Settings\n\nRestaurant: ' + UK_CONFIG.restaurant.name + '\nAddress: ' + UK_CONFIG.restaurant.address + '\nPhone: ' + UK_CONFIG.restaurant.phone + '\n\nHours: 11:00 AM - 11:00 PM\nLast Orders: 10:30 PM\nMax Delivery: ' + UK_CONFIG.maxDeliveryDistance + ' miles');
+    alert('âš™ï¸ Settings\n\nRestaurant: ' + UK_CONFIG.restaurant.name + '\nAddress: ' + UK_CONFIG.restaurant.address + '\nPhone: ' + UK_CONFIG.restaurant.phone + '\n\nHours: 11:00 AM - 11:00 PM\nLast Orders: 10:30 PM\nMax Delivery: ' + UK_CONFIG.maxDeliveryDistance + ' miles');
 }
 
 // Make functions globally available
@@ -4213,7 +4216,7 @@ function refreshOrders() {
     if (typeof showRestaurantDashboard === 'function') {
         showRestaurantDashboard();
     }
-    showToast('🔄 Orders refreshed!', 'success');
+    showToast('ðŸ”„ Orders refreshed!', 'success');
 }
 
 function showPendingOnly() {
@@ -4222,20 +4225,20 @@ function showPendingOnly() {
     
     const pendingOnly = pendingOrders.filter(o => o.status === 'pending');
     if (pendingOnly.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);"><div style="font-size: 2rem;">✅</div><p>No pending orders</p></div>';
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);"><div style="font-size: 2rem;">âœ…</div><p>No pending orders</p></div>';
     } else {
-        showToast('⏳ Showing ' + pendingOnly.length + ' pending orders', 'info');
+        showToast('â³ Showing ' + pendingOnly.length + ' pending orders', 'info');
     }
 }
 
 function showAcceptedOnly() {
     const acceptedCount = pendingOrders.filter(o => o.status === 'accepted').length;
-    showToast('✅ ' + acceptedCount + ' accepted orders awaiting pickup', 'info');
+    showToast('âœ… ' + acceptedCount + ' accepted orders awaiting pickup', 'info');
 }
 
 function showDeliveryOnly() {
     const deliveryCount = pendingOrders.filter(o => o.status === 'out_for_delivery' || o.status === 'driver_assigned').length;
-    showToast('🚗 ' + deliveryCount + ' orders out for delivery', 'info');
+    showToast('ðŸš— ' + deliveryCount + ' orders out for delivery', 'info');
 }
 
 function showAllOrdersRestaurant() {
@@ -4245,21 +4248,21 @@ function showAllOrdersRestaurant() {
     const delivery = pendingOrders.filter(o => o.status === 'out_for_delivery' || o.status === 'driver_assigned').length;
     const completed = orderHistory.length;
     
-    alert('📋 All Orders Summary\n\n' +
-        '⏳ Pending: ' + pending + '\n' +
-        '✅ Accepted: ' + accepted + '\n' +
-        '🚗 Out for Delivery: ' + delivery + '\n' +
-        '✔️ Completed: ' + completed + '\n\n' +
-        '📦 Total: ' + total);
+    alert('ðŸ“‹ All Orders Summary\n\n' +
+        'â³ Pending: ' + pending + '\n' +
+        'âœ… Accepted: ' + accepted + '\n' +
+        'ðŸš— Out for Delivery: ' + delivery + '\n' +
+        'âœ”ï¸ Completed: ' + completed + '\n\n' +
+        'ðŸ“¦ Total: ' + total);
 }
 
 function notifyAllDrivers() {
     const availableDrivers = drivers.filter(d => d.available && d.online);
     if (availableDrivers.length === 0) {
-        showToast('❌ No drivers available', 'error');
+        showToast('âŒ No drivers available', 'error');
         return;
     }
-    showToast('📢 Alert sent to ' + availableDrivers.length + ' drivers!', 'success');
+    showToast('ðŸ“¢ Alert sent to ' + availableDrivers.length + ' drivers!', 'success');
 }
 
 function goToOwnerDashboard() {
@@ -4302,7 +4305,7 @@ window.updateRestaurantStats = updateRestaurantStats;
 
 function confirmDeleteAccount() {
     if (!currentUser) {
-        alert('❌ Please login first');
+        alert('âŒ Please login first');
         return;
     }
     
@@ -4310,20 +4313,20 @@ function confirmDeleteAccount() {
     const hasPendingOrders = pendingOrders.some(o => o.userId === currentUser.email && (o.status === 'pending' || o.status === 'preparing' || o.status === 'out_for_delivery'));
     
     if (hasPendingOrders) {
-        alert('⚠️ You cannot delete your account while you have active orders.\n\nPlease wait for your orders to be completed.');
+        alert('âš ï¸ You cannot delete your account while you have active orders.\n\nPlease wait for your orders to be completed.');
         return;
     }
     
-    let warningMessage = '⚠️ DELETE ACCOUNT\n\n';
+    let warningMessage = 'âš ï¸ DELETE ACCOUNT\n\n';
     warningMessage += 'This action is PERMANENT and cannot be undone.\n\n';
     warningMessage += 'The following will be deleted:\n';
-    warningMessage += '• Your account and profile data\n';
-    warningMessage += '• Your reviews and feedback\n';
-    warningMessage += '• Your favorites list\n';
-    warningMessage += '• Your notification preferences\n';
+    warningMessage += 'â€¢ Your account and profile data\n';
+    warningMessage += 'â€¢ Your reviews and feedback\n';
+    warningMessage += 'â€¢ Your favorites list\n';
+    warningMessage += 'â€¢ Your notification preferences\n';
     
     if (hasOrders) {
-        warningMessage += '\n📋 Your order history will be kept for restaurant records.';
+        warningMessage += '\nðŸ“‹ Your order history will be kept for restaurant records.';
     }
     
     warningMessage += '\n\nType "DELETE" to confirm:';
@@ -4333,7 +4336,7 @@ function confirmDeleteAccount() {
     if (confirmation === 'DELETE') {
         deleteUserAccount();
     } else if (confirmation !== null) {
-        alert('❌ Account deletion cancelled.\n\nYou must type "DELETE" exactly to confirm.');
+        alert('âŒ Account deletion cancelled.\n\nYou must type "DELETE" exactly to confirm.');
     }
 }
 
@@ -4371,7 +4374,7 @@ function deleteUserAccount() {
     // Close modal and show confirmation
     closeModal('accountModal');
     
-    alert('✅ Your account has been permanently deleted.\n\nThank you for being our customer. We hope to see you again!');
+    alert('âœ… Your account has been permanently deleted.\n\nThank you for being our customer. We hope to see you again!');
     
     // Refresh page
     location.reload();
@@ -4457,7 +4460,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-console.log('✅ Antalya Shawarma script loaded successfully');
+console.log('âœ… Antalya Shawarma script loaded successfully');
 
 // FIX: Star rating click handlers
 document.addEventListener('DOMContentLoaded', function() {
@@ -4474,10 +4477,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update display
             stars.forEach((s, i) => {
                 if (i < rating) {
-                    s.textContent = '⭐';
+                    s.textContent = 'â­';
                     s.style.transform = 'scale(1.1)';
                 } else {
-                    s.textContent = '☆';
+                    s.textContent = 'â˜†';
                     s.style.transform = 'scale(1)';
                 }
             });
