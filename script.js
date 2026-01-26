@@ -1951,7 +1951,7 @@ function showAccount() {
             <button onclick="openChangeEmail()" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
                 📧 Change Email
             </button>
-            <button onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+            <button type="button" onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
                 🔒 Change Password
             </button>
         </div>
@@ -2404,16 +2404,30 @@ function verifyAndChangeEmail(event) {
 }
 
 function openChangePassword() {
+    console.log('🔒 openChangePassword called');
+    
     closeModal('accountModal');
+    console.log('✅ Closed accountModal');
     
     const modal = document.getElementById('changePasswordModal');
+    console.log('🔍 changePasswordModal element:', modal);
+    
     if (modal) {
         // Clear form
-        document.getElementById('currentPassword').value = '';
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmNewPassword').value = '';
+        const currentPwd = document.getElementById('currentPassword');
+        const newPwd = document.getElementById('newPassword');
+        const confirmPwd = document.getElementById('confirmNewPassword');
+        
+        if (currentPwd) currentPwd.value = '';
+        if (newPwd) newPwd.value = '';
+        if (confirmPwd) confirmPwd.value = '';
+        
+        console.log('✅ Cleared form fields');
         
         openModal('changePasswordModal');
+        console.log('✅ Opened changePasswordModal');
+    } else {
+        console.error('❌ changePasswordModal not found!');
     }
 }
 
@@ -3960,7 +3974,10 @@ function submitReview(event) {
 
 // Display reviews
 function displayReviews() {
-    console.log('🔍 displayReviews called, reviews count:', restaurantReviews.length);
+    console.log('🔍 ===== displayReviews START =====');
+    console.log('🔍 restaurantReviews:', restaurantReviews);
+    console.log('🔍 restaurantReviews.length:', restaurantReviews.length);
+    console.log('🔍 isOwnerLoggedIn:', isOwnerLoggedIn);
     
     const container = document.getElementById('reviewsList');
     const noReviewsMsg = document.getElementById('noReviewsMessage');
@@ -3972,15 +3989,17 @@ function displayReviews() {
         return;
     }
     
-    console.log('✅ Container found:', container);
+    console.log('✅ Container found');
     
     if (restaurantReviews.length === 0) {
+        console.log('❌ NO REVIEWS - restaurantReviews.length is 0');
         container.innerHTML = '';
         if (noReviewsMsg) noReviewsMsg.style.display = 'block';
         if (showMoreContainer) showMoreContainer.style.display = 'none';
-        console.log('ℹ️ No reviews to display');
         return;
     }
+    
+    console.log('✅ Has reviews:', restaurantReviews.length);
     
     if (noReviewsMsg) noReviewsMsg.style.display = 'none';
     
@@ -4023,14 +4042,19 @@ function displayReviews() {
             const timeAgo = getTimeAgo(new Date(review.date));
             const isOwn = currentUser && review.userId === currentUser.email;
             
-            // Simple owner check - if owner button is visible, user is owner
+            // Check if owner
             const ownerBtn = document.getElementById('ownerAccessBtn');
+            const ownerBtnInlineStyle = ownerBtn ? ownerBtn.style.display : 'null';
+            const ownerBtnComputedStyle = ownerBtn ? window.getComputedStyle(ownerBtn).display : 'null';
             const isOwnerVisible = ownerBtn && ownerBtn.style.display !== 'none';
             const isOwner = isOwnerLoggedIn || isOwnerVisible;
             
-            console.log('🔍 Simple Owner Check:', {
+            console.log('🔍 Review #' + review.id + ' Owner Check:', {
                 isOwnerLoggedIn: isOwnerLoggedIn,
-                ownerButtonVisible: isOwnerVisible,
+                ownerBtnExists: !!ownerBtn,
+                ownerBtnInlineStyle: ownerBtnInlineStyle,
+                ownerBtnComputedStyle: ownerBtnComputedStyle,
+                isOwnerVisible: isOwnerVisible,
                 isOwner: isOwner
             });
             
