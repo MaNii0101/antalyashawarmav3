@@ -749,7 +749,7 @@ function closeTrackingModal() {
 // ========================================
 // DRIVER RATING SYSTEM
 // ========================================
-let currentDriverRating = 0;
+let currentRating = 0;
 
 function openDriverRating(orderId, driverId, driverName, autoPopup = false) {
     // Check if order was already rated
@@ -782,14 +782,14 @@ function openDriverRating(orderId, driverId, driverName, autoPopup = false) {
     const commentField = document.getElementById('ratingComment');
     if (commentField) commentField.value = '';
     
-    currentDriverRating = 0;
-    renderDriverStarRating();
+    currentRating = 0;
+    renderStarRating();
     document.getElementById('ratingValue').textContent = '0';
     
     openModal('driverRatingModal');
 }
 
-function renderDriverStarRating() {
+function renderStarRating() {
     const container = document.getElementById('starRatingContainer');
     if (!container) return;
     
@@ -797,10 +797,10 @@ function renderDriverStarRating() {
     container.innerHTML = `
         <div style="display: flex; gap: 0.5rem; justify-content: center;">
             ${[1, 2, 3, 4, 5].map(i => `
-                <div onclick="setDriverRating(${i})" 
-                     style="font-size: 2.8rem; cursor: pointer; opacity: ${i <= currentDriverRating ? 1 : 0.3}; transition: all 0.2s; transform: ${i <= currentDriverRating ? 'scale(1.1)' : 'scale(1)'};" 
-                     onmouseover="previewDriverRating(${i})" 
-                     onmouseout="resetDriverPreview()">⭐</div>
+                <div onclick="setRating(${i})" 
+                     style="font-size: 2.8rem; cursor: pointer; opacity: ${i <= currentRating ? 1 : 0.3}; transition: all 0.2s; transform: ${i <= currentRating ? 'scale(1.1)' : 'scale(1)'};" 
+                     onmouseover="previewRating(${i})" 
+                     onmouseout="resetPreview()">⭐</div>
             `).join('')}
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; padding: 0 0.5rem;">
@@ -811,13 +811,13 @@ function renderDriverStarRating() {
     `;
 }
 
-function setDriverRating(value) {
-    currentDriverRating = value;
+function setRating(value) {
+    currentRating = value;
     document.getElementById('ratingValue').textContent = value;
-    renderDriverStarRating();
+    renderStarRating();
 }
 
-function previewDriverRating(value) {
+function previewRating(value) {
     // Visual preview on hover
     const stars = document.querySelectorAll('#starRatingContainer > div > div');
     stars.forEach((star, index) => {
@@ -826,12 +826,12 @@ function previewDriverRating(value) {
     });
 }
 
-function resetDriverPreview() {
-    renderDriverStarRating();
+function resetPreview() {
+    renderStarRating();
 }
 
 function submitDriverRating() {
-    if (currentDriverRating < 1) {
+    if (currentRating < 1) {
         alert('⚠️ Please select a rating (1-5 stars)');
         return;
     }
@@ -844,7 +844,7 @@ function submitDriverRating() {
     const order = orderHistory.find(o => o.id === orderId);
     if (order) {
         order.driverRated = true;
-        order.driverRating = currentDriverRating;
+        order.driverRating = currentRating;
         order.driverRatingComment = comment;
         saveData();
     }
@@ -853,7 +853,7 @@ function submitDriverRating() {
     const pendingOrder = pendingOrders.find(o => o.id === orderId);
     if (pendingOrder) {
         pendingOrder.driverRated = true;
-        pendingOrder.driverRating = currentDriverRating;
+        pendingOrder.driverRating = currentRating;
         pendingOrder.driverRatingComment = comment;
         saveData();
     }
@@ -862,7 +862,7 @@ function submitDriverRating() {
     const driver = window.driverSystem.get(driverId);
     if (driver) {
         const totalRatings = (driver.totalRatings || 0) + 1;
-        const ratingSum = ((driver.rating || 5) * (driver.totalRatings || 0)) + currentDriverRating;
+        const ratingSum = ((driver.rating || 5) * (driver.totalRatings || 0)) + currentRating;
         const newAverage = ratingSum / totalRatings;
         
         window.driverSystem.update(driverId, {
@@ -873,7 +873,7 @@ function submitDriverRating() {
     
     closeModal('driverRatingModal');
     
-    alert(`⭐ Thank you for your ${currentDriverRating}-star rating!${comment ? '\n\nYour feedback has been saved.' : ''}`);
+    alert(`⭐ Thank you for your ${currentRating}-star rating!${comment ? '\n\nYour feedback has been saved.' : ''}`);
     
     // Refresh account page if open
     if (document.getElementById('accountModal')?.style.display === 'flex') {
@@ -896,13 +896,4 @@ function generateDriverSecretCode() {
     }
     return code;
 }
-
-// Export driver rating functions (distinct from review rating)
-window.setDriverRating = setDriverRating;
-window.previewDriverRating = previewDriverRating;
-window.resetDriverPreview = resetDriverPreview;
-window.renderDriverStarRating = renderDriverStarRating;
-window.openDriverRating = openDriverRating;
-window.submitDriverRating = submitDriverRating;
-window.showDeliveryRatingPopup = showDeliveryRatingPopup;
 

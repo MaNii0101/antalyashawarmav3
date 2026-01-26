@@ -523,7 +523,6 @@ let currentDriver = null;
 let restaurantReviews = [];
 let currentReviewId = null;
 let selectedRating = 0;
-let showingAllReviews = false;
 
 let ownerBankDetails = {
     bankName: 'Barclays Bank UK',
@@ -1951,7 +1950,7 @@ function showAccount() {
             <button onclick="openChangeEmail()" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
                 📧 Change Email
             </button>
-            <button type="button" onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+            <button onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
                 🔒 Change Password
             </button>
         </div>
@@ -2404,30 +2403,16 @@ function verifyAndChangeEmail(event) {
 }
 
 function openChangePassword() {
-    console.log('🔒 openChangePassword called');
-    
     closeModal('accountModal');
-    console.log('✅ Closed accountModal');
     
     const modal = document.getElementById('changePasswordModal');
-    console.log('🔍 changePasswordModal element:', modal);
-    
     if (modal) {
         // Clear form
-        const currentPwd = document.getElementById('currentPassword');
-        const newPwd = document.getElementById('newPassword');
-        const confirmPwd = document.getElementById('confirmNewPassword');
-        
-        if (currentPwd) currentPwd.value = '';
-        if (newPwd) newPwd.value = '';
-        if (confirmPwd) confirmPwd.value = '';
-        
-        console.log('✅ Cleared form fields');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
         
         openModal('changePasswordModal');
-        console.log('✅ Opened changePasswordModal');
-    } else {
-        console.error('❌ changePasswordModal not found!');
     }
 }
 
@@ -2811,6 +2796,7 @@ function showVerificationModal(email, type) {
     modal.className = 'modal';
     modal.style.display = 'flex';
     
+    const typeText = type === 'registration' ? 'Registration' : 'Login';
     const messageText = type === 'registration' ? 'Complete your registration' : 'Complete your login';
     
     modal.innerHTML = `
@@ -3569,13 +3555,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMenuData(); // Load custom menu data from owner
     loadReviews(); // Load customer reviews
     
-    // Additional review display after a delay to ensure DOM is ready
-    setTimeout(() => {
-        console.log('🔄 Additional review display check after DOM load');
-        loadReviews();
-        displayReviews();
-    }, 500);
-    
     // Debug: Check if data loaded correctly
     console.log('📦 Categories:', Object.keys(categories).length);
     console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
@@ -3748,8 +3727,13 @@ window.refreshDriverLocation = refreshDriverLocation;
 window.closeTrackingModal = closeTrackingModal;
 window.startDriverLocationTracking = startDriverLocationTracking;
 
-// Note: Driver rating functions (setDriverRating, previewDriverRating, etc.) 
-// are now exported from driver.js to avoid conflicts with review setRating
+// Driver rating functions
+window.openDriverRating = openDriverRating;
+window.setRating = setRating;
+window.previewRating = previewRating;
+window.resetPreview = resetPreview;
+window.submitDriverRating = submitDriverRating;
+window.showDeliveryRatingPopup = showDeliveryRatingPopup;
 
 // Order functions
 window.userCanOrder = userCanOrder;
@@ -3814,25 +3798,18 @@ window.closeModal = closeModal;
 // REVIEWS SYSTEM
 // ========================================
 
+let showingAllReviews = false;
+
 // Load reviews from localStorage
 function loadReviews() {
-    console.log('🔄 loadReviews called');
     const saved = localStorage.getItem('restaurantReviews');
-    console.log('💾 Saved reviews from localStorage:', saved);
-    
     if (saved) {
         try {
             restaurantReviews = JSON.parse(saved);
-            console.log('✅ Reviews parsed successfully, count:', restaurantReviews.length);
         } catch(e) {
-            console.error('❌ Error parsing reviews:', e);
             restaurantReviews = [];
         }
-    } else {
-        console.log('ℹ️ No saved reviews found');
     }
-    
-    console.log('📊 Final restaurantReviews:', restaurantReviews);
     displayReviews();
 }
 
@@ -3867,30 +3844,18 @@ function openWriteReview() {
 
 // Set star rating
 function setRating(rating) {
-    console.log('setRating called with rating:', rating);
     selectedRating = rating;
     document.getElementById('reviewRating').value = rating;
     updateStarDisplay();
-    
-    // Haptic feedback on mobile
-    if (navigator.vibrate) {
-        navigator.vibrate(10);
-    }
 }
 
-// Update star display - works with both span and button elements
+// Update star display
 function updateStarDisplay() {
-    const container = document.getElementById('starRating');
-    console.log('updateStarDisplay called, container:', container, 'selectedRating:', selectedRating);
-    if (!container) return;
-    
-    // Support both button.review-star and span elements
-    const stars = container.querySelectorAll('button.review-star, button[data-rating], span');
-    console.log('Found stars:', stars.length);
+    const stars = document.querySelectorAll('#starRating span');
     stars.forEach((star, index) => {
         if (index < selectedRating) {
             star.textContent = '⭐';
-            star.style.transform = 'scale(1.15)';
+            star.style.transform = 'scale(1.1)';
         } else {
             star.textContent = '☆';
             star.style.transform = 'scale(1)';
@@ -3901,8 +3866,6 @@ function updateStarDisplay() {
 // Submit review
 function submitReview(event) {
     event.preventDefault();
-    
-    console.log('📝 submitReview called');
     
     if (!currentUser) {
         alert('❌ Please login first');
@@ -3919,8 +3882,6 @@ function submitReview(event) {
     
     const rating = parseInt(document.getElementById('reviewRating').value);
     const text = document.getElementById('reviewText').value.trim();
-    
-    console.log('Rating:', rating, 'Text:', text);
     
     if (rating < 1 || rating > 5) {
         alert('❌ Please select a rating (1-5 stars)');
@@ -3943,63 +3904,29 @@ function submitReview(event) {
         replies: []
     };
     
-    console.log('✅ Review created:', review);
-    
     restaurantReviews.unshift(review);
-    console.log('📊 Total reviews now:', restaurantReviews.length);
-    
     saveReviews();
-    console.log('💾 Reviews saved to localStorage');
-    
-    closeModal('writeReviewModal');
-    
-    // Force refresh the display with multiple attempts
-    console.log('🔄 Attempting to display reviews...');
     displayReviews();
     
-    setTimeout(() => {
-        console.log('🔄 Second attempt to display reviews...');
-        displayReviews();
-        
-        // Scroll to reviews section
-        const reviewsSection = document.querySelector('.reviews-section');
-        if (reviewsSection) {
-            console.log('📜 Scrolling to reviews section');
-            reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    }, 200);
-    
+    closeModal('writeReviewModal');
     alert('✅ Thank you for your review!');
 }
 
 // Display reviews
 function displayReviews() {
-    console.log('🔍 ===== displayReviews START =====');
-    console.log('🔍 restaurantReviews:', restaurantReviews);
-    console.log('🔍 restaurantReviews.length:', restaurantReviews.length);
-    console.log('🔍 isOwnerLoggedIn:', isOwnerLoggedIn);
-    
     const container = document.getElementById('reviewsList');
     const noReviewsMsg = document.getElementById('noReviewsMessage');
     const avgDisplay = document.getElementById('averageRatingDisplay');
     const showMoreContainer = document.getElementById('showMoreReviewsContainer');
     
-    if (!container) {
-        console.error('❌ reviewsList container not found!');
-        return;
-    }
-    
-    console.log('✅ Container found');
+    if (!container) return;
     
     if (restaurantReviews.length === 0) {
-        console.log('❌ NO REVIEWS - restaurantReviews.length is 0');
         container.innerHTML = '';
         if (noReviewsMsg) noReviewsMsg.style.display = 'block';
         if (showMoreContainer) showMoreContainer.style.display = 'none';
         return;
     }
-    
-    console.log('✅ Has reviews:', restaurantReviews.length);
     
     if (noReviewsMsg) noReviewsMsg.style.display = 'none';
     
@@ -4015,7 +3942,6 @@ function displayReviews() {
     
     // Show more/less logic
     const reviewsToShow = showingAllReviews ? restaurantReviews : restaurantReviews.slice(0, 3);
-    console.log('📝 Displaying', reviewsToShow.length, 'reviews out of', restaurantReviews.length);
     
     if (showMoreContainer) {
         if (restaurantReviews.length > 3) {
@@ -4029,126 +3955,64 @@ function displayReviews() {
         }
     }
     
-    try {
-        const reviewHTML = reviewsToShow.map(review => {
-            // Add safety checks
-            if (!review) {
-                console.warn('⚠️ Null review found, skipping');
-                return '';
-            }
-            
-            const userName = review.userName || 'Anonymous';
-            const stars = '⭐'.repeat(review.rating || 0) + '☆'.repeat(5 - (review.rating || 0));
-            const timeAgo = getTimeAgo(new Date(review.date));
-            const isOwn = currentUser && review.userId === currentUser.email;
-            
-            // Check if owner
-            const ownerBtn = document.getElementById('ownerAccessBtn');
-            const ownerBtnInlineStyle = ownerBtn ? ownerBtn.style.display : 'null';
-            const ownerBtnComputedStyle = ownerBtn ? window.getComputedStyle(ownerBtn).display : 'null';
-            const isOwnerVisible = ownerBtn && ownerBtn.style.display !== 'none';
-            const isOwner = isOwnerLoggedIn || isOwnerVisible;
-            
-            console.log('🔍 Review #' + review.id + ' Owner Check:', {
-                isOwnerLoggedIn: isOwnerLoggedIn,
-                ownerBtnExists: !!ownerBtn,
-                ownerBtnInlineStyle: ownerBtnInlineStyle,
-                ownerBtnComputedStyle: ownerBtnComputedStyle,
-                isOwnerVisible: isOwnerVisible,
-                isOwner: isOwner
-            });
-            
-            const canDelete = isOwn || isOwner;
-            
-            const userAvatar = review.userPic 
-                ? `<img src="${review.userPic}" style="width: 100%; height: 100%; object-fit: cover;">`
-                : `<span style="font-size: 1.5rem;">${userName.charAt(0).toUpperCase()}</span>`;
-            
-            return `
-                <div class="review-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem;">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem;">
-                        <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: white; font-weight: bold;">
-                            ${userAvatar}
-                        </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <span style="font-weight: 700; color: #fff;">${userName}</span>
-                                ${isOwn ? '<span style="background: rgba(230,57,70,0.2); color: #e63946; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem;">You</span>' : ''}
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
-                                <span style="font-size: 0.85rem;">${stars}</span>
-                                <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">• ${timeAgo}</span>
-                            </div>
-                        </div>
-                        ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🗑️</button>` : ''}
+    container.innerHTML = reviewsToShow.map(review => {
+        const stars = '⭐'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const timeAgo = getTimeAgo(new Date(review.date));
+        const isOwn = currentUser && review.userId === currentUser.email;
+        const canDelete = isOwn || isOwnerLoggedIn;
+        
+        const userAvatar = review.userPic 
+            ? `<img src="${review.userPic}" style="width: 100%; height: 100%; object-fit: cover;">`
+            : `<span style="font-size: 1.5rem;">${review.userName.charAt(0).toUpperCase()}</span>`;
+        
+        return `
+            <div class="review-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem;">
+                <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem;">
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: white; font-weight: bold;">
+                        ${userAvatar}
                     </div>
-                    
-                    <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text || ''}</p>
-                    
-                    ${review.replies && review.replies.length > 0 ? `
-                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
-                            <div style="background: rgba(230,57,70,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid #e63946;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                    <img src="logo.png" alt="Restaurant" style="height: 20px; width: auto;">
-                                    <span style="font-weight: 700; font-size: 0.85rem; color: #f59e0b;">RESTAURANT OWNER</span>
-                                </div>
-                                <div style="color: rgba(255,255,255,0.85); font-size: 0.9rem; line-height: 1.5;">${review.replies[review.replies.length - 1].text}</div>
-                                ${review.replies.length > 1 ? `
-                                    <button onclick="openReplies(${review.id})" style="background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #e63946; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem;">
-                                        View all replies (${review.replies.length})
-                                    </button>
-                                ` : ''}
-                            </div>
-                            ${isOwner ? `
-                                <button onclick="openReplies(${review.id})" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-top: 0.5rem; width: 100%;">
-                                    ✏️ Edit Reply
-                                </button>
-                            ` : ''}
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <span style="font-weight: 700; color: #fff;">${review.userName}</span>
+                            ${isOwn ? '<span style="background: rgba(230,57,70,0.2); color: #e63946; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem;">You</span>' : ''}
                         </div>
-                    ` : `
-                        ${isOwner ? `
-                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
-                                <button onclick="openReplies(${review.id})" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; width: 100%; transition: transform 0.2s;">
-                                    💬 Reply as Owner
-                                </button>
-                            </div>
-                        ` : ''}
-                    `}
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+                            <span style="font-size: 0.85rem;">${stars}</span>
+                            <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">• ${timeAgo}</span>
+                        </div>
+                    </div>
+                    ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🗑️</button>` : ''}
                 </div>
-            `;
-        }).join('');
-        
-        console.log('📏 Generated HTML length:', reviewHTML.length);
-        console.log('📊 reviewsToShow length:', reviewsToShow.length);
-        
-        if (reviewHTML.length === 0) {
-            console.error('❌ Generated HTML is empty! reviewsToShow:', reviewsToShow);
-        }
-        
-        container.innerHTML = reviewHTML;
-        console.log('✅ Reviews HTML set to container');
-        console.log('👶 Container now has', container.children.length, 'children');
-        
-        // Force a reflow to ensure DOM updates
-        container.offsetHeight;
-        
-        // Verify it persists
-        setTimeout(() => {
-            const currentChildren = container.children.length;
-            console.log('⏰ After 100ms, container has', currentChildren, 'children');
-            if (currentChildren === 0 && restaurantReviews.length > 0) {
-                console.error('⚠️ WARNING: Reviews were cleared after being set!');
-                console.log('Attempting to restore...');
-                container.innerHTML = reviewHTML;
-            }
-        }, 100);
-        
-    } catch (error) {
-        console.error('❌ Error rendering reviews:', error);
-        console.error('❌ Error details:', error.message);
-        console.error('❌ Stack:', error.stack);
-        container.innerHTML = '<div style="color: #ef4444; padding: 1rem;">Error displaying reviews. Please check console.</div>';
-    }
+                
+                <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text}</p>
+                
+                ${review.replies && review.replies.length > 0 ? `
+                    <div style="margin-top: 0.5rem;">
+                        <button onclick="openReplies(${review.id})" style="background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #e63946; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem;">
+                            Show replies (${review.replies.length}) ↓
+                        </button>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <div style="background: rgba(230,57,70,0.05); padding: 0.8rem; border-radius: 8px; border-left: 3px solid #e63946;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+                                <img src="logo.png" alt="Restaurant" style="height: 20px; width: auto;">
+                                <span style="font-weight: 700; font-size: 0.85rem; color: #f59e0b;">RESTAURANT OWNER</span>
+                            </div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">${review.replies[review.replies.length - 1].text}</div>
+                        </div>
+                    </div>
+                ` : `
+                    ${isOwnerLoggedIn ? `
+                        <div style="margin-top: 0.5rem;">
+                            <button onclick="openReplies(${review.id})" style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #8b5cf6; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem;">
+                                Reply as Owner
+                            </button>
+                        </div>
+                    ` : ''}
+                `}
+            </div>
+        `;
+    }).join('');
 }
 
 // Toggle show more reviews
@@ -4178,14 +4042,9 @@ function openReplies(reviewId) {
     const container = document.getElementById('repliesContent');
     const ownerReplySection = document.getElementById('ownerReplySection');
     
-    // Simple owner check
-    const ownerBtn = document.getElementById('ownerAccessBtn');
-    const isOwnerVisible = ownerBtn && ownerBtn.style.display !== 'none';
-    const isOwner = isOwnerLoggedIn || isOwnerVisible;
-    
+    // Show owner reply section only if owner is logged in
     if (ownerReplySection) {
-        ownerReplySection.style.display = isOwner ? 'block' : 'none';
-        console.log('🔍 Reply modal owner check:', isOwner);
+        ownerReplySection.style.display = isOwnerLoggedIn ? 'block' : 'none';
     }
     
     if (!review.replies || review.replies.length === 0) {
@@ -4218,8 +4077,38 @@ function openReplies(reviewId) {
     openModal('repliesModal');
 }
 
-// Submit owner reply - MOVED TO owner.js
-// See owner.js for submitOwnerReply() function
+// Submit owner reply
+function submitOwnerReply() {
+    if (!isOwnerLoggedIn) {
+        alert('❌ Only restaurant owner can reply to reviews');
+        return;
+    }
+    
+    const text = document.getElementById('replyText').value.trim();
+    if (text.length < 2) {
+        alert('❌ Please write a reply');
+        return;
+    }
+    
+    const review = restaurantReviews.find(r => r.id === currentReviewId);
+    if (!review) return;
+    
+    const reply = {
+        isOwner: true,
+        text: text,
+        date: new Date().toISOString()
+    };
+    
+    if (!review.replies) review.replies = [];
+    review.replies.push(reply);
+    saveReviews();
+    
+    // Refresh replies modal
+    openReplies(currentReviewId);
+    displayReviews();
+    
+    alert('✅ Reply posted!');
+}
 
 // Delete review (owner or own review)
 function deleteReview(reviewId) {
@@ -4227,11 +4116,8 @@ function deleteReview(reviewId) {
     if (!review) return;
     
     const isOwn = currentUser && review.userId === currentUser.email;
-    const ownerBtn = document.getElementById('ownerAccessBtn');
-    const isOwnerVisible = ownerBtn && ownerBtn.style.display !== 'none';
-    const isOwner = isOwnerLoggedIn || isOwnerVisible;
     
-    if (!isOwn && !isOwner) {
+    if (!isOwn && !isOwnerLoggedIn) {
         alert('❌ You can only delete your own reviews');
         return;
     }
@@ -4244,8 +4130,23 @@ function deleteReview(reviewId) {
     alert('✅ Review deleted');
 }
 
-// Delete owner reply - MOVED TO owner.js
-// See owner.js for deleteOwnerReply() function
+// Delete owner reply
+function deleteOwnerReply(reviewId, replyIndex) {
+    if (!isOwnerLoggedIn) {
+        alert('❌ Only owner can delete replies');
+        return;
+    }
+    
+    const review = restaurantReviews.find(r => r.id === reviewId);
+    if (!review || !review.replies[replyIndex]) return;
+    
+    if (!confirm('Delete this reply?')) return;
+    
+    review.replies.splice(replyIndex, 1);
+    saveReviews();
+    openReplies(reviewId);
+    displayReviews();
+}
 
 // Show owner dashboard direct (for owner button)
 function showOwnerDashboardDirect() {
@@ -4497,36 +4398,7 @@ window.submitOwnerReply = submitOwnerReply;
 window.deleteReview = deleteReview;
 window.deleteOwnerReply = deleteOwnerReply;
 window.loadReviews = loadReviews;
-window.displayReviews = displayReviews; // Export for debugging
 window.toggleShowMoreReviews = toggleShowMoreReviews;
-
-// Debug helper function
-window.debugReviews = function() {
-    console.log('=== REVIEW DEBUG INFO ===');
-    console.log('📊 restaurantReviews array length:', restaurantReviews.length);
-    console.log('📋 Reviews data:', restaurantReviews);
-    console.log('💾 localStorage:', localStorage.getItem('restaurantReviews'));
-    
-    const container = document.getElementById('reviewsList');
-    console.log('📦 Container exists:', !!container);
-    if (container) {
-        console.log('👁️ Container display:', getComputedStyle(container).display);
-        console.log('🔢 Container children count:', container.children.length);
-        console.log('📏 Container innerHTML length:', container.innerHTML.length);
-    }
-    
-    const noMsg = document.getElementById('noReviewsMessage');
-    console.log('🚫 No reviews message display:', noMsg ? getComputedStyle(noMsg).display : 'not found');
-    
-    console.log('🔄 Attempting to refresh display...');
-    displayReviews();
-    
-    return {
-        reviewsCount: restaurantReviews.length,
-        containerExists: !!container,
-        containerChildren: container ? container.children.length : 0
-    };
-};
 window.showOwnerDashboardDirect = showOwnerDashboardDirect;
 window.openForgotPasswordFromChangePassword = openForgotPasswordFromChangePassword;
 window.confirmDeleteAccount = confirmDeleteAccount;
@@ -4587,5 +4459,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 console.log('✅ Antalya Shawarma script loaded successfully');
 
-// Export updateStarDisplay for review stars
-window.updateStarDisplay = updateStarDisplay;
+// FIX: Star rating click handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('#starRating span');
+    stars.forEach((star, index) => {
+        star.style.cursor = 'pointer';
+        star.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const rating = index + 1;
+            selectedRating = rating;
+            document.getElementById('reviewRating').value = rating;
+            
+            // Update display
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.textContent = '⭐';
+                    s.style.transform = 'scale(1.1)';
+                } else {
+                    s.textContent = '☆';
+                    s.style.transform = 'scale(1)';
+                }
+            });
+        });
+    });
+});

@@ -18,14 +18,19 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <meta name="google-signin-client_id" content="888032224287-20qgalf8pvpg7s7589il4f025cva4944.apps.googleusercontent.com">
     
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          emailjs.init({
-            publicKey: "RP9gGNpu9OJx0Laq4",
-          });
-       })();
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "RP9gGNpu9OJx0Laq4",
+      });
+   })();
+</script>
+    <script src="script.js" defer></script> 
 
     
 </head>
@@ -973,12 +978,12 @@
                 <!-- Star Rating -->
                 <div class="form-group" style="text-align: center;">
                     <label style="display: block; margin-bottom: 0.8rem;">Your Rating *</label>
-                    <div id="starRating" style="display: flex; justify-content: center; gap: 0.3rem; font-size: 2.2rem;">
-                        <button type="button" class="review-star" data-rating="1" onclick="setRating(1)" ontouchend="setRating(1); event.preventDefault();" style="background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: inherit; min-width: 48px; min-height: 48px; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform 0.15s;">☆</button>
-                        <button type="button" class="review-star" data-rating="2" onclick="setRating(2)" ontouchend="setRating(2); event.preventDefault();" style="background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: inherit; min-width: 48px; min-height: 48px; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform 0.15s;">☆</button>
-                        <button type="button" class="review-star" data-rating="3" onclick="setRating(3)" ontouchend="setRating(3); event.preventDefault();" style="background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: inherit; min-width: 48px; min-height: 48px; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform 0.15s;">☆</button>
-                        <button type="button" class="review-star" data-rating="4" onclick="setRating(4)" ontouchend="setRating(4); event.preventDefault();" style="background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: inherit; min-width: 48px; min-height: 48px; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform 0.15s;">☆</button>
-                        <button type="button" class="review-star" data-rating="5" onclick="setRating(5)" ontouchend="setRating(5); event.preventDefault();" style="background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: inherit; min-width: 48px; min-height: 48px; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform 0.15s;">☆</button>
+                  <div id="starRating" style="display: flex; justify-content: center; gap: 0.5rem; font-size: 2rem;">
+                        <span onclick="setRating(1)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(2)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(3)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(4)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(5)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
                     </div>
                     <input type="hidden" id="reviewRating" value="0">
                 </div>
@@ -1165,6 +1170,35 @@
                     <input type="email" id="confirmNewEmail" placeholder="Confirm new email" required>
                 </div>
                 <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #f59e0b, #d97706);">🔐 Verify & Change Email</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD MODAL (WITH SECURITY) -->
+    <div class="modal" id="changePasswordModal" style="display: none;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔒</div>
+                <h2 style="color: #ef4444;">Change Password</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Create a strong password to protect your account</p>
+            </div>
+            
+            <form onsubmit="verifyAndChangePassword(event)">
+                <div class="form-group">
+                    <label>Current Password *</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password *</label>
+                    <input type="password" id="newPassword" placeholder="Min 6 characters" minlength="6" required>
+                    <small style="color: rgba(255,255,255,0.5);">Minimum 6 characters</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password *</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #ef4444, #dc2626);">🔐 Change Password</button>
             </form>
         </div>
     </div>
@@ -1402,10 +1436,10 @@
 
     <!-- SCRIPTS -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-    <script src="script.js?v=3.6"></script>
-    <script src="owner.js?v=3.6"></script>
-    <script src="driver.js?v=3.6"></script>
-    <script src="utils.js?v=3.6"></script>
+    <script src="script.js?v=3.0"></script>
+    <script src="owner.js?v=3.0"></script>
+    <script src="driver.js?v=3.0"></script>
+    <script src="utils.js?v=3.0"></script>
     <script>
         // Card field toggle
         function toggleCardFields() {
