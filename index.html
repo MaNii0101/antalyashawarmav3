@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Antalya Shawarma - Authentic Turkish Shawarma & Kebabs</title>
+
+    <!-- Add after line 6 (after viewport meta) -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCT7AO_PmeURgQTZUWNRt83jUsSWXZq3aU&libraries=places"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="888032224287-20qgalf8pvpg7s7589il4f025cva4944.apps.googleusercontent.com">
+    
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "RP9gGNpu9OJx0Laq4",
+      });
+   })();
+</script>
+    <script src="script.js" defer></script> 
+
+    
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 45px; width: auto;">
+                <span style="font-weight: 700;" class="logo-text">Antalya Shawarma</span>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" id="mobileMenuBtn">☰</button>
+            
+            <div class="nav-buttons" id="navButtons">
+                <button class="icon-btn owner-access-btn" id="ownerAccessBtn" onclick="showOwnerDashboardDirect()" title="Owner Dashboard" style="display: none;">
+                    <img src="logo.png" alt="Owner" style="height: 24px; width: auto;"><span class="nav-label">Owner</span>
+                </button>
+                <button class="icon-btn" onclick="showNotifications()" title="Notifications">
+                    🔔<span class="badge" id="notificationBadge">0</span><span class="nav-label">Notify</span>
+                </button>
+                <button class="icon-btn" onclick="showFavorites()" title="Favorites">
+                    ❤️<span class="badge" id="favoritesBadge">0</span><span class="nav-label">Favorites</span>
+                </button>
+                <button class="icon-btn" onclick="showOrderHistory()" title="Orders">
+                    📋<span class="badge" id="ordersBadge">0</span><span class="nav-label">History</span>
+                </button>
+                <button class="icon-btn" onclick="showCart()" title="Cart">
+                    🛒<span class="badge" id="cartBadge">0</span><span class="nav-label">Cart</span>
+                </button>
+                <button class="icon-btn" onclick="showAccount()" title="Account">
+                    👤<span class="nav-label">Profile</span>
+                </button>
+                <button class="login-btn" onclick="showLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MOBILE BOTTOM NAVIGATION (separate element for mobile) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <button type="button" class="mobile-nav-item mobile-owner-btn" id="mobileOwnerBtn" onclick="window.showOwnerDashboardDirect()" style="display: none;">
+            <span class="mobile-nav-icon">👔</span>
+            <span class="mobile-nav-label">Owner</span>
+        </button>
+       <button type="button" class="mobile-nav-item">
+            <span class="mobile-nav-icon">🔔</span>
+            <span class="mobile-nav-badge" id="mobileNotifyBadge">0</span>
+            <span class="mobile-nav-label">Notify</span>
+        </button>
+        <button type="button" class="mobile-nav-item">
+            <span class="mobile-nav-icon">❤️</span>
+            <span class="mobile-nav-badge" id="mobileFavBadge">0</span>
+            <span class="mobile-nav-label">Favorites</span>
+        </button>
+        <button type="button" class="mobile-nav-item">
+            <span class="mobile-nav-icon">📋</span>
+            <span class="mobile-nav-badge" id="mobileHistoryBadge">0</span>
+            <span class="mobile-nav-label">History</span>
+        </button>
+        <button type="button" class="mobile-nav-item">
+            <span class="mobile-nav-icon">🛒</span>
+            <span class="mobile-nav-badge" id="mobileCartBadge">0</span>
+            <span class="mobile-nav-label">Cart</span>
+        </button>
+        <button type="button" class="mobile-nav-item">
+            <span class="mobile-nav-icon">👤</span>
+            <span class="mobile-nav-label">Profile</span>
+        </button>
+    </nav>
+    <div class="hero">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="shawarma.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Antalya Shawarma</h1>
+                <p>Authentic Turkish Shawarma, Kebabs & Grill - Delivered Fresh to Your Door</p>
+                <button class="cta-btn" onclick="scrollToMenu()" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <img src="logo.png" alt="" style="height: 24px; width: auto;"> Order Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="category-bar">
+        <div class="categories">
+            <!-- Categories will be rendered by JavaScript -->
+        </div>
+    </div>
+<div id="categoryContainer" class="category-container"></div>
+
+    <!-- MENU -->
+    <div class="main-content" style="padding: 0;">
+        <h2 class="section-title" id="menuTitle" style="padding: 1rem 1rem 0.8rem; margin: 0; font-size: 1.5rem; font-weight: 700; border-bottom: 2px solid rgba(230, 57, 70, 0.3);">Our Menu</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+    </div>
+    
+    <!-- REVIEWS SECTION -->
+    <div class="reviews-section" style="background: linear-gradient(180deg, #0a0a0a 0%, #141414 100%); padding: 2rem 1rem; border-top: 2px solid rgba(230,57,70,0.2);">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="logo.png" alt="Antalya Shawarma" style="height: 40px; width: auto;">
+                    <div>
+                        <h2 style="color: #fff; margin: 0; font-size: 1.5rem;">Customer Reviews</h2>
+                        <p style="color: rgba(255,255,255,0.6); margin: 0.3rem 0 0 0; font-size: 0.9rem;">See what our customers say about us</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="averageRatingDisplay" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 8px;">
+                        <span style="font-size: 1.5rem;">⭐</span>
+                        <span style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">4.8</span>
+                        <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">(0 reviews)</span>
+                    </div>
+                    <button onclick="openWriteReview()" style="background: linear-gradient(135deg, #e63946, #c1121f); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">✍️ Write Review</button>
+                </div>
+            </div>
+            <div id="reviewsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Reviews will be loaded here -->
+            </div>
+            <div id="noReviewsMessage" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; opacity: 0.5; margin-bottom: 1rem;">
+                <p>No reviews yet. Be the first to share your experience!</p>
+            </div>
+            <div id="showMoreReviewsContainer" style="text-align: center; margin-top: 1.5rem; display: none;">
+                <button onclick="toggleShowMoreReviews()" id="showMoreReviewsBtn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); padding: 0.8rem 2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">
+                    Show more reviews ↓
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="social-footer">
+        <div class="social-content">
+            <div class="footer-section">
+                <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                    <img src="logo.png" alt="Antalya Shawarma" style="height: 50px; width: auto;">
+                    <h3 style="margin: 0;">Antalya Shawarma</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.6);">Hyde's Best Shawarma Restaurant</p>
+                <p style="color: rgba(255,255,255,0.5); margin-top: 0.5rem; font-size: 0.9rem;">Traditional Kurdish, Turkish & Arabic Cuisine</p>
+                <div style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(34,197,94,0.2); padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid rgba(34,197,94,0.4);">
+                    <span style="font-size: 1.2rem;">☪️</span>
+                    <span style="color: #22c55e; font-weight: 600;">100% HALAL</span>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>📍 Location</h3>
+                <div style="color: rgba(255,255,255,0.7);">181 Market Street</div>
+                <div style="color: rgba(255,255,255,0.7);">Hyde, Tameside</div>
+                <div style="color: rgba(255,255,255,0.7);">SK14 1HF</div>
+                <a href="https://maps.google.com/?q=181+Market+St,+Hyde+SK14+1HF" target="_blank" style="color: #3b82f6; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">📍 View on Map</a>
+            </div>
+            <div class="footer-section">
+                <h3>📞 Contact</h3>
+                <div style="color: rgba(255,255,255,0.7);">📞 +44 161 536 1862</div>
+                <div style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b4dddad2dbf4d5dac0d5d8cdd5c7dcd5c3d5c6d9d59ad7dbd9">[email&#160;protected]</a></div>
+                <a href="https://instagram.com/antalyashawarma_" target="_blank" style="color: #e1306c; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">📸 @antalyashawarma_</a>
+            </div>
+            <div class="footer-section">
+                <h3>🕐 Hours</h3>
+                <div style="color: rgba(255,255,255,0.7);">Mon-Sun: 11:00 - 23:00</div>
+                <div style="color: #f4a261; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 600;">Last orders: 22:30</div>
+                <div style="color: rgba(255,255,255,0.5); margin-top: 0.5rem; font-size: 0.85rem;">Delivery • Takeaway • Dine-in</div>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem;">
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">All food is 100% Halal • Fresh ingredients made to order</p>
+        </div>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- FOOD DETAIL MODAL -->
+    <div class="modal" id="foodModal">
+        <div class="modal-content" style="max-width: 500px; padding: 0; overflow: hidden;">
+            <button class="close-btn" onclick="closeModal('foodModal')" style="position: absolute; top: 1rem; right: 1rem; z-index: 10; background: rgba(60,60,60,0.9); width: 36px; height: 36px;">×</button>
+            
+            <!-- Food Header -->
+            <div style="padding: 1.5rem; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(20,20,20,1) 100%);">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div id="modalFoodIcon" style="width: 130px; height: 130px; background: #f5f5f5; border-radius: 12px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 4rem;"></div>
+                    <div style="flex: 1; min-width: 0;">
+                        <h2 id="modalFoodName" style="margin: 0 0 0.5rem 0; font-size: 1.3rem; font-weight: 700; color: #fff;"></h2>
+                        <p id="modalFoodDesc" style="color: rgba(255,255,255,0.6); margin: 0; font-size: 0.9rem; line-height: 1.4;"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customization Options -->
+            <div id="customizationSection" style="display: none; border-top: 6px solid rgba(230,57,70,0.15);">
+                <div style="padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700;">Extras</h3>
+                        <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; color: rgba(255,255,255,0.6);">Optional</span>
+                    </div>
+                </div>
+                <div id="customOptions" style="padding: 0;"></div>
+            </div>
+            
+            <!-- Special Instructions -->
+            <div style="padding: 1.2rem 1.5rem; border-top: 6px solid rgba(230,57,70,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 600;">Special Instructions</h3>
+                    <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; color: rgba(255,255,255,0.6);">Optional</span>
+                </div>
+                <textarea id="specialInstructions" rows="2" placeholder="E.g., Extra spicy, no onions..." style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; font-size: 0.9rem; resize: none;"></textarea>
+            </div>
+            
+            <!-- Bottom Action Bar -->
+            <div style="padding: 1rem 1.5rem; background: rgba(15,15,15,1); border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 1rem;">
+                <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
+                    <button onclick="changeQuantity(-1)" style="background: transparent; border: none; color: #e63946; width: 44px; height: 44px; font-size: 1.5rem; cursor: pointer; font-weight: 700;">−</button>
+                    <span id="quantity" style="min-width: 30px; text-align: center; font-size: 1.1rem; font-weight: 600; color: white;">1</span>
+                    <button onclick="changeQuantity(1)" style="background: transparent; border: none; color: #e63946; width: 44px; height: 44px; font-size: 1.5rem; cursor: pointer; font-weight: 700;">+</button>
+                </div>
+                <button class="submit-btn" onclick="addToCart()" style="flex: 1; margin: 0; padding: 0.9rem; background: linear-gradient(135deg, #e63946, #c1121f); border-radius: 8px; font-size: 1rem; font-weight: 700; display: flex; justify-content: center; gap: 0.5rem;">
+                    <span>Add Item</span>
+                    <span id="totalPrice" style="opacity: 0.9;">£0.00</span>
+                </button>
+            </div>
+            
+            <!-- Hidden price display for reference -->
+            <span id="modalFoodPrice" style="display: none;"></span>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('loginModal')">×</button>
+            <h2 id="authTitle">🔐 Login</h2>
+            
+            <!-- Email Verification Section -->
+            <div id="emailVerificationSection" style="display: none;">
+                <div style="background: rgba(66,133,244,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <h3 style="color: #6ba3ff;">📧 Verify Your Email</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Code sent to <strong id="verifyEmailDisplay"></strong></p>
+                </div>
+                <div class="form-group">
+                    <label>Verification Code</label>
+                    <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;">
+                </div>
+                <button class="submit-btn" onclick="verifyCode()">✅ Verify Code</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <a href="#" onclick="resendCode(); return false;" style="color: #6ba3ff;">📨 Resend Code</a>
+                </p>
+            </div>
+
+            <!-- Forgot Password Section -->
+            <div id="forgotPasswordSection" style="display: none;">
+                <div style="background: rgba(245,158,11,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <h3 style="color: #f59e0b;">🔑 Reset Password</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Enter your email to receive a reset code</p>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="forgotPasswordEmail" placeholder="your@email.com">
+                </div>
+                <button class="submit-btn" onclick="sendPasswordResetCode()">📧 Send Reset Code</button>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <a href="#" onclick="showForgotPasswordSection(false); return false;" style="color: #ff6b6b;">← Back to Login</a>
+                </p>
+            </div>
+
+            <!-- Auth Form Section -->
+            <div id="authFormSection">
+                <div class="auth-options">
+                    <button class="auth-btn google-btn" onclick="loginWithGoogle()">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px; height: 20px; margin-right: 8px;">
+                        Continue with Google
+                    </button>
+                    <button class="auth-btn" onclick="loginWithApple()" style="background: #000; color: #fff; border: 1px solid #333;">
+                        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; fill: white;">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                        </svg>
+                        Continue with Apple
+                    </button>
+                </div>
+                <div class="divider">or use email</div>
+                <form onsubmit="handleEmailAuth(event)">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label>Full Name *</label>
+                        <input type="text" id="authName" class="form-input" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="authEmail" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="authPassword" class="form-input" placeholder="Min 6 characters" required>
+                    </div>
+                    <div id="forgotPasswordLink" style="text-align: right; margin-bottom: 1rem;">
+                        <a href="#" onclick="showForgotPasswordSection(true); return false;" style="color: #6ba3ff; font-size: 0.9rem;">Forgot password?</a>
+                    </div>
+                    <div class="form-group" id="phoneGroup" style="display: none;">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="authPhone" class="form-input" placeholder="+44 7700 900123">
+                    </div>
+                    <div class="form-group" id="ageGroup" style="display: none;">
+                        <label>Date of Birth (Optional)</label>
+                        <input type="date" id="authDOB" class="form-input">
+                    </div>
+                    <div class="form-group" id="addressGroup" style="display: none;">
+                        <label>Delivery Location *</label>
+                        <input type="text" id="authAddress" class="form-input" placeholder="Click to select on map" readonly>
+                        <button type="button" class="submit-btn" onclick="pickLocation()" style="margin-top: 0.5rem; background: linear-gradient(45deg, #f59e0b, #d97706) !important;">📍 Pick Location on Map</button>
+                    </div>
+                    <button type="submit" class="submit-btn" id="authSubmitBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a6f);">Login</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <span id="authToggleText">Don't have an account?</span>
+                    <a href="#" onclick="toggleAuthMode(); return false;" style="color: #ff6b6b;"> Sign Up</a>
+                </p>
+                
+                <!-- Staff & Driver Buttons -->
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <p style="text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 1rem; font-size: 0.9rem;">Staff Access:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <!-- EMPLOYER BUTTON - FIXED: Now opens Restaurant Dashboard -->
+                        <button onclick="showRestaurantLogin()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(102,126,234,0.3);">
+                            <span style="font-size: 1.8rem;">👔</span>
+                            <span>I'm Employer</span>
+                        </button>
+                        
+                        <!-- Driver Button -->
+                        <button onclick="showDriverLogin()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(16,185,129,0.3);">
+                            <span style="font-size: 1.8rem;">🚗</span>
+                            <span>I'm Driver</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESTAURANT LOGIN MODAL (FOR EMPLOYERS) -->
+    <div class="modal" id="restaurantLoginModal" style="display: none;">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('restaurantLoginModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">👔</div>
+                <h2 style="color: #667eea;">Restaurant Staff Login</h2>
+                <p style="color: rgba(255,255,255,0.6);">Access the order management dashboard</p>
+            </div>
+            <form onsubmit="handleRestaurantLogin(event)">
+                <div class="form-group">
+                    <label>Staff Email *</label>
+                    <input type="email" id="restaurantEmail" placeholder="staff@antalyashawarma.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="restaurantPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">🔓 Login to Dashboard</button>
+            </form>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.3);">
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
+                    <strong>Demo Credentials:</strong><br>
+                    Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33404752555573525d47525f4a52405b524452415e521d505c5e">[email&#160;protected]</a><br>
+                    Password: staff2024
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESTAURANT DASHBOARD -->
+    <div id="restaurantDashboard" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%); z-index: 10000; overflow-y: auto; padding: 1.5rem;">
+        <div style="max-width: 1400px; margin: 0 auto; position: relative;">
+            <button onclick="closeRestaurantDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">×</button>
+            
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 2rem; border-radius: 16px; text-align: center; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 40px rgba(102,126,234,0.3);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👔</div>
+                <h1 style="margin: 0; font-size: 1.8rem; font-weight: 800;">Restaurant Dashboard</h1>
+                <p style="margin: 0.5rem 0 0; font-size: 1rem; opacity: 0.9;">Order Management System</p>
+            </div>
+            
+            <!-- DAILY STATS - Quick Actions Style -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #10b981; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">📊 Today's Stats</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem;">
+                    <div style="padding: 1rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">💰</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Daily Revenue</div>
+                        <div id="monthlyRevenueStat" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">£0.00</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">📦</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Daily Orders</div>
+                        <div id="monthlyOrdersStat" style="font-size: 1.3rem; font-weight: 700; color: #3b82f6;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">⏳</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Pending</div>
+                        <div id="pendingOrdersStat" style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">✅</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Completed</div>
+                        <div id="completedOrdersStat" style="font-size: 1.3rem; font-weight: 700; color: #ec4899;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">🚗</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Out for Delivery</div>
+                        <div id="outForDeliveryStat" style="font-size: 1.3rem; font-weight: 700; color: #8b5cf6;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">⏱️</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Avg Time</div>
+                        <div id="avgTimeStat" style="font-size: 1.3rem; font-weight: 700; color: #14b8a6;">--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QUICK ACTIONS - Restaurant Staff -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #667eea; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">⚡ Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.8rem;">
+                    <button onclick="refreshOrders()" style="padding: 1rem; background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">🔄</span>
+                        <span style="font-size: 0.8rem;">Refresh</span>
+                    </button>
+                    <button onclick="showPendingOnly()" style="padding: 1rem; background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">⏳</span>
+                        <span style="font-size: 0.8rem;">Pending</span>
+                    </button>
+                    <button onclick="showAcceptedOnly()" style="padding: 1rem; background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">✅</span>
+                        <span style="font-size: 0.8rem;">Accepted</span>
+                    </button>
+                    <button onclick="showDeliveryOnly()" style="padding: 1rem; background: rgba(139,92,246,0.1); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">🚗</span>
+                        <span style="font-size: 0.8rem;">Delivery</span>
+                    </button>
+                    <button onclick="showAllOrdersRestaurant()" style="padding: 1rem; background: rgba(236,72,153,0.1); color: #ec4899; border: 1px solid rgba(236,72,153,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">📋</span>
+                        <span style="font-size: 0.8rem;">All Orders</span>
+                    </button>
+                    <button onclick="notifyAllDrivers()" style="padding: 1rem; background: rgba(20,184,166,0.1); color: #14b8a6; border: 1px solid rgba(20,184,166,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">📢</span>
+                        <span style="font-size: 0.8rem;">Alert Drivers</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- PENDING ORDERS SECTION -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #f59e0b; margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">📦 Pending Orders</h3>
+                    <span id="pendingCountBadge" style="background: rgba(245,158,11,0.2); color: #f59e0b; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">0 orders</span>
+                </div>
+                <div id="restaurantPendingOrders" style="max-height: 500px; overflow-y: auto;">
+                    <!-- Orders will be rendered here -->
+                    <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.4);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                        <p>No pending orders</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STATUS BAR -->
+            <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap;">
+                <span style="font-size: 1.5rem;">👔</span>
+                <span style="color: #667eea; font-weight: 600;">Restaurant Staff Mode</span>
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">• Order management only</span>
+                <button onclick="goToOwnerDashboard()" style="background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-left: auto;">
+                    🔐 Owner Access
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OWNER ACCESS MODAL -->
+    <div class="modal" id="ownerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: #1a1a1a; padding: 3rem; border-radius: 15px; max-width: 500px; width: 90%; position: relative;">
+            <button onclick="document.getElementById('ownerModal').style.display = 'none';" style="position: absolute; top: 1rem; right: 1rem; background: #ff4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer;">×</button>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; margin-bottom: 0.5rem;">
+                <h2 style="color: #8b5cf6; margin: 0; font-size: 1.8rem;">Owner Access</h2>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem;">Full System Control Panel</p>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="color: white; display: block; margin-bottom: 0.5rem;">Email *</label>
+                <input type="email" id="devEmail" placeholder="admin@antalyashawarma.com" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1rem;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="color: white; display: block; margin-bottom: 0.5rem;">Password *</label>
+                <input type="password" id="devPassword" placeholder="Enter password" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1rem;">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="color: white; display: block; margin-bottom: 0.5rem;">PIN *</label>
+                <input type="text" id="devPin" placeholder="4-digit PIN" maxlength="4" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1rem; text-align: center; letter-spacing: 0.5rem;">
+            </div>
+            
+            <button onclick="handleOwnerLogin()" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; width: 100%; font-size: 1.1rem; cursor: pointer; font-weight: 700;">
+                🔓 Unlock Owner Mode
+            </button>
+            
+    
+        </div>
+    </div>
+
+    <!-- OWNER DASHBOARD -->
+    <div id="ownerDashboard" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%); z-index: 10000; overflow-y: auto; padding: 1.5rem;">
+        <div style="max-width: 1400px; margin: 0 auto; position: relative;">
+            <button onclick="closeOwnerDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">×</button>
+            
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); padding: 2rem; border-radius: 16px; text-align: center; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 40px rgba(139,92,246,0.3);">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; margin-bottom: 0.8rem;">
+                <h1 style="margin: 0; font-size: 1.8rem; font-weight: 800;">Owner Console</h1>
+                <p style="margin: 0.5rem 0 0; font-size: 1rem; opacity: 0.9;">Full System Control Panel</p>
+            </div>
+            
+            <!-- STATS GRID - Quick Actions Style -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #10b981; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">📊 Live Statistics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem;">
+                    <div style="padding: 1rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">💰</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Total Revenue</div>
+                        <div id="revenueStat" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">£0.00</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">📦</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Total Orders</div>
+                        <div id="ordersStat" style="font-size: 1.3rem; font-weight: 700; color: #3b82f6;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">⏳</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Pending</div>
+                        <div id="pendingStat" style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">👥</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Users</div>
+                        <div id="usersStat" style="font-size: 1.3rem; font-weight: 700; color: #ec4899;">0</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">🚗</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Drivers</div>
+                        <div id="driverCountStat" style="font-size: 1.3rem; font-weight: 700; color: #14b8a6;">3</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; text-align: center;">
+                        <span style="font-size: 1.5rem;">⭐</span>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Rating</div>
+                        <div id="avgRatingStat" style="font-size: 1.3rem; font-weight: 700; color: #8b5cf6;">5.0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAIN ACTIONS - Quick Actions Style -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #e63946; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">🎛️ Management</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem;">
+                    <button onclick="openMenuManager()" style="padding: 1.2rem 0.8rem; background: rgba(230,57,70,0.15); color: #e63946; border: 1px solid rgba(230,57,70,0.3); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1.8rem;">🍽️</span>
+                        <span style="font-size: 0.85rem;">Menu</span>
+                        <span style="font-size: 0.7rem; opacity: 0.7;">Add/Edit Items</span>
+                    </button>
+                    <button onclick="showDriverManagementModal()" style="padding: 1.2rem 0.8rem; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1.8rem;">🚗</span>
+                        <span style="font-size: 0.85rem;">Drivers</span>
+                        <span id="driversRegisteredText" style="font-size: 0.7rem; opacity: 0.7;">3 registered</span>
+                    </button>
+                    <button onclick="showBankSettingsModal()" style="padding: 1.2rem 0.8rem; background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1.8rem;">🏦</span>
+                        <span style="font-size: 0.85rem;">Bank</span>
+                        <span style="font-size: 0.7rem; opacity: 0.7;">Payments</span>
+                    </button>
+                    <button onclick="document.getElementById('ownerDashboard').style.display='none'; showRestaurantDashboard();" style="padding: 1.2rem 0.8rem; background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1.8rem;">👔</span>
+                        <span style="font-size: 0.85rem;">Restaurant</span>
+                        <span style="font-size: 0.7rem; opacity: 0.7;">Orders</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- QUICK ACTIONS - Quick Actions Style -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #3b82f6; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">⚡ Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.8rem;">
+                    <button onclick="showAllOrders()" style="padding: 1rem; background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">📋</span>
+                        <span style="font-size: 0.8rem;">Orders</span>
+                    </button>
+                    <button onclick="showAllUsers()" style="padding: 1rem; background: rgba(236,72,153,0.1); color: #ec4899; border: 1px solid rgba(236,72,153,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">👥</span>
+                        <span style="font-size: 0.8rem;">Users</span>
+                    </button>
+                    <button onclick="showAllReviews()" style="padding: 1rem; background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">⭐</span>
+                        <span style="font-size: 0.8rem;">Reviews</span>
+                    </button>
+                    <button onclick="showAnalytics()" style="padding: 1rem; background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">📊</span>
+                        <span style="font-size: 0.8rem;">Analytics</span>
+                    </button>
+                    <button onclick="showNotificationCenter()" style="padding: 1rem; background: rgba(139,92,246,0.1); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">🔔</span>
+                        <span style="font-size: 0.8rem;">Alerts</span>
+                    </button>
+                    <button onclick="showSettings()" style="padding: 1rem; background: rgba(107,114,128,0.1); color: #9ca3af; border: 1px solid rgba(107,114,128,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                        <span style="font-size: 1.5rem;">⚙️</span>
+                        <span style="font-size: 0.8rem;">Settings</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- TODAY & POPULAR - Side by Side -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- Today's Summary -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem;">
+                    <h3 style="color: #3b82f6; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">📅 Today</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                        <div style="background: rgba(16,185,129,0.1); padding: 0.8rem; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Revenue</div>
+                            <div id="todayRevenue" style="font-size: 1.2rem; font-weight: 700; color: #10b981;">£0.00</div>
+                        </div>
+                        <div style="background: rgba(59,130,246,0.1); padding: 0.8rem; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Orders</div>
+                            <div id="todayOrders" style="font-size: 1.2rem; font-weight: 700; color: #3b82f6;">0</div>
+                        </div>
+                        <div style="background: rgba(245,158,11,0.1); padding: 0.8rem; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Avg Order</div>
+                            <div id="avgOrderValue" style="font-size: 1.2rem; font-weight: 700; color: #f59e0b;">£0.00</div>
+                        </div>
+                        <div style="background: rgba(236,72,153,0.1); padding: 0.8rem; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">New Users</div>
+                            <div id="newCustomers" style="font-size: 1.2rem; font-weight: 700; color: #ec4899;">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Popular Items -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem;">
+                    <h3 style="color: #f59e0b; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">🔥 Popular</h3>
+                    <div id="popularItemsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
+                            <span>🌯 Mix Grill Wrap</span>
+                            <span style="color: #10b981; font-weight: 600;">23</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
+                            <span>🍖 Chicken Portion</span>
+                            <span style="color: #10b981; font-weight: 600;">18</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
+                            <span>🥙 Lamb Kebab</span>
+                            <span style="color: #10b981; font-weight: 600;">15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STATUS BAR -->
+            <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.8rem; margin-bottom: 1.5rem;">
+                <span style="font-size: 1.5rem;">✅</span>
+                <span style="color: #10b981; font-weight: 600;">Owner Access Active</span>
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">• All features unlocked</span>
+            </div>
+            
+            <!-- DANGER ZONE -->
+            <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 16px; padding: 1.2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h3 style="color: #ef4444; margin: 0 0 0.3rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">⚠️ Danger Zone</h3>
+                        <p style="color: rgba(255,255,255,0.5); margin: 0; font-size: 0.8rem;">These actions cannot be undone</p>
+                    </div>
+                    <button onclick="showResetOptions()" style="background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                        🗑️ Reset Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RESET OPTIONS MODAL -->
+    <div class="modal" id="resetOptionsModal" style="display: none; z-index: 10005;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeModal('resetOptionsModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
+                <h2 style="color: #ef4444;">Reset Data Options</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Select what you want to reset</p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="resetUsers" style="width: 20px; height: 20px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-weight: 600;">👥 User Accounts</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Delete all customer accounts</div>
+                    </div>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="resetOrders" style="width: 20px; height: 20px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-weight: 600;">📦 Order History</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Delete all orders (pending & completed)</div>
+                    </div>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="resetDrivers" style="width: 20px; height: 20px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-weight: 600;">🚗 Driver Data</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Delete all driver accounts & locations</div>
+                    </div>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="resetFavorites" style="width: 20px; height: 20px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-weight: 600;">❤️ Favorites & Notifications</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Delete all user favorites & notifications</div>
+                    </div>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="resetMenu" style="width: 20px; height: 20px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-weight: 600;">🍽️ Menu to Default</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Reset menu to original items</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button onclick="closeModal('resetOptionsModal')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Cancel
+                </button>
+                <button onclick="resetSelectedData()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    🗑️ Reset Selected
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRIVER MANAGEMENT MODAL (OWNER ONLY) - COMPLETE -->
+    <div class="modal" id="driverManagementModal" style="display: none; z-index: 10002;">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <button class="close-btn" onclick="closeModal('driverManagementModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🚗</div>
+                <h2 style="color: #10b981;">Driver Management</h2>
+                <p style="color: rgba(255,255,255,0.6);">Manage delivery drivers</p>
+            </div>
+            
+            <!-- Add New Driver Form -->
+            <div style="background: rgba(16,185,129,0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid rgba(16,185,129,0.3);">
+                <h3 style="color: #10b981; margin: 0 0 1rem 0; font-size: 1.1rem;">➕ Add New Driver</h3>
+                
+                <!-- Profile Picture -->
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div id="newDriverPicPreview" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(16,185,129,0.5);">🚗</div>
+                    <input type="file" id="newDriverPicInput" accept="image/*" style="display: none;" onchange="previewDriverPic(this)">
+                    <button type="button" onclick="document.getElementById('newDriverPicInput').click()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.3rem 0.8rem; border-radius: 15px; cursor: pointer; font-size: 0.8rem;">📷 Photo</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Full Name *</label>
+                        <input type="text" id="newDriverName" placeholder="Driver full name" style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Email *</label>
+                        <input type="email" id="newDriverEmail" placeholder="driver@email.com" style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Phone *</label>
+                        <input type="tel" id="newDriverPhone" placeholder="+44 7XXX XXX XXX" style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Password *</label>
+                        <input type="password" id="newDriverPassword" placeholder="Login password" style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Date of Birth</label>
+                        <input type="date" id="newDriverBirth" style="width: 100%;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Gender</label>
+                        <select id="newDriverGender" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="addNewDriver()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 1rem; font-size: 1rem;">➕ Add Driver</button>
+            </div>
+            
+            <!-- Driver List -->
+            <div id="driverListContainer">
+                <!-- Drivers will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT DRIVER MODAL -->
+    <div class="modal" id="editDriverModal" style="display: none; z-index: 10003;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn" onclick="closeModal('editDriverModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✏️</div>
+                <h2 style="color: #3b82f6;">Edit Driver</h2>
+            </div>
+            
+            <input type="hidden" id="editDriverId">
+            
+            <!-- Profile Picture -->
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div id="editDriverPicPreview" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(59,130,246,0.5);">🚗</div>
+                <input type="file" id="editDriverPicInput" accept="image/*" style="display: none;" onchange="previewEditDriverPic(this)">
+                <button type="button" onclick="document.getElementById('editDriverPicInput').click()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.3rem 0.8rem; border-radius: 15px; cursor: pointer; font-size: 0.8rem;">📷 Change Photo</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="editDriverName" placeholder="Driver name">
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="editDriverEmail" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Phone *</label>
+                <input type="tel" id="editDriverPhone" placeholder="Phone">
+            </div>
+            <div class="form-group">
+                <label>New Password (leave empty to keep current)</label>
+                <input type="password" id="editDriverPassword" placeholder="New password">
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="editDriverBirth">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="editDriverGender" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="editDriverStatus" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
+                    <option value="active">🟢 Active</option>
+                    <option value="inactive">🔴 Inactive</option>
+                </select>
+            </div>
+            <button onclick="saveDriverChanges()" class="submit-btn" style="background: linear-gradient(45deg, #3b82f6, #2563eb);">💾 Save Changes</button>
+        </div>
+    </div>
+
+    <!-- BANK SETTINGS MODAL (OWNER ONLY) -->
+    <div class="modal" id="bankSettingsModal" style="display: none; z-index: 10002;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn" onclick="closeModal('bankSettingsModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🏦</div>
+                <h2 style="color: #f59e0b;">Bank Settings</h2>
+                <p style="color: rgba(255,255,255,0.6);">Payment configuration</p>
+            </div>
+            
+            <form onsubmit="saveBankSettings(event)">
+                <div class="form-group">
+                    <label>Bank Name *</label>
+                    <input type="text" id="bankName" placeholder="e.g., Barclays Bank UK" required>
+                </div>
+                <div class="form-group">
+                    <label>Account Holder Name *</label>
+                    <input type="text" id="accountHolder" placeholder="Business name" required>
+                </div>
+                <div class="form-group">
+                    <label>Account Number *</label>
+                    <input type="text" id="accountNumber" placeholder="8-digit account number" maxlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label>Sort Code *</label>
+                    <input type="text" id="sortCode" placeholder="XX-XX-XX" maxlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label>IBAN (Optional)</label>
+                    <input type="text" id="iban" placeholder="GB00 XXXX 0000 0000 0000 00">
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #f59e0b, #d97706);">💾 Save Bank Details</button>
+            </form>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(245,158,11,0.1); border-radius: 10px; border: 1px solid rgba(245,158,11,0.3);">
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
+                    🔒 Your bank details are stored securely and used only for receiving customer payments.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('cartModal')">×</button>
+            <h2>🛒 Your Cart</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <span>Subtotal:</span>
+                <span id="cartTotal">£0.00</span>
+            </div>
+            <button class="submit-btn" onclick="proceedToCheckout()" style="background: linear-gradient(45deg, #10b981, #059669);">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- FAVORITES MODAL -->
+    <div class="modal" id="favoritesModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('favoritesModal')">×</button>
+            <h2>❤️ Your Favorites</h2>
+            <div id="favoritesContent"></div>
+        </div>
+    </div>
+
+    <!-- WRITE REVIEW MODAL -->
+    <div class="modal" id="writeReviewModal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn" onclick="closeModal('writeReviewModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; margin-bottom: 0.5rem;">
+                <h2 style="color: #f59e0b;">Write a Review</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Share your experience with others</p>
+            </div>
+            
+            <form onsubmit="submitReview(event)">
+                <!-- Star Rating -->
+                <div class="form-group" style="text-align: center;">
+                    <label style="display: block; margin-bottom: 0.8rem;">Your Rating *</label>
+                  <div id="starRating" style="display: flex; justify-content: center; gap: 0.5rem; font-size: 2rem;">
+                        <span onclick="setRating(1)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(2)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(3)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(4)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(5)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                    </div>
+                    <input type="hidden" id="reviewRating" value="0">
+                </div>
+                
+                <!-- Review Text -->
+                <div class="form-group">
+                    <label>Your Review *</label>
+                    <textarea id="reviewText" rows="4" placeholder="Tell us about your experience..." required style="resize: vertical;"></textarea>
+                </div>
+                
+                <button type="submit" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem;">
+                    ⭐ Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- VIEW REPLIES MODAL -->
+    <div class="modal" id="repliesModal" style="display: none;">
+        <div class="modal-content" style="max-width: 550px; max-height: 80vh; overflow-y: auto;">
+            <button class="close-btn" onclick="closeModal('repliesModal')">×</button>
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                <img src="logo.png" alt="Antalya Shawarma" style="height: 35px; width: auto;">
+                <h2 style="color: #e63946; margin: 0;">Restaurant Replies</h2>
+            </div>
+            <div id="repliesContent"></div>
+            
+            <!-- Owner Reply Form (Only visible to owner) -->
+            <div id="ownerReplySection" style="display: none; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem;">
+                    <img src="logo.png" alt="Antalya Shawarma" style="height: 25px; width: auto;">
+                    <span style="color: #f59e0b; font-weight: 600; font-size: 0.9rem;">Reply as Restaurant Owner</span>
+                </div>
+                <div class="form-group">
+                    <textarea id="replyText" rows="2" placeholder="Write your reply to this customer..."></textarea>
+                </div>
+                <button onclick="submitOwnerReply()" style="background: linear-gradient(135deg, #e63946, #c1121f); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Send Reply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS MODAL -->
+    <div class="modal" id="notificationsModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('notificationsModal')">×</button>
+            <h2>🔔 Notifications</h2>
+            <div id="notificationsContent"></div>
+        </div>
+    </div>
+
+    <!-- ORDER HISTORY MODAL -->
+    <div class="modal" id="orderHistoryModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" onclick="closeModal('orderHistoryModal')">×</button>
+            <h2>📋 Order History</h2>
+            <div id="orderHistoryContent"></div>
+        </div>
+    </div>
+
+    <!-- ACCOUNT MODAL - FULL PROFILE EDITING -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" onclick="closeModal('accountModal')">×</button>
+            <div id="accountContent">
+                <!-- Will be rendered by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div class="modal" id="editProfileModal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn" onclick="closeModal('editProfileModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✏️</div>
+                <h2 style="color: #3b82f6;">Edit Profile</h2>
+            </div>
+            
+            <!-- Profile Picture Upload -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div id="profilePicPreview" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem; overflow: hidden; border: 4px solid rgba(255,255,255,0.2);">
+                    👤
+                </div>
+                <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="previewProfilePic(this)">
+                <button onclick="document.getElementById('profilePicInput').click()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.9rem;">📷 Change Photo</button>
+            </div>
+            
+            <form onsubmit="saveProfileChanges(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="editName" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="editDOB" placeholder="Your date of birth">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="editPhone" placeholder="+44 7XXX XXX XXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <input type="text" id="editAddress" placeholder="Click button below to set location" readonly style="background: rgba(255,255,255,0.05);">
+                    <button type="button" onclick="pickLocationForProfile()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem;">
+                        📍 Pick Location on Map
+                    </button>
+                </div>
+                
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #3b82f6, #2563eb);">💾 Save Changes</button>
+            </form>
+            
+            <!-- Change Password Button -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <button onclick="openChangePasswordModal()" style="background: transparent; color: #e63946; border: 2px solid rgba(230,57,70,0.4); padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    🔑 Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CHANGE PASSWORD MODAL -->
+    <div class="modal" id="changePasswordModal" style="display: none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔐</div>
+                <h2 style="color: #e63946;">Change Password</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Create a strong password to protect your account</p>
+            </div>
+            
+            <form onsubmit="handleChangePassword(event)">
+                <div class="form-group">
+                    <label>Current Password *</label>
+                    <input type="password" id="cpCurrentPassword" placeholder="••••••" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password *</label>
+                    <input type="password" id="cpNewPassword" placeholder="••••••" required>
+                    <small style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">Minimum 6 characters</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password *</label>
+                    <input type="password" id="cpConfirmPassword" placeholder="••••••" required>
+                </div>
+                
+                <button type="submit" style="background: linear-gradient(135deg, #e63946, #c1121f); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: 2px solid rgba(230,57,70,0.5);">
+                    🔐 CHANGE PASSWORD
+                </button>
+            </form>
+            
+            <!-- Forgot Password Link -->
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 0.5rem;">Forgot your current password?</p>
+                <button onclick="openForgotPasswordFromChangePassword()" style="background: transparent; color: #f59e0b; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; text-decoration: underline;">
+                    🔑 Reset via Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE EMAIL MODAL (WITH SECURITY) -->
+    <div class="modal" id="changeEmailModal" style="display: none;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeModal('changeEmailModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📧</div>
+                <h2 style="color: #f59e0b;">Change Email</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">For security, please verify your password</p>
+            </div>
+            
+            <form onsubmit="verifyAndChangeEmail(event)">
+                <div class="form-group">
+                    <label>Current Password *</label>
+                    <input type="password" id="emailCurrentPassword" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Email *</label>
+                    <input type="email" id="newEmail" placeholder="new@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Email *</label>
+                    <input type="email" id="confirmNewEmail" placeholder="Confirm new email" required>
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #f59e0b, #d97706);">🔐 Verify & Change Email</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD MODAL (WITH SECURITY) -->
+    <div class="modal" id="changePasswordModal" style="display: none;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔒</div>
+                <h2 style="color: #ef4444;">Change Password</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Create a strong password to protect your account</p>
+            </div>
+            
+            <form onsubmit="verifyAndChangePassword(event)">
+                <div class="form-group">
+                    <label>Current Password *</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password *</label>
+                    <input type="password" id="newPassword" placeholder="Min 6 characters" minlength="6" required>
+                    <small style="color: rgba(255,255,255,0.5);">Minimum 6 characters</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password *</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #ef4444, #dc2626);">🔐 Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAP MODAL - FULLSCREEN -->
+    <div id="mapModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 10002;">
+        <div style="height: 100%; display: flex; flex-direction: column;">
+            <div style="padding: 1rem; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; color: white; font-size: 1.2rem;">📍 Select Delivery Location</h2>
+                <button onclick="closeModal('mapModal')" style="background: #ef4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="map" style="flex: 1; width: 100%;"></div>
+            <div style="padding: 1rem; background: rgba(0,0,0,0.5);">
+                <div id="selectedLocationText" style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Click on the map to select your delivery location
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                    <button onclick="getCurrentLocation()" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">📍 My Location</button>
+                    <button onclick="confirmLocation()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">✅ Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRIVER TRACKING MODAL - FULLSCREEN -->
+    <div id="driverTrackingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 10002;">
+        <div style="height: 100%; display: flex; flex-direction: column;">
+            <div style="padding: 1rem; background: linear-gradient(135deg, #10b981, #059669); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="margin: 0; color: white; font-size: 1.1rem;">🚗 Driver On The Way</h2>
+                    <p id="trackingOrderId" style="margin: 0.2rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.85rem;"></p>
+                </div>
+                <button onclick="closeModal('driverTrackingModal')" style="background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <div id="trackingMap" style="flex: 1; width: 100%;"></div>
+            <div id="driverInfoPanel" style="padding: 1rem; background: rgba(0,0,0,0.5);">
+                <!-- Driver info will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DRIVER RATING MODAL -->
+    <div class="modal" id="driverRatingModal" style="display: none; z-index: 10003;">
+        <div class="modal-content" style="max-width: 400px;">
+            <button class="close-btn" onclick="closeModal('driverRatingModal')">×</button>
+            <div style="text-align: center;">
+                <div id="ratingDriverImage" style="margin-bottom: 1rem;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto;">🚗</div>
+                </div>
+                <h2 style="color: white; margin: 0 0 0.3rem;">Rate Your Driver</h2>
+                <p id="ratingDriverName" style="color: rgba(255,255,255,0.7); margin: 0 0 1.5rem; font-size: 1.1rem;"></p>
+                
+                <div id="starRatingContainer" style="margin-bottom: 1rem;">
+                    <!-- Stars will be rendered here -->
+                </div>
+                
+                <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b; margin-bottom: 1rem;">
+                    <span id="ratingValue">0</span>/5
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <textarea id="ratingComment" placeholder="Add a comment (optional)..." rows="3" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; resize: none; font-family: inherit;"></textarea>
+                </div>
+                
+                <input type="hidden" id="ratingOrderId">
+                <input type="hidden" id="ratingDriverId">
+                
+                <button onclick="submitDriverRating()" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem;">
+                    ⭐ Submit Rating
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('checkoutModal')">×</button>
+            <h2>💳 Checkout</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                <h3>📍 Delivery Address</h3>
+                <p id="checkoutAddress" style="color: rgba(255,255,255,0.7);"></p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                <h3>📦 Order Summary</h3>
+                <div id="checkoutItems"></div>
+            </div>
+            <form onsubmit="handlePayment(event)">
+                <div class="form-group">
+                    <label>Payment Method *</label>
+                    <select id="paymentMethod" required onchange="toggleCardFields()">
+                        <option value="">Choose payment method</option>
+                        <option value="cash">💷 Cash on Delivery</option>
+                        <option value="card">💳 Card Payment</option>
+                        <option value="applepay">🍎 Apple Pay</option>
+                    </select>
+                </div>
+                <div id="cardFieldsSection" style="display: none;">
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-group">
+                        <label>Name on Card</label>
+                        <input type="text" id="paymentCardName" placeholder="JOHN SMITH">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Expiry</label>
+                            <input type="text" id="paymentExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" id="paymentCVV" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">💳 Pay <span id="paymentTotal">£0.00</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOCATION CONFIRMATION MODAL -->
+    <div class="modal" id="locationConfirmModal" style="display: none; z-index: 10002;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeModal('locationConfirmModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">📍</div>
+                <h2 style="color: #3b82f6;">Confirm Delivery Location</h2>
+            </div>
+            
+            <div id="currentLocationDisplay" style="background: rgba(59,130,246,0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(59,130,246,0.3);">
+                <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem; font-size: 0.9rem;">Current delivery address:</p>
+                <p id="confirmLocationAddress" style="color: white; margin: 0; font-weight: 600; font-size: 1.1rem;"></p>
+            </div>
+            
+            <div style="display: grid; gap: 1rem;">
+                <button onclick="confirmCurrentLocation()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    ✅ Use This Location
+                </button>
+                <button onclick="changeDeliveryLocation()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                    📍 Change Location
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REORDER CONFIRMATION MODAL -->
+    <div class="modal" id="reorderModal" style="display: none; z-index: 10002;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn" onclick="closeModal('reorderModal')">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔄</div>
+                <h2 style="color: #10b981;">Reorder</h2>
+                <p style="color: rgba(255,255,255,0.6);">Order the same items again?</p>
+            </div>
+            
+            <div id="reorderItemsList" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
+                <!-- Items will be listed here -->
+            </div>
+            
+            <div id="reorderTotal" style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(16,185,129,0.1); border-radius: 10px; margin-bottom: 1.5rem; font-weight: 700;">
+                <span>Total:</span>
+                <span style="color: #10b981;"></span>
+            </div>
+            
+            <button onclick="confirmReorder()" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">
+                🛒 Add to Cart & Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- DRIVER LOGIN MODAL -->
+    <div class="modal" id="driverLoginModal" style="display: none; z-index: 10002;">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('driverLoginModal')">×</button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🚗</div>
+                <h2 style="color: #10b981;">Driver Login</h2>
+                <p style="color: rgba(255,255,255,0.6);">Login to access your delivery dashboard</p>
+            </div>
+            
+            <!-- Login with Secret Code -->
+            <div id="driverCodeLogin">
+                <form onsubmit="handleDriverCodeLogin(event)">
+                    <div class="form-group">
+                        <label>Secret Code *</label>
+                        <input type="text" id="driverSecretCode" placeholder="DRV-XXX-XX" style="text-transform: uppercase;">
+                    </div>
+                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔓 Login with Code</button>
+                </form>
+                
+                <div style="text-align: center; margin: 1.5rem 0; color: rgba(255,255,255,0.5);">
+                    <span style="padding: 0 1rem;">OR</span>
+                </div>
+                
+                <button onclick="showDriverEmailLogin()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1rem; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 600;">
+                    📧 Login with Email & Password
+                </button>
+            </div>
+            
+            <!-- Login with Email/Password -->
+            <div id="driverEmailLogin" style="display: none;">
+                <form onsubmit="handleDriverEmailPasswordLogin(event)">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="driverLoginEmail" placeholder="driver@antalya.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="driverLoginPassword" placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔓 Login</button>
+                </form>
+                
+                <button onclick="showDriverCodeLogin()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem; border-radius: 8px; width: 100%; cursor: pointer; margin-top: 1rem;">
+                    ← Back to Code Login
+                </button>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(16,185,129,0.1); border-radius: 10px; border: 1px solid rgba(16,185,129,0.3);">
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
+                    <strong>💡 Tip:</strong> Use your Secret Code for quick login, or Email & Password for full access.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRIVER DASHBOARD - FULLSCREEN FOR MOBILE -->
+    <div id="driverDashboardModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); z-index: 10002; overflow-y: auto;">
+        <div id="driverDashboardContent" style="padding: 1rem; min-height: 100vh;">
+            <!-- Driver dashboard content will be rendered here -->
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="script.js?v=3.0"></script>
+    <script src="owner.js?v=3.0"></script>
+    <script src="driver.js?v=3.0"></script>
+    <script src="utils.js?v=3.0"></script>
+    <script>
+        // Card field toggle
+        function toggleCardFields() {
+            const method = document.getElementById('paymentMethod').value;
+            const cardSection = document.getElementById('cardFieldsSection');
+            const cardInputs = cardSection.querySelectorAll('input');
+            
+            if (method === 'card') {
+                cardSection.style.display = 'block';
+                cardInputs.forEach(input => input.setAttribute('required', 'required'));
+            } else {
+                cardSection.style.display = 'none';
+                cardInputs.forEach(input => input.removeAttribute('required'));
+            }
+        }
+    </script>
+    
+    <!-- MENU MANAGER MODAL -->
+    <div class="modal" id="menuManagerModal" style="display: none; z-index: 10003;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <button class="close-btn" onclick="document.getElementById('menuManagerModal').style.display='none'">×</button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🍽️</div>
+                <h2 style="color: #e63946; margin: 0;">Menu Management</h2>
+                <p style="color: rgba(255,255,255,0.6);">Add, edit, and manage food items & categories</p>
+            </div>
+            <div id="menuManagerContent"></div>
+        </div>
+    </div>
+    
+    <!-- FOOD EDITOR MODAL -->
+    <div class="modal" id="foodEditorModal" style="display: none; z-index: 10004;">
+        <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <button class="close-btn" onclick="closeFoodEditor()">×</button>
+            <h2 id="foodEditorTitle" style="color: #10b981; text-align: center; margin-bottom: 1.5rem;">Add Food Item</h2>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Category *</label>
+                <select id="foodEditCategory" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+                    <option value="" style="background: #2a2a2a; color: white;">Select category</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Food Name *</label>
+                <input type="text" id="foodEditName" placeholder="e.g. Chicken Shawarma Wrap" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Price (£) *</label>
+                    <input type="number" id="foodEditPrice" step="0.01" placeholder="6.99" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Icon (emoji)</label>
+                    <input type="text" id="foodEditIcon" placeholder="🌯" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 1.5rem; text-align: center;">
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Description</label>
+                <textarea id="foodEditDesc" rows="2" placeholder="Describe this food item..." style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; resize: vertical;"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Food Image (optional - leave empty for icon)</label>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <button type="button" onclick="document.getElementById('foodEditImageFile').click()" style="flex: 1; padding: 0.6rem; background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                        📁 Upload File
+                    </button>
+                    <input type="file" id="foodEditImageFile" accept="image/*" onchange="handleFoodImageUpload(event)" style="display: none;">
+                </div>
+                <input type="text" id="foodEditImage" placeholder="Or paste image URL here..." oninput="previewFoodImage()" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+                <div id="foodEditImagePreview" style="margin-top: 0.5rem;"></div>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Extras/Options (one per line: Name:Price)</label>
+                <textarea id="foodEditOptions" rows="4" placeholder="Extra Meat:2.00&#10;Add Cheese:1.00&#10;Make it Spicy:0" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; resize: vertical; font-family: monospace;"></textarea>
+            </div>
+            
+            <button onclick="saveFoodItem()" style="width: 100%; padding: 1rem; background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
+                💾 Save Food Item
+            </button>
+        </div>
+    </div>
+    
+    <!-- CATEGORY EDITOR MODAL -->
+    <div class="modal" id="categoryEditorModal" style="display: none; z-index: 10004;">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeCategoryEditor()">×</button>
+            <h2 id="categoryEditorTitle" style="color: #8b5cf6; text-align: center; margin-bottom: 1.5rem;">Add Category</h2>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Category Key * (no spaces)</label>
+                <input type="text" id="categoryEditKey" placeholder="e.g. shawarma, kebabs, drinks" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Display Name *</label>
+                <input type="text" id="categoryEditName" placeholder="e.g. Shawarma Wraps" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Icon (emoji)</label>
+                <input type="text" id="categoryEditIcon" placeholder="🌯" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 1.5rem; text-align: center;">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.3rem; color: rgba(255,255,255,0.8);">Category Image (optional)</label>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <button type="button" onclick="document.getElementById('categoryEditImageFile').click()" style="flex: 1; padding: 0.6rem; background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                        📁 Upload File
+                    </button>
+                    <input type="file" id="categoryEditImageFile" accept="image/*" onchange="handleCategoryImageUpload(event)" style="display: none;">
+                </div>
+                <input type="text" id="categoryEditImage" placeholder="Or paste image URL here..." oninput="previewCategoryImage()" style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white;">
+                <div id="categoryEditImagePreview" style="margin-top: 0.5rem;"></div>
+            </div>
+            
+            <button onclick="saveCategory()" style="width: 100%; padding: 1rem; background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem;">
+                💾 Save Category
+            </button>
+            
+            <button id="deleteCategoryBtn" onclick="deleteCategory()" style="width: 100%; padding: 0.8rem; background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; font-size: 0.95rem; cursor: pointer; display: none;">
+                🗑️ Delete Category
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Populate category dropdown when food editor opens
+        document.getElementById('foodEditorModal').addEventListener('click', function(e) {
+            if (e.target === this) closeFoodEditor();
+        });
+        document.getElementById('categoryEditorModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCategoryEditor();
+        });
+        document.getElementById('menuManagerModal').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+        
+        // Populate categories dropdown
+        const originalOpenAddFood = window.openAddFood;
+        window.openAddFood = function() {
+            const select = document.getElementById('foodEditCategory');
+            if (select && typeof categories !== 'undefined') {
+                select.innerHTML = '<option value="">Select category</option>' + 
+                    Object.entries(categories).map(([key, cat]) => 
+                        `<option value="${key}">${cat.name}</option>`
+                    ).join('');
+            }
+            if (originalOpenAddFood) originalOpenAddFood();
+        };
+        
+        const originalOpenEditFood = window.openEditFood;
+        window.openEditFood = function(catKey, foodId) {
+            const select = document.getElementById('foodEditCategory');
+            if (select && typeof categories !== 'undefined') {
+                select.innerHTML = '<option value="">Select category</option>' + 
+                    Object.entries(categories).map(([key, cat]) => 
+                        `<option value="${key}">${cat.name}</option>`
+                    ).join('');
+                select.value = catKey;
+            }
+            if (originalOpenEditFood) originalOpenEditFood(catKey, foodId);
+        };
+    </script>
+</body>
+</html> 
