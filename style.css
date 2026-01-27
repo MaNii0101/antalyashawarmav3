@@ -839,3 +839,51 @@ body {
 .icon-btn[title="Driver"]:hover::after {
     width: 80%;
 }
+
+/* ========================================
+   STAR RATING STYLES - TOUCH OPTIMIZED
+   ======================================== */
+#starRating {
+    position: relative;
+    z-index: 100;
+}
+
+#starRating .star-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    position: relative;
+    z-index: 101;
+}
+
+#starRating .star-btn:hover {
+    transform: scale(1.2) !important;
+}
+
+#starRating .star-btn:active {
+    transform: scale(0.95) !important;
+}
+
+#starRating .star-btn:focus {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Ensure stars are always clickable */
+#writeReviewModal .modal-content {
+    overflow: visible;
+}
+
+#writeReviewModal .form-group {
+    position: relative;
+    z-index: 50;
+}

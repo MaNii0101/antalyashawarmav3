@@ -897,3 +897,28 @@ function generateDriverSecretCode() {
     return code;
 }
 
+// ========================================
+// EXPORT DRIVER.JS FUNCTIONS GLOBALLY
+// ========================================
+window.showDriverLogin = showDriverLogin;
+window.showDriverCodeLogin = showDriverCodeLogin;
+window.showDriverEmailLogin = showDriverEmailLogin;
+window.handleDriverCodeLogin = handleDriverCodeLogin;
+window.handleDriverEmailPasswordLogin = handleDriverEmailPasswordLogin;
+window.showDriverDashboard = showDriverDashboard;
+window.toggleDriverAvailability = toggleDriverAvailability;
+window.updateDriverLocation = updateDriverLocation;
+window.openDirections = openDirections;
+window.markOrderDelivered = markOrderDelivered;
+window.callCustomer = callCustomer;
+window.confirmLogoutDriver = confirmLogoutDriver;
+window.logoutDriver = logoutDriver;
+window.loginDriver = loginDriver;
+window.updateDriverLoginUI = updateDriverLoginUI;
+window.setDriverRating = setDriverRating;
+window.submitDriverRating = submitDriverRating;
+window.openDriverRating = openDriverRating;
+window.showDeliveryRatingPopup = showDeliveryRatingPopup;
+window.generateDriverSecretCode = generateDriverSecretCode;
+
+console.log('✅ Driver.js loaded successfully');

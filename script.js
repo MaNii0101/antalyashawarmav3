@@ -3583,6 +3583,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.value = value;
         });
     }
+    
+    // ========================================
+    // STAR RATING INITIALIZATION - FULL TOUCH SUPPORT
+    // ========================================
+    initializeStarRating();
  
 });
 
@@ -3628,9 +3633,7 @@ window.showAccount = showAccount;
 window.showCart = showCart;
 window.showFavorites = showFavorites;
 window.showNotifications = showNotifications;
-window.showRestaurantLogin = showRestaurantLogin;
-window.showOwnerLogin = showOwnerLogin;
-window.showDriverLogin = showDriverLogin;
+// showRestaurantLogin, showOwnerLogin, showDriverLogin are exported from their respective files (owner.js, driver.js)
 window.closeModal = closeModal;
 window.filterCategory = filterCategory;
 window.openFoodModal = openFoodModal;
@@ -3651,7 +3654,7 @@ window.resendCode = resendCode;
 window.toggleAuthMode = toggleAuthMode;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
-window.handleRestaurantLogin = handleRestaurantLogin;
+// handleRestaurantLogin is exported from owner.js
 window.handleOwnerLogin = handleOwnerLogin;
 window.pickLocation = pickLocation;
 window.getCurrentLocation = getCurrentLocation;
@@ -3677,29 +3680,8 @@ window.openChangePasswordModal = openChangePasswordModal;
 window.handleChangePassword = handleChangePassword;
 window.showOwnerPinEntry = showOwnerPinEntry;
 
-// New driver functions
-window.showDriverCodeLogin = showDriverCodeLogin;
-window.showDriverEmailLogin = showDriverEmailLogin;
-window.handleDriverCodeLogin = handleDriverCodeLogin;
-window.handleDriverEmailPasswordLogin = handleDriverEmailPasswordLogin;
-window.showDriverDashboard = showDriverDashboard;
-window.toggleDriverAvailability = toggleDriverAvailability;
-window.updateDriverLocation = updateDriverLocation;
-window.openDirections = openDirections;
-window.markOrderDelivered = markOrderDelivered;
-
-// Driver management functions
-window.editDriver = editDriver;
-window.previewDriverPic = previewDriverPic;
-window.previewEditDriverPic = previewEditDriverPic;
-window.saveDriverChanges = saveDriverChanges;
-window.toggleDriverStatus = toggleDriverStatus;
-window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
-
-// Driver order functions
-window.driverAcceptOrder = driverAcceptOrder;
-window.callCustomer = callCustomer;
-window.confirmLogoutDriver = confirmLogoutDriver;
+// NOTE: Driver functions are exported from driver.js
+// NOTE: Driver management functions are exported from owner.js
 window.calculateDeliveryTime = calculateDeliveryTime;
 window.getDistanceFromLatLng = getDistanceFromLatLng;
 
@@ -3833,17 +3815,110 @@ function setRating(rating) {
 
 // Update star display
 function updateStarDisplay() {
-    const stars = document.querySelectorAll('#starRating span');
+    const stars = document.querySelectorAll('#starRating .star-btn');
     stars.forEach((star, index) => {
         if (index < selectedRating) {
             star.textContent = '⭐';
             star.style.transform = 'scale(1.1)';
+            star.setAttribute('aria-checked', 'true');
         } else {
             star.textContent = '☆';
             star.style.transform = 'scale(1)';
+            star.setAttribute('aria-checked', 'false');
         }
     });
 }
+
+// ========================================
+// STAR RATING INITIALIZATION - COMPLETE
+// Supports: Mouse, Touch, Keyboard
+// ========================================
+function initializeStarRating() {
+    const starContainer = document.getElementById('starRating');
+    if (!starContainer) return;
+    
+    const stars = starContainer.querySelectorAll('.star-btn');
+    if (stars.length === 0) return;
+    
+    stars.forEach((star, index) => {
+        const rating = index + 1;
+        
+        // Remove any existing listeners by cloning
+        const newStar = star.cloneNode(true);
+        star.parentNode.replaceChild(newStar, star);
+        
+        // Mouse click handler
+        newStar.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            setRating(rating);
+            console.log('⭐ Star clicked:', rating);
+        });
+        
+        // Touch handler for mobile
+        newStar.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            setRating(rating);
+            console.log('⭐ Star touched:', rating);
+        }, { passive: false });
+        
+        // Prevent touchstart from scrolling
+        newStar.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+        
+        // Keyboard support (Enter and Space)
+        newStar.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setRating(rating);
+                console.log('⭐ Star keyboard:', rating);
+            }
+        });
+        
+        // Hover effect
+        newStar.addEventListener('mouseenter', function() {
+            // Show preview of rating on hover
+            stars.forEach((s, i) => {
+                const currentStar = starContainer.querySelectorAll('.star-btn')[i];
+                if (currentStar) {
+                    if (i < rating) {
+                        currentStar.style.transform = 'scale(1.15)';
+                        currentStar.style.opacity = '1';
+                    } else {
+                        currentStar.style.transform = 'scale(1)';
+                        currentStar.style.opacity = '0.5';
+                    }
+                }
+            });
+        });
+        
+        newStar.addEventListener('mouseleave', function() {
+            // Restore actual rating display
+            updateStarDisplay();
+        });
+    });
+    
+    // Reset hover state when leaving container
+    starContainer.addEventListener('mouseleave', function() {
+        updateStarDisplay();
+    });
+    
+    console.log('✅ Star rating initialized with touch support');
+}
+
+// Re-initialize stars when modal opens
+const originalOpenWriteReview = openWriteReview;
+openWriteReview = function() {
+    originalOpenWriteReview();
+    // Re-initialize after modal opens
+    setTimeout(initializeStarRating, 100);
+};
+
+// Make setRating globally available for any inline handlers
+window.setRating = setRating;
+window.initializeStarRating = initializeStarRating;
 
 // Submit review
 function submitReview(event) {

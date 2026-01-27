@@ -1347,3 +1347,38 @@ function previewCategoryImage() {
     }
 }
 
+// ========================================
+// EXPORT OWNER.JS FUNCTIONS GLOBALLY
+// ========================================
+window.showRestaurantLogin = showRestaurantLogin;
+window.handleRestaurantLogin = handleRestaurantLogin;
+window.showRestaurantDashboard = showRestaurantDashboard;
+window.closeRestaurantDashboard = closeRestaurantDashboard;
+window.showOwnerLogin = showOwnerLogin;
+window.editDriver = editDriver;
+window.previewDriverPic = previewDriverPic;
+window.previewEditDriverPic = previewEditDriverPic;
+window.saveDriverChanges = saveDriverChanges;
+window.toggleDriverStatus = toggleDriverStatus;
+window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
+window.driverAcceptOrder = driverAcceptOrder;
+window.updateOwnerStats = updateOwnerStats;
+window.closeOwnerDashboard = closeOwnerDashboard;
+window.openMenuManager = openMenuManager;
+window.renderMenuManagerList = renderMenuManagerList;
+window.openAddFood = openAddFood;
+window.openEditFood = openEditFood;
+window.saveFoodItem = saveFoodItem;
+window.deleteFood = deleteFood;
+window.closeFoodEditor = closeFoodEditor;
+window.openAddCategory = openAddCategory;
+window.openEditCategory = openEditCategory;
+window.saveCategory = saveCategory;
+window.deleteCategory = deleteCategory;
+window.closeCategoryEditor = closeCategoryEditor;
+window.previewFoodImage = previewFoodImage;
+window.previewCategoryImage = previewCategoryImage;
+window.handleFoodImageUpload = handleFoodImageUpload;
+window.handleCategoryImageUpload = handleCategoryImageUpload;
+
+console.log('✅ Owner.js loaded successfully');
