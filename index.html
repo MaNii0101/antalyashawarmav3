@@ -73,7 +73,7 @@
     <!-- MOBILE BOTTOM NAVIGATION (separate element for mobile) -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav">
         <button type="button" class="mobile-nav-item mobile-owner-btn" id="mobileOwnerBtn" onclick="window.showOwnerDashboardDirect()" style="display: none;">
-            <span class="mobile-nav-icon">👝</span>
+            <span class="mobile-nav-icon">👑</span>
             <span class="mobile-nav-label">Owner</span>
         </button>
        <button type="button" class="mobile-nav-item">
@@ -210,7 +210,7 @@
     <!-- FOOD DETAIL MODAL -->
     <div class="modal" id="foodModal">
         <div class="modal-content" style="max-width: 500px; padding: 0; overflow: hidden;">
-            <button class="close-btn" onclick="closeModal('foodModal')" style="position: absolute; top: 1rem; right: 1rem; z-index: 10; background: rgba(60,60,60,0.9); width: 36px; height: 36px;">Ã—</button>
+            <button class="close-btn" onclick="closeModal('foodModal')" style="position: absolute; top: 1rem; right: 1rem; z-index: 10; background: rgba(60,60,60,0.9); width: 36px; height: 36px;">×</button>
             
             <!-- Food Header -->
             <div style="padding: 1.5rem; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(20,20,20,1) 100%);">
@@ -246,7 +246,7 @@
             <!-- Bottom Action Bar -->
             <div style="padding: 1rem 1.5rem; background: rgba(15,15,15,1); border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 1rem;">
                 <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
-                    <button onclick="changeQuantity(-1)" style="background: transparent; border: none; color: #e63946; width: 44px; height: 44px; font-size: 1.5rem; cursor: pointer; font-weight: 700;">↑</button>
+                    <button onclick="changeQuantity(-1)" style="background: transparent; border: none; color: #e63946; width: 44px; height: 44px; font-size: 1.5rem; cursor: pointer; font-weight: 700;">−</button>
                     <span id="quantity" style="min-width: 30px; text-align: center; font-size: 1.1rem; font-weight: 600; color: white;">1</span>
                     <button onclick="changeQuantity(1)" style="background: transparent; border: none; color: #e63946; width: 44px; height: 44px; font-size: 1.5rem; cursor: pointer; font-weight: 700;">+</button>
                 </div>
@@ -264,7 +264,7 @@
     <!-- LOGIN MODAL -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('loginModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('loginModal')">×</button>
             <h2 id="authTitle">🔐 Login</h2>
             
             <!-- Email Verification Section -->
@@ -286,7 +286,7 @@
             <!-- Forgot Password Section -->
             <div id="forgotPasswordSection" style="display: none;">
                 <div style="background: rgba(245,158,11,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                    <h3 style="color: #f59e0b;">🔘 Reset Password</h3>
+                    <h3 style="color: #f59e0b;">🔄 Reset Password</h3>
                     <p style="color: rgba(255,255,255,0.8);">Enter your email to receive a reset code</p>
                 </div>
                 <div class="form-group">
@@ -356,7 +356,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <!-- EMPLOYER BUTTON - FIXED: Now opens Restaurant Dashboard -->
                         <button onclick="showRestaurantLogin()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(102,126,234,0.3);">
-                            <span style="font-size: 1.8rem;">👝</span>
+                            <span style="font-size: 1.8rem;">👑</span>
                             <span>I'm Employer</span>
                         </button>
                         
@@ -374,9 +374,9 @@
     <!-- RESTAURANT LOGIN MODAL (FOR EMPLOYERS) -->
     <div class="modal" id="restaurantLoginModal" style="display: none;">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('restaurantLoginModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('restaurantLoginModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="font-size: 4rem; margin-bottom: 0.5rem;">👝</div>
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">👑</div>
                 <h2 style="color: #667eea;">Restaurant Staff Login</h2>
                 <p style="color: rgba(255,255,255,0.6);">Access the order management dashboard</p>
             </div>
@@ -389,7 +389,7 @@
                     <label>Password *</label>
                     <input type="password" id="restaurantPassword" placeholder="Enter password" required>
                 </div>
-                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">🔜 Login to Dashboard</button>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">🔓 Login to Dashboard</button>
             </form>
             <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.3);">
                 <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
@@ -404,11 +404,11 @@
     <!-- RESTAURANT DASHBOARD -->
     <div id="restaurantDashboard" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%); z-index: 10000; overflow-y: auto; padding: 1.5rem;">
         <div style="max-width: 1400px; margin: 0 auto; position: relative;">
-            <button onclick="closeRestaurantDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">Ã—</button>
+            <button onclick="closeRestaurantDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">×</button>
             
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 2rem; border-radius: 16px; text-align: center; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 40px rgba(102,126,234,0.3);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👝</div>
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👑</div>
                 <h1 style="margin: 0; font-size: 1.8rem; font-weight: 800;">Restaurant Dashboard</h1>
                 <p style="margin: 0.5rem 0 0; font-size: 1rem; opacity: 0.9;">Order Management System</p>
             </div>
@@ -498,7 +498,7 @@
             
             <!-- STATUS BAR -->
             <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap;">
-                <span style="font-size: 1.5rem;">👝</span>
+                <span style="font-size: 1.5rem;">👑</span>
                 <span style="color: #667eea; font-weight: 600;">Restaurant Staff Mode</span>
                 <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">• Order management only</span>
                 <button onclick="goToOwnerDashboard()" style="background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-left: auto;">
@@ -511,7 +511,7 @@
     <!-- OWNER ACCESS MODAL -->
     <div class="modal" id="ownerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
         <div style="background: #1a1a1a; padding: 3rem; border-radius: 15px; max-width: 500px; width: 90%; position: relative;">
-            <button onclick="document.getElementById('ownerModal').style.display = 'none';" style="position: absolute; top: 1rem; right: 1rem; background: #ff4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer;">Ã—</button>
+            <button onclick="document.getElementById('ownerModal').style.display = 'none';" style="position: absolute; top: 1rem; right: 1rem; background: #ff4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer;">×</button>
             
             <div style="text-align: center; margin-bottom: 2rem;">
                 <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; margin-bottom: 0.5rem;">
@@ -535,7 +535,7 @@
             </div>
             
             <button onclick="handleOwnerLogin()" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; width: 100%; font-size: 1.1rem; cursor: pointer; font-weight: 700;">
-                🔜 Unlock Owner Mode
+                🔓 Unlock Owner Mode
             </button>
             
     
@@ -545,7 +545,7 @@
     <!-- OWNER DASHBOARD -->
     <div id="ownerDashboard" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%); z-index: 10000; overflow-y: auto; padding: 1.5rem;">
         <div style="max-width: 1400px; margin: 0 auto; position: relative;">
-            <button onclick="closeOwnerDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">Ã—</button>
+            <button onclick="closeOwnerDashboard()" style="position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,68,68,0.9); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; cursor: pointer; z-index: 10001; backdrop-filter: blur(10px);">×</button>
             
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); padding: 2rem; border-radius: 16px; text-align: center; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 40px rgba(139,92,246,0.3);">
@@ -611,7 +611,7 @@
                         <span style="font-size: 0.7rem; opacity: 0.7;">Payments</span>
                     </button>
                     <button onclick="document.getElementById('ownerDashboard').style.display='none'; showRestaurantDashboard();" style="padding: 1.2rem 0.8rem; background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; transition: all 0.2s;">
-                        <span style="font-size: 1.8rem;">👝</span>
+                        <span style="font-size: 1.8rem;">👑</span>
                         <span style="font-size: 0.85rem;">Restaurant</span>
                         <span style="font-size: 0.7rem; opacity: 0.7;">Orders</span>
                     </button>
@@ -719,7 +719,7 @@
     <!-- RESET OPTIONS MODAL -->
     <div class="modal" id="resetOptionsModal" style="display: none; z-index: 10005;">
         <div class="modal-content" style="max-width: 450px;">
-            <button class="close-btn" onclick="closeModal('resetOptionsModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('resetOptionsModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
                 <h2 style="color: #ef4444;">Reset Data Options</h2>
@@ -782,7 +782,7 @@
     <!-- DRIVER MANAGEMENT MODAL (OWNER ONLY) - COMPLETE -->
     <div class="modal" id="driverManagementModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-            <button class="close-btn" onclick="closeModal('driverManagementModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('driverManagementModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">🚗</div>
                 <h2 style="color: #10b981;">Driver Management</h2>
@@ -844,7 +844,7 @@
     <!-- EDIT DRIVER MODAL -->
     <div class="modal" id="editDriverModal" style="display: none; z-index: 10003;">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="close-btn" onclick="closeModal('editDriverModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('editDriverModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">✏️</div>
                 <h2 style="color: #3b82f6;">Edit Driver</h2>
@@ -902,7 +902,7 @@
     <!-- BANK SETTINGS MODAL (OWNER ONLY) -->
     <div class="modal" id="bankSettingsModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="close-btn" onclick="closeModal('bankSettingsModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('bankSettingsModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">🏦</div>
                 <h2 style="color: #f59e0b;">Bank Settings</h2>
@@ -944,7 +944,7 @@
     <!-- CART MODAL -->
     <div class="modal" id="cartModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('cartModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('cartModal')">×</button>
             <h2>🛒 Your Cart</h2>
             <div id="cartItems"></div>
             <div class="cart-total">
@@ -958,7 +958,7 @@
     <!-- FAVORITES MODAL -->
     <div class="modal" id="favoritesModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('favoritesModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('favoritesModal')">×</button>
             <h2>❤️ Your Favorites</h2>
             <div id="favoritesContent"></div>
         </div>
@@ -967,7 +967,7 @@
     <!-- WRITE REVIEW MODAL -->
     <div class="modal" id="writeReviewModal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="close-btn" onclick="closeModal('writeReviewModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('writeReviewModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <img src="logo.png" alt="Antalya Shawarma" style="height: 60px; width: auto; margin-bottom: 0.5rem;">
                 <h2 style="color: #f59e0b;">Write a Review</h2>
@@ -979,11 +979,11 @@
                 <div class="form-group" style="text-align: center;">
                     <label style="display: block; margin-bottom: 0.8rem;">Your Rating *</label>
                   <div id="starRating" style="display: flex; justify-content: center; gap: 0.5rem; font-size: 2rem;">
-                        <span onclick="setRating(1)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☠</span>
-                        <span onclick="setRating(2)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☠</span>
-                        <span onclick="setRating(3)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☠</span>
-                        <span onclick="setRating(4)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☠</span>
-                        <span onclick="setRating(5)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☠</span>
+                        <span onclick="setRating(1)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(2)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(3)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(4)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
+                        <span onclick="setRating(5)" style="cursor: pointer; padding: 0.3rem; user-select: none;">☆</span>
                     </div>
                     <input type="hidden" id="reviewRating" value="0">
                 </div>
@@ -1004,7 +1004,7 @@
     <!-- VIEW REPLIES MODAL -->
     <div class="modal" id="repliesModal" style="display: none;">
         <div class="modal-content" style="max-width: 550px; max-height: 80vh; overflow-y: auto;">
-            <button class="close-btn" onclick="closeModal('repliesModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('repliesModal')">×</button>
             <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
                 <img src="logo.png" alt="Antalya Shawarma" style="height: 35px; width: auto;">
                 <h2 style="color: #e63946; margin: 0;">Restaurant Replies</h2>
@@ -1030,7 +1030,7 @@
     <!-- NOTIFICATIONS MODAL -->
     <div class="modal" id="notificationsModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('notificationsModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('notificationsModal')">×</button>
             <h2>🔔 Notifications</h2>
             <div id="notificationsContent"></div>
         </div>
@@ -1039,7 +1039,7 @@
     <!-- ORDER HISTORY MODAL -->
     <div class="modal" id="orderHistoryModal">
         <div class="modal-content" style="max-width: 600px;">
-            <button class="close-btn" onclick="closeModal('orderHistoryModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('orderHistoryModal')">×</button>
             <h2>📋 Order History</h2>
             <div id="orderHistoryContent"></div>
         </div>
@@ -1048,7 +1048,7 @@
     <!-- ACCOUNT MODAL - FULL PROFILE EDITING -->
     <div class="modal" id="accountModal">
         <div class="modal-content" style="max-width: 600px;">
-            <button class="close-btn" onclick="closeModal('accountModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('accountModal')">×</button>
             <div id="accountContent">
                 <!-- Will be rendered by JavaScript -->
             </div>
@@ -1058,7 +1058,7 @@
     <!-- EDIT PROFILE MODAL -->
     <div class="modal" id="editProfileModal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="close-btn" onclick="closeModal('editProfileModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('editProfileModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">✏️</div>
                 <h2 style="color: #3b82f6;">Edit Profile</h2>
@@ -1109,7 +1109,7 @@
     <!-- CHANGE PASSWORD MODAL -->
     <div class="modal" id="changePasswordModal" style="display: none;">
         <div class="modal-content" style="max-width: 420px;">
-            <button class="close-btn" onclick="closeModal('changePasswordModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔐</div>
                 <h2 style="color: #e63946;">Change Password</h2>
@@ -1149,7 +1149,7 @@
     <!-- CHANGE EMAIL MODAL (WITH SECURITY) -->
     <div class="modal" id="changeEmailModal" style="display: none;">
         <div class="modal-content" style="max-width: 450px;">
-            <button class="close-btn" onclick="closeModal('changeEmailModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('changeEmailModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">📧</div>
                 <h2 style="color: #f59e0b;">Change Email</h2>
@@ -1177,7 +1177,7 @@
     <!-- CHANGE PASSWORD MODAL (WITH SECURITY) -->
     <div class="modal" id="changePasswordModal" style="display: none;">
         <div class="modal-content" style="max-width: 450px;">
-            <button class="close-btn" onclick="closeModal('changePasswordModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔙</div>
                 <h2 style="color: #ef4444;">Change Password</h2>
@@ -1243,7 +1243,7 @@
     <!-- DRIVER RATING MODAL -->
     <div class="modal" id="driverRatingModal" style="display: none; z-index: 10003;">
         <div class="modal-content" style="max-width: 400px;">
-            <button class="close-btn" onclick="closeModal('driverRatingModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('driverRatingModal')">×</button>
             <div style="text-align: center;">
                 <div id="ratingDriverImage" style="margin-bottom: 1rem;">
                     <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto;">🚗</div>
@@ -1276,7 +1276,7 @@
     <!-- CHECKOUT MODAL -->
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('checkoutModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('checkoutModal')">×</button>
             <h2>💳 Checkout</h2>
             <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
                 <h3>📍 Delivery Address</h3>
@@ -1324,7 +1324,7 @@
     <!-- LOCATION CONFIRMATION MODAL -->
     <div class="modal" id="locationConfirmModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 450px;">
-            <button class="close-btn" onclick="closeModal('locationConfirmModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('locationConfirmModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">📍</div>
                 <h2 style="color: #3b82f6;">Confirm Delivery Location</h2>
@@ -1349,7 +1349,7 @@
     <!-- REORDER CONFIRMATION MODAL -->
     <div class="modal" id="reorderModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="close-btn" onclick="closeModal('reorderModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('reorderModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔞</div>
                 <h2 style="color: #10b981;">Reorder</h2>
@@ -1374,7 +1374,7 @@
     <!-- DRIVER LOGIN MODAL -->
     <div class="modal" id="driverLoginModal" style="display: none; z-index: 10002;">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('driverLoginModal')">Ã—</button>
+            <button class="close-btn" onclick="closeModal('driverLoginModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
                 <div style="font-size: 4rem; margin-bottom: 0.5rem;">🚗</div>
                 <h2 style="color: #10b981;">Driver Login</h2>
@@ -1460,7 +1460,7 @@
     <!-- MENU MANAGER MODAL -->
     <div class="modal" id="menuManagerModal" style="display: none; z-index: 10003;">
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-            <button class="close-btn" onclick="document.getElementById('menuManagerModal').style.display='none'">Ã—</button>
+            <button class="close-btn" onclick="document.getElementById('menuManagerModal').style.display='none'">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 3rem; margin-bottom: 0.5rem;">🍽️</div>
                 <h2 style="color: #e63946; margin: 0;">Menu Management</h2>
@@ -1473,7 +1473,7 @@
     <!-- FOOD EDITOR MODAL -->
     <div class="modal" id="foodEditorModal" style="display: none; z-index: 10004;">
         <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
-            <button class="close-btn" onclick="closeFoodEditor()">Ã—</button>
+            <button class="close-btn" onclick="closeFoodEditor()">×</button>
             <h2 id="foodEditorTitle" style="color: #10b981; text-align: center; margin-bottom: 1.5rem;">Add Food Item</h2>
             
             <div style="margin-bottom: 1rem;">
@@ -1530,7 +1530,7 @@
     <!-- CATEGORY EDITOR MODAL -->
     <div class="modal" id="categoryEditorModal" style="display: none; z-index: 10004;">
         <div class="modal-content" style="max-width: 450px;">
-            <button class="close-btn" onclick="closeCategoryEditor()">Ã—</button>
+            <button class="close-btn" onclick="closeCategoryEditor()">×</button>
             <h2 id="categoryEditorTitle" style="color: #8b5cf6; text-align: center; margin-bottom: 1.5rem;">Add Category</h2>
             
             <div style="margin-bottom: 1rem;">

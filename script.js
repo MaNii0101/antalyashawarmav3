@@ -1483,7 +1483,7 @@ function showCart() {
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
                         <button onclick="updateCartItem(${index}, -1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">-</button>
                         <button onclick="updateCartItem(${index}, 1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">+</button>
-                        <button onclick="removeCartItem(${index})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; margin-left: auto;">🔘 Remove</button>
+                        <button onclick="removeCartItem(${index})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; margin-left: auto;">🗑️ Remove</button>
                     </div>
                 </div>
             `;
@@ -1962,7 +1962,7 @@ function showAccount() {
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; text-align: center; margin-bottom: 0.8rem;">Danger Zone</p>
             <button onclick="confirmDeleteAccount()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem;">
-                🔘 Delete My Account
+                🗑️ Delete My Account
             </button>
         </div>
     `;
@@ -2531,7 +2531,7 @@ function showForgotPasswordSection(show) {
     if (show) {
         if (authSection) authSection.style.display = 'none';
         if (forgotSection) forgotSection.style.display = 'block';
-        if (title) title.textContent = '🔘 Reset Password';
+        if (title) title.textContent = '🔄 Reset Password';
     } else {
         if (authSection) authSection.style.display = 'block';
         if (forgotSection) forgotSection.style.display = 'none';
@@ -2568,7 +2568,7 @@ function sendPasswordResetCode() {
     // Show code entry
     document.getElementById('forgotPasswordSection').innerHTML = `
         <div style="background: rgba(245,158,11,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-            <h3 style="color: #f59e0b;">🔘 Enter Reset Code</h3>
+            <h3 style="color: #f59e0b;">🔑 Enter Reset Code</h3>
             <p style="color: rgba(255,255,255,0.8);">Code sent to <strong>${email}</strong></p>
         </div>
         <div class="form-group">
@@ -3963,7 +3963,7 @@ function displayReviews() {
                             <span style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">• ${timeAgo}</span>
                         </div>
                     </div>
-                    ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🔘</button>` : ''}
+                    ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🗑️</button>` : ''}
                 </div>
                 
                 <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text}</p>
@@ -4045,7 +4045,7 @@ function openReplies(reviewId) {
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
                                 <span style="font-weight: 700; font-size: 0.9rem; color: #f59e0b;">RESTAURANT OWNER</span>
                                 <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">• ${timeAgo}</span>
-                                ${isOwnerLoggedIn ? `<button onclick="deleteOwnerReply(${reviewId}, ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.75rem; margin-left: auto;">🔘</button>` : ''}
+                                ${isOwnerLoggedIn ? `<button onclick="deleteOwnerReply(${reviewId}, ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.75rem; margin-left: auto;">🗑️</button>` : ''}
                             </div>
                             <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0; line-height: 1.4;">${reply.text}</p>
                         </div>
