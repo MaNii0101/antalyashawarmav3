@@ -3583,11 +3583,6 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.value = value;
         });
     }
-    
-    // ========================================
-    // STAR RATING INITIALIZATION - FULL TOUCH SUPPORT
-    // ========================================
-    initializeStarRating();
  
 });
 
@@ -3627,13 +3622,12 @@ function setupMobileNavigation() {
     });
 }
 
-// Make functions globally available
+// Make functions globally available (only functions defined in THIS file)
 window.showLogin = showLogin;
 window.showAccount = showAccount;
 window.showCart = showCart;
 window.showFavorites = showFavorites;
 window.showNotifications = showNotifications;
-// showRestaurantLogin, showOwnerLogin, showDriverLogin are exported from their respective files (owner.js, driver.js)
 window.closeModal = closeModal;
 window.filterCategory = filterCategory;
 window.openFoodModal = openFoodModal;
@@ -3654,7 +3648,6 @@ window.resendCode = resendCode;
 window.toggleAuthMode = toggleAuthMode;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
-// handleRestaurantLogin is exported from owner.js
 window.handleOwnerLogin = handleOwnerLogin;
 window.pickLocation = pickLocation;
 window.getCurrentLocation = getCurrentLocation;
@@ -3663,14 +3656,7 @@ window.acceptOrder = acceptOrder;
 window.rejectOrder = rejectOrder;
 window.assignDriver = assignDriver;
 window.completeOrder = completeOrder;
-window.closeRestaurantDashboard = closeRestaurantDashboard;
-window.showDriverManagementModal = showDriverManagementModal;
-window.addNewDriver = addNewDriver;
-window.deleteDriver = deleteDriver;
-window.showBankSettingsModal = showBankSettingsModal;
-window.saveBankSettings = saveBankSettings;
 window.logout = logout;
-window.logoutDriver = logoutDriver;
 window.openEditProfile = openEditProfile;
 window.previewProfilePic = previewProfilePic;
 window.saveProfileChanges = saveProfileChanges;
@@ -3679,19 +3665,12 @@ window.verifyAndChangeEmail = verifyAndChangeEmail;
 window.openChangePasswordModal = openChangePasswordModal;
 window.handleChangePassword = handleChangePassword;
 window.showOwnerPinEntry = showOwnerPinEntry;
-
-// NOTE: Driver functions are exported from driver.js
-// NOTE: Driver management functions are exported from owner.js
 window.calculateDeliveryTime = calculateDeliveryTime;
 window.getDistanceFromLatLng = getDistanceFromLatLng;
-
-// Driver tracking functions
 window.trackDriver = trackDriver;
 window.refreshDriverLocation = refreshDriverLocation;
 window.closeTrackingModal = closeTrackingModal;
 window.startDriverLocationTracking = startDriverLocationTracking;
-
-// Driver rating functions
 window.openDriverRating = openDriverRating;
 window.setRating = setRating;
 window.previewRating = previewRating;
@@ -3815,110 +3794,17 @@ function setRating(rating) {
 
 // Update star display
 function updateStarDisplay() {
-    const stars = document.querySelectorAll('#starRating .star-btn');
+    const stars = document.querySelectorAll('#starRating span');
     stars.forEach((star, index) => {
         if (index < selectedRating) {
             star.textContent = '⭐';
             star.style.transform = 'scale(1.1)';
-            star.setAttribute('aria-checked', 'true');
         } else {
             star.textContent = '☆';
             star.style.transform = 'scale(1)';
-            star.setAttribute('aria-checked', 'false');
         }
     });
 }
-
-// ========================================
-// STAR RATING INITIALIZATION - COMPLETE
-// Supports: Mouse, Touch, Keyboard
-// ========================================
-function initializeStarRating() {
-    const starContainer = document.getElementById('starRating');
-    if (!starContainer) return;
-    
-    const stars = starContainer.querySelectorAll('.star-btn');
-    if (stars.length === 0) return;
-    
-    stars.forEach((star, index) => {
-        const rating = index + 1;
-        
-        // Remove any existing listeners by cloning
-        const newStar = star.cloneNode(true);
-        star.parentNode.replaceChild(newStar, star);
-        
-        // Mouse click handler
-        newStar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            setRating(rating);
-            console.log('⭐ Star clicked:', rating);
-        });
-        
-        // Touch handler for mobile
-        newStar.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            setRating(rating);
-            console.log('⭐ Star touched:', rating);
-        }, { passive: false });
-        
-        // Prevent touchstart from scrolling
-        newStar.addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // Keyboard support (Enter and Space)
-        newStar.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setRating(rating);
-                console.log('⭐ Star keyboard:', rating);
-            }
-        });
-        
-        // Hover effect
-        newStar.addEventListener('mouseenter', function() {
-            // Show preview of rating on hover
-            stars.forEach((s, i) => {
-                const currentStar = starContainer.querySelectorAll('.star-btn')[i];
-                if (currentStar) {
-                    if (i < rating) {
-                        currentStar.style.transform = 'scale(1.15)';
-                        currentStar.style.opacity = '1';
-                    } else {
-                        currentStar.style.transform = 'scale(1)';
-                        currentStar.style.opacity = '0.5';
-                    }
-                }
-            });
-        });
-        
-        newStar.addEventListener('mouseleave', function() {
-            // Restore actual rating display
-            updateStarDisplay();
-        });
-    });
-    
-    // Reset hover state when leaving container
-    starContainer.addEventListener('mouseleave', function() {
-        updateStarDisplay();
-    });
-    
-    console.log('✅ Star rating initialized with touch support');
-}
-
-// Re-initialize stars when modal opens
-const originalOpenWriteReview = openWriteReview;
-openWriteReview = function() {
-    originalOpenWriteReview();
-    // Re-initialize after modal opens
-    setTimeout(initializeStarRating, 100);
-};
-
-// Make setRating globally available for any inline handlers
-window.setRating = setRating;
-window.initializeStarRating = initializeStarRating;
 
 // Submit review
 function submitReview(event) {
@@ -4013,14 +3899,19 @@ function displayReviews() {
     }
     
     container.innerHTML = reviewsToShow.map(review => {
-        const stars = '⭐'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-        const timeAgo = getTimeAgo(new Date(review.date));
+        // Safety checks to prevent crashes
+        const safeRating = review.rating || 0;
+        const safeName = review.userName || 'Anonymous';
+        const safeDate = review.date || new Date().toISOString();
+        
+        const stars = '⭐'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+        const timeAgo = getTimeAgo(new Date(safeDate));
         const isOwn = currentUser && review.userId === currentUser.email;
         const canDelete = isOwn || isOwnerLoggedIn;
         
         const userAvatar = review.userPic 
             ? `<img src="${review.userPic}" style="width: 100%; height: 100%; object-fit: cover;">`
-            : `<span style="font-size: 1.5rem;">${review.userName.charAt(0).toUpperCase()}</span>`;
+            : `<span style="font-size: 1.5rem;">${safeName.charAt(0).toUpperCase()}</span>`;
         
         return `
             <div class="review-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem;">
@@ -4030,7 +3921,7 @@ function displayReviews() {
                     </div>
                     <div style="flex: 1; min-width: 0;">
                         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            <span style="font-weight: 700; color: #fff;">${review.userName}</span>
+                            <span style="font-weight: 700; color: #fff;">${safeName}</span>
                             ${isOwn ? '<span style="background: rgba(230,57,70,0.2); color: #e63946; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem;">You</span>' : ''}
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
@@ -4041,7 +3932,7 @@ function displayReviews() {
                     ${canDelete ? `<button onclick="deleteReview(${review.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem;" title="Delete">🗑️</button>` : ''}
                 </div>
                 
-                <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text}</p>
+                <p style="color: rgba(255,255,255,0.85); line-height: 1.5; margin: 0 0 1rem 0;">${review.text || ''}</p>
                 
                 ${review.replies && review.replies.length > 0 ? `
                     <div style="margin-top: 0.5rem;">

@@ -1348,13 +1348,16 @@ function previewCategoryImage() {
 }
 
 // ========================================
-// EXPORT OWNER.JS FUNCTIONS GLOBALLY
+// GLOBAL EXPORTS FOR OWNER.JS FUNCTIONS
 // ========================================
 window.showRestaurantLogin = showRestaurantLogin;
 window.handleRestaurantLogin = handleRestaurantLogin;
 window.showRestaurantDashboard = showRestaurantDashboard;
 window.closeRestaurantDashboard = closeRestaurantDashboard;
 window.showOwnerLogin = showOwnerLogin;
+window.showDriverManagementModal = showDriverManagementModal;
+window.addNewDriver = addNewDriver;
+window.deleteDriver = deleteDriver;
 window.editDriver = editDriver;
 window.previewDriverPic = previewDriverPic;
 window.previewEditDriverPic = previewEditDriverPic;
@@ -1362,6 +1365,8 @@ window.saveDriverChanges = saveDriverChanges;
 window.toggleDriverStatus = toggleDriverStatus;
 window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
 window.driverAcceptOrder = driverAcceptOrder;
+window.showBankSettingsModal = showBankSettingsModal;
+window.saveBankSettings = saveBankSettings;
 window.updateOwnerStats = updateOwnerStats;
 window.closeOwnerDashboard = closeOwnerDashboard;
 window.openMenuManager = openMenuManager;
@@ -1380,5 +1385,3 @@ window.previewFoodImage = previewFoodImage;
 window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
-
-console.log('✅ Owner.js loaded successfully');
