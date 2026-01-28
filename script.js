@@ -3893,6 +3893,7 @@ function submitReview(event) {
 }
 
 // Display reviews
+// Display reviews
 function displayReviews() {
     const container = document.getElementById('reviewsList');
     const noReviewsMsg = document.getElementById('noReviewsMessage');
@@ -4390,7 +4391,6 @@ window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
 window.handleOwnerLogin = handleOwnerLogin;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
-window.displayReviews = displayReviews;
 
 // Update UI when login state changes
 function updateAuthUI() {
@@ -4424,5 +4424,6 @@ function updateOwnerButtonVisibility() {
 
 // Make confirmLocation globally accessible
 window.confirmLocation = confirmLocation;
+window.displayReviews = displayReviews;
 
 console.log('✅ Antalya Shawarma script loaded successfully');
