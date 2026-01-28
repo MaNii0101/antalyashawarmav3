@@ -442,14 +442,6 @@ let categories = {
     drinks: { name: 'Drinks', icon: '🥤', image: '' }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadMenuData();
-    loadData();
-
-    
-    displayMenu(currentCategory);
-    updateOwnerButtonVisibility(); // ADD THIS
-});
 
 
 // Load saved menu data from localStorage
@@ -3535,18 +3527,24 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData();
     loadBankDetails();
     loadMenuData(); // Load custom menu data from owner
-    loadReviews(); // Load customer reviews
     
     // Debug: Check if data loaded correctly
     console.log('📦 Categories:', Object.keys(categories).length);
     console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
     
-    // Render categories
+    // Render categories FIRST (before reviews to prevent blocking)
     renderCategories();
     
     // Display initial menu - use first available category
     const firstCategory = Object.keys(menuData).find(key => menuData[key] && menuData[key].length > 0) || 'grill_wraps';
     displayMenu(firstCategory);
+    
+    // Load reviews AFTER categories are rendered (isolated)
+    try {
+        loadReviews();
+    } catch(e) {
+        console.error('Error loading reviews:', e);
+    }
     
     // Update badges
     updateCartBadge();
@@ -3622,7 +3620,7 @@ function setupMobileNavigation() {
     });
 }
 
-// Make functions globally available (only functions defined in THIS file)
+// Make functions globally available
 window.showLogin = showLogin;
 window.showAccount = showAccount;
 window.showCart = showCart;
@@ -3648,15 +3646,15 @@ window.resendCode = resendCode;
 window.toggleAuthMode = toggleAuthMode;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
+// handleRestaurantLogin exported by owner.js
 window.handleOwnerLogin = handleOwnerLogin;
 window.pickLocation = pickLocation;
 window.getCurrentLocation = getCurrentLocation;
 window.confirmLocation = confirmLocation;
-window.acceptOrder = acceptOrder;
-window.rejectOrder = rejectOrder;
-window.assignDriver = assignDriver;
-window.completeOrder = completeOrder;
+// acceptOrder, rejectOrder, assignDriver, completeOrder exported by owner.js
+// closeRestaurantDashboard, showDriverManagementModal, addNewDriver, deleteDriver, showBankSettingsModal, saveBankSettings exported by owner.js
 window.logout = logout;
+// logoutDriver exported by driver.js
 window.openEditProfile = openEditProfile;
 window.previewProfilePic = previewProfilePic;
 window.saveProfileChanges = saveProfileChanges;
@@ -3665,14 +3663,18 @@ window.verifyAndChangeEmail = verifyAndChangeEmail;
 window.openChangePasswordModal = openChangePasswordModal;
 window.handleChangePassword = handleChangePassword;
 window.showOwnerPinEntry = showOwnerPinEntry;
-window.calculateDeliveryTime = calculateDeliveryTime;
-window.getDistanceFromLatLng = getDistanceFromLatLng;
+
+// Driver functions are exported by driver.js and owner.js
+
+// Driver tracking functions (these are defined in script.js)
 window.trackDriver = trackDriver;
 window.refreshDriverLocation = refreshDriverLocation;
 window.closeTrackingModal = closeTrackingModal;
 window.startDriverLocationTracking = startDriverLocationTracking;
+
+// Driver rating functions
 window.openDriverRating = openDriverRating;
-window.setRating = setRating;
+window.setReviewRating = setReviewRating;
 window.previewRating = previewRating;
 window.resetPreview = resetPreview;
 window.submitDriverRating = submitDriverRating;
@@ -3786,7 +3788,7 @@ function openWriteReview() {
 }
 
 // Set star rating
-function setRating(rating) {
+function setReviewRating(rating) {
     selectedRating = rating;
     document.getElementById('reviewRating').value = rating;
     updateStarDisplay();
@@ -3899,7 +3901,7 @@ function displayReviews() {
     }
     
     container.innerHTML = reviewsToShow.map(review => {
-        // Safety checks to prevent crashes
+        // Null safety checks to prevent crashes
         const safeRating = review.rating || 0;
         const safeName = review.userName || 'Anonymous';
         const safeDate = review.date || new Date().toISOString();
@@ -4339,7 +4341,7 @@ setTimeout(() => {
 
 // Review system exports
 window.openWriteReview = openWriteReview;
-window.setRating = setRating;
+window.setReviewRating = setReviewRating;
 window.submitReview = submitReview;
 window.openReplies = openReplies;
 window.submitOwnerReply = submitOwnerReply;
