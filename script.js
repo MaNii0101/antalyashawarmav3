@@ -3884,6 +3884,8 @@ function submitReview(event) {
     
     restaurantReviews.unshift(review);
     saveReviews();
+    
+    // Trigger immediate render
     displayReviews();
     
     closeModal('writeReviewModal');
@@ -3908,7 +3910,7 @@ function displayReviews() {
     
     if (noReviewsMsg) noReviewsMsg.style.display = 'none';
     
-    // Calculate average rating (with null safety)
+    // Calculate average rating
     const avgRating = restaurantReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / restaurantReviews.length;
     if (avgDisplay) {
         avgDisplay.innerHTML = `
@@ -3938,7 +3940,9 @@ function displayReviews() {
         const timeAgo = getTimeAgo(new Date(review.date || Date.now()));
         const isOwn = currentUser && review.userId === currentUser.email;
         const canDelete = isOwn || isOwnerLoggedIn;
-        const safeName = review.userName || 'Anonymous';
+        
+        // BUG FIX: Force safeName to be a String to prevent .charAt() crashes
+        const safeName = String(review.userName || 'Anonymous');
         
         const userAvatar = review.userPic 
             ? `<img src="${review.userPic}" style="width: 100%; height: 100%; object-fit: cover;">`
@@ -4386,6 +4390,7 @@ window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
 window.handleOwnerLogin = handleOwnerLogin;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
+window.displayReviews = displayReviews;
 
 // Update UI when login state changes
 function updateAuthUI() {
