@@ -442,8 +442,6 @@ let categories = {
     drinks: { name: 'Drinks', icon: '🥤', image: '' }
 };
 
-
-
 // Load saved menu data from localStorage
 function loadMenuData() {
     const savedMenu = localStorage.getItem('menuData');
@@ -3532,14 +3530,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('📦 Categories:', Object.keys(categories).length);
     console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
     
-    // Render categories FIRST (before reviews to prevent blocking)
+    // Render categories FIRST
     renderCategories();
     
     // Display initial menu - use first available category
     const firstCategory = Object.keys(menuData).find(key => menuData[key] && menuData[key].length > 0) || 'grill_wraps';
     displayMenu(firstCategory);
     
-    // Load reviews AFTER categories are rendered (isolated)
+    // Load reviews AFTER categories (isolated in try-catch)
     try {
         loadReviews();
     } catch(e) {
@@ -3626,6 +3624,9 @@ window.showAccount = showAccount;
 window.showCart = showCart;
 window.showFavorites = showFavorites;
 window.showNotifications = showNotifications;
+window.showRestaurantLogin = showRestaurantLogin;
+window.showOwnerLogin = showOwnerLogin;
+window.showDriverLogin = showDriverLogin;
 window.closeModal = closeModal;
 window.filterCategory = filterCategory;
 window.openFoodModal = openFoodModal;
@@ -3646,15 +3647,23 @@ window.resendCode = resendCode;
 window.toggleAuthMode = toggleAuthMode;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
-// handleRestaurantLogin exported by owner.js
+window.handleRestaurantLogin = handleRestaurantLogin;
 window.handleOwnerLogin = handleOwnerLogin;
 window.pickLocation = pickLocation;
 window.getCurrentLocation = getCurrentLocation;
 window.confirmLocation = confirmLocation;
-// acceptOrder, rejectOrder, assignDriver, completeOrder exported by owner.js
-// closeRestaurantDashboard, showDriverManagementModal, addNewDriver, deleteDriver, showBankSettingsModal, saveBankSettings exported by owner.js
+window.acceptOrder = acceptOrder;
+window.rejectOrder = rejectOrder;
+window.assignDriver = assignDriver;
+window.completeOrder = completeOrder;
+window.closeRestaurantDashboard = closeRestaurantDashboard;
+window.showDriverManagementModal = showDriverManagementModal;
+window.addNewDriver = addNewDriver;
+window.deleteDriver = deleteDriver;
+window.showBankSettingsModal = showBankSettingsModal;
+window.saveBankSettings = saveBankSettings;
 window.logout = logout;
-// logoutDriver exported by driver.js
+window.logoutDriver = logoutDriver;
 window.openEditProfile = openEditProfile;
 window.previewProfilePic = previewProfilePic;
 window.saveProfileChanges = saveProfileChanges;
@@ -3664,9 +3673,33 @@ window.openChangePasswordModal = openChangePasswordModal;
 window.handleChangePassword = handleChangePassword;
 window.showOwnerPinEntry = showOwnerPinEntry;
 
-// Driver functions are exported by driver.js and owner.js
+// New driver functions
+window.showDriverCodeLogin = showDriverCodeLogin;
+window.showDriverEmailLogin = showDriverEmailLogin;
+window.handleDriverCodeLogin = handleDriverCodeLogin;
+window.handleDriverEmailPasswordLogin = handleDriverEmailPasswordLogin;
+window.showDriverDashboard = showDriverDashboard;
+window.toggleDriverAvailability = toggleDriverAvailability;
+window.updateDriverLocation = updateDriverLocation;
+window.openDirections = openDirections;
+window.markOrderDelivered = markOrderDelivered;
 
-// Driver tracking functions (these are defined in script.js)
+// Driver management functions
+window.editDriver = editDriver;
+window.previewDriverPic = previewDriverPic;
+window.previewEditDriverPic = previewEditDriverPic;
+window.saveDriverChanges = saveDriverChanges;
+window.toggleDriverStatus = toggleDriverStatus;
+window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
+
+// Driver order functions
+window.driverAcceptOrder = driverAcceptOrder;
+window.callCustomer = callCustomer;
+window.confirmLogoutDriver = confirmLogoutDriver;
+window.calculateDeliveryTime = calculateDeliveryTime;
+window.getDistanceFromLatLng = getDistanceFromLatLng;
+
+// Driver tracking functions
 window.trackDriver = trackDriver;
 window.refreshDriverLocation = refreshDriverLocation;
 window.closeTrackingModal = closeTrackingModal;
@@ -3875,8 +3908,8 @@ function displayReviews() {
     
     if (noReviewsMsg) noReviewsMsg.style.display = 'none';
     
-    // Calculate average rating
-    const avgRating = restaurantReviews.reduce((sum, r) => sum + r.rating, 0) / restaurantReviews.length;
+    // Calculate average rating (with null safety)
+    const avgRating = restaurantReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / restaurantReviews.length;
     if (avgDisplay) {
         avgDisplay.innerHTML = `
             <span style="font-size: 1.5rem;">⭐</span>
@@ -3901,15 +3934,11 @@ function displayReviews() {
     }
     
     container.innerHTML = reviewsToShow.map(review => {
-        // Null safety checks to prevent crashes
-        const safeRating = review.rating || 0;
-        const safeName = review.userName || 'Anonymous';
-        const safeDate = review.date || new Date().toISOString();
-        
-        const stars = '⭐'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
-        const timeAgo = getTimeAgo(new Date(safeDate));
+        const stars = '⭐'.repeat(review.rating || 0) + '☆'.repeat(5 - (review.rating || 0));
+        const timeAgo = getTimeAgo(new Date(review.date || Date.now()));
         const isOwn = currentUser && review.userId === currentUser.email;
         const canDelete = isOwn || isOwnerLoggedIn;
+        const safeName = review.userName || 'Anonymous';
         
         const userAvatar = review.userPic 
             ? `<img src="${review.userPic}" style="width: 100%; height: 100%; object-fit: cover;">`
@@ -3948,7 +3977,7 @@ function displayReviews() {
                                 <img src="logo.png" alt="Restaurant" style="height: 20px; width: auto;">
                                 <span style="font-weight: 700; font-size: 0.85rem; color: #f59e0b;">RESTAURANT OWNER</span>
                             </div>
-                            <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">${review.replies[review.replies.length - 1].text}</div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">${(review.replies[review.replies.length - 1] || {}).text || ''}</div>
                         </div>
                     </div>
                 ` : `
