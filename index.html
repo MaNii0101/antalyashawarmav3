@@ -276,11 +276,8 @@
                     <label>Verification Code</label>
                     <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;">
                 </div>
-                <button class="submit-btn" onclick="verifyCode()">✅ Verify Code</button>
-                <p style="text-align: center; margin-top: 1rem;">
-                    <a href="#" onclick="resendCode(); return false;" style="color: #6ba3ff;">📨 Resend Code</a>
-                </p>
-            </div>
+             <button class="submit-btn" onclick="verifyCode()">✅ Verify Code</button>
+                </div>
 
             <!-- Forgot Password Section -->
             <div id="forgotPasswordSection" style="display: none;">
@@ -454,7 +451,7 @@
                 <h3 style="color: #667eea; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">⚡ Quick Actions</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.8rem;">
                     <button onclick="refreshOrders()" style="padding: 1rem; background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
-                        <span style="font-size: 1.5rem;">🔞</span>
+                        <span style="font-size: 1.5rem;">🔁</span>
                         <span style="font-size: 0.8rem;">Refresh</span>
                     </button>
                     <button onclick="showPendingOnly()" style="padding: 1rem; background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
@@ -934,7 +931,7 @@
             
             <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(245,158,11,0.1); border-radius: 10px; border: 1px solid rgba(245,158,11,0.3);">
                 <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
-                    🔙 Your bank details are stored securely and used only for receiving customer payments.
+                    🏦 Your bank details are stored securely and used only for receiving customer payments.
                 </p>
             </div>
         </div>
@@ -1039,7 +1036,7 @@
     <div class="modal" id="orderHistoryModal">
         <div class="modal-content" style="max-width: 600px;">
             <button class="close-btn" onclick="closeModal('orderHistoryModal')">×</button>
-            <h2>📋 Order History</h2>
+            <h2>📜 Order History</h2>
             <div id="orderHistoryContent"></div>
         </div>
     </div>
@@ -1099,7 +1096,7 @@
             <!-- Change Password Button -->
             <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem;">
                 <button onclick="openChangePasswordModal()" style="background: transparent; color: #e63946; border: 2px solid rgba(230,57,70,0.4); padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    🔘 Change Password
+                    🔐 Change Password
                 </button>
             </div>
         </div>
@@ -1139,7 +1136,7 @@
             <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 0.5rem;">Forgot your current password?</p>
                 <button onclick="openForgotPasswordFromChangePassword()" style="background: transparent; color: #f59e0b; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; text-decoration: underline;">
-                    🔘 Reset via Email
+                    📨 Reset via Email
                 </button>
             </div>
         </div>
@@ -1290,9 +1287,9 @@
                     <label>Payment Method *</label>
                     <select id="paymentMethod" required onchange="toggleCardFields()">
                         <option value="">Choose payment method</option>
-                        <option value="cash">💷 Cash on Delivery</option>
+                        <option value="cash">💵 Cash on Delivery</option>
                         <option value="card">💳 Card Payment</option>
-                        <option value="applepay">🍽 Apple Pay</option>
+                        <option value="applepay"> Apple Pay</option>
                     </select>
                 </div>
                 <div id="cardFieldsSection" style="display: none;">
@@ -1350,7 +1347,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <button class="close-btn" onclick="closeModal('reorderModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔞</div>
+                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔁</div>
                 <h2 style="color: #10b981;">Reorder</h2>
                 <p style="color: rgba(255,255,255,0.6);">Order the same items again?</p>
             </div>
@@ -1387,7 +1384,7 @@
                         <label>Secret Code *</label>
                         <input type="text" id="driverSecretCode" placeholder="DRV-XXX-XX" style="text-transform: uppercase;">
                     </div>
-                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔜 Login with Code</button>
+                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔓 Login with Code</button>
                 </form>
                 
                 <div style="text-align: center; margin: 1.5rem 0; color: rgba(255,255,255,0.5);">
@@ -1410,7 +1407,7 @@
                         <label>Password *</label>
                         <input type="password" id="driverLoginPassword" placeholder="Enter your password">
                     </div>
-                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔜 Login</button>
+                    <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #10b981, #059669);">🔓 Login</button>
                 </form>
                 
                 <button onclick="showDriverCodeLogin()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem; border-radius: 8px; width: 100%; cursor: pointer; margin-top: 1rem;">

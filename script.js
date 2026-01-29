@@ -2769,6 +2769,7 @@ function showVerificationModal(email, type) {
     const typeText = type === 'registration' ? 'Registration' : 'Login';
     const messageText = type === 'registration' ? 'Complete your registration' : 'Complete your login';
     
+    // REMOVED: Resend Code Button and Countdown DIV below
     modal.innerHTML = `
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('verificationModal')">&times;</button>
@@ -2784,14 +2785,9 @@ function showVerificationModal(email, type) {
                     style="text-align: center; font-size: 1.8rem; letter-spacing: 0.5rem; font-weight: 600;"
                     autocomplete="off">
             </div>
-            <div style="text-align: center; margin: 1rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
-                <div id="otpCountdown">Initializing...</div>
-            </div>
-            <button class="submit-btn" onclick="verifyEmailCode()">✅ Verify Code</button>
-            <button class="submit-btn" id="resendCodeBtn" onclick="resendVerificationCode()" 
-                style="background: rgba(255,255,255,0.1); margin-top: 0.5rem;">
-                📧 Resend Code
-            </button>
+            
+            <button class="submit-btn" onclick="verifyEmailCode()" style="margin-top: 1rem;">✅ Verify Code</button>
+            
             <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
                 Code expires in 10 minutes
             </p>
@@ -2800,8 +2796,7 @@ function showVerificationModal(email, type) {
     
     document.body.appendChild(modal);
     
-    // Start countdown
-    setTimeout(() => startOTPCountdown(email), 100);
+    // REMOVED: setTimeout(() => startOTPCountdown(email), 100);
     
     // Auto-focus input
     setTimeout(() => {
