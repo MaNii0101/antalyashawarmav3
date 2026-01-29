@@ -513,6 +513,7 @@ let currentDriver = null;
 let restaurantReviews = [];
 let currentReviewId = null;
 let selectedRating = 0;
+let showingAllReviews = false;
 
 let ownerBankDetails = {
     bankName: 'Barclays Bank UK',
@@ -3618,15 +3619,16 @@ function setupMobileNavigation() {
     });
 }
 
+// ========================================
+// FINAL EXPORTS (script.js)
+// ========================================
+
 // Make functions globally available
 window.showLogin = showLogin;
 window.showAccount = showAccount;
 window.showCart = showCart;
 window.showFavorites = showFavorites;
 window.showNotifications = showNotifications;
-window.showRestaurantLogin = showRestaurantLogin;
-window.showOwnerLogin = showOwnerLogin;
-window.showDriverLogin = showDriverLogin;
 window.closeModal = closeModal;
 window.filterCategory = filterCategory;
 window.openFoodModal = openFoodModal;
@@ -3647,23 +3649,19 @@ window.resendCode = resendCode;
 window.toggleAuthMode = toggleAuthMode;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
-window.handleRestaurantLogin = handleRestaurantLogin;
-window.handleOwnerLogin = handleOwnerLogin;
+
+// Location functions
 window.pickLocation = pickLocation;
 window.getCurrentLocation = getCurrentLocation;
 window.confirmLocation = confirmLocation;
-window.acceptOrder = acceptOrder;
-window.rejectOrder = rejectOrder;
-window.assignDriver = assignDriver;
-window.completeOrder = completeOrder;
-window.closeRestaurantDashboard = closeRestaurantDashboard;
-window.showDriverManagementModal = showDriverManagementModal;
-window.addNewDriver = addNewDriver;
-window.deleteDriver = deleteDriver;
-window.showBankSettingsModal = showBankSettingsModal;
-window.saveBankSettings = saveBankSettings;
+window.pickLocationForProfile = pickLocationForProfile;
+window.showLocationConfirmation = showLocationConfirmation;
+window.confirmCurrentLocation = confirmCurrentLocation;
+window.changeDeliveryLocation = changeDeliveryLocation;
+window.openCheckoutModal = openCheckoutModal;
+
+// User Account functions
 window.logout = logout;
-window.logoutDriver = logoutDriver;
 window.openEditProfile = openEditProfile;
 window.previewProfilePic = previewProfilePic;
 window.saveProfileChanges = saveProfileChanges;
@@ -3671,54 +3669,21 @@ window.openChangeEmail = openChangeEmail;
 window.verifyAndChangeEmail = verifyAndChangeEmail;
 window.openChangePasswordModal = openChangePasswordModal;
 window.handleChangePassword = handleChangePassword;
-window.showOwnerPinEntry = showOwnerPinEntry;
-
-// New driver functions
-window.showDriverCodeLogin = showDriverCodeLogin;
-window.showDriverEmailLogin = showDriverEmailLogin;
-window.handleDriverCodeLogin = handleDriverCodeLogin;
-window.handleDriverEmailPasswordLogin = handleDriverEmailPasswordLogin;
-window.showDriverDashboard = showDriverDashboard;
-window.toggleDriverAvailability = toggleDriverAvailability;
-window.updateDriverLocation = updateDriverLocation;
-window.openDirections = openDirections;
-window.markOrderDelivered = markOrderDelivered;
-
-// Driver management functions
-window.editDriver = editDriver;
-window.previewDriverPic = previewDriverPic;
-window.previewEditDriverPic = previewEditDriverPic;
-window.saveDriverChanges = saveDriverChanges;
-window.toggleDriverStatus = toggleDriverStatus;
-window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
-
-// Driver order functions
-window.driverAcceptOrder = driverAcceptOrder;
-window.callCustomer = callCustomer;
-window.confirmLogoutDriver = confirmLogoutDriver;
-window.calculateDeliveryTime = calculateDeliveryTime;
-window.getDistanceFromLatLng = getDistanceFromLatLng;
-
-// Driver tracking functions
-window.trackDriver = trackDriver;
-window.refreshDriverLocation = refreshDriverLocation;
-window.closeTrackingModal = closeTrackingModal;
-window.startDriverLocationTracking = startDriverLocationTracking;
-
-// Driver rating functions
-window.openDriverRating = openDriverRating;
-window.setReviewRating = setReviewRating;
-window.previewRating = previewRating;
-window.resetPreview = resetPreview;
-window.submitDriverRating = submitDriverRating;
-window.showDeliveryRatingPopup = showDeliveryRatingPopup;
+window.openForgotPasswordFromChangePassword = openForgotPasswordFromChangePassword;
+window.confirmDeleteAccount = confirmDeleteAccount;
+window.deleteUserAccount = deleteUserAccount;
+window.showForgotPasswordSection = showForgotPasswordSection;
+window.sendPasswordResetCode = sendPasswordResetCode;
+window.resetPassword = resetPassword;
 
 // Order functions
 window.userCanOrder = userCanOrder;
 window.showOrderHistory = showOrderHistory;
+window.reorderFromHistory = reorderFromHistory;
+window.confirmReorder = confirmReorder;
 window.updateOrdersBadge = updateOrdersBadge;
 
-// Restaurant status functions
+// Restaurant status
 window.isRestaurantOpen = isRestaurantOpen;
 window.getRestaurantStatus = getRestaurantStatus;
 window.getUKTime = getUKTime;
@@ -3727,56 +3692,30 @@ window.resetAllData = resetAllData;
 window.showResetOptions = showResetOptions;
 window.resetSelectedData = resetSelectedData;
 
-// Location functions
-window.pickLocationForProfile = pickLocationForProfile;
+// Review system exports
+window.openWriteReview = openWriteReview;
+window.setReviewRating = setReviewRating;
+window.submitReview = submitReview;
+window.openReplies = openReplies;
+window.submitOwnerReply = submitOwnerReply;
+window.deleteReview = deleteReview;
+window.deleteOwnerReply = deleteOwnerReply;
+window.loadReviews = loadReviews;
+window.toggleShowMoreReviews = toggleShowMoreReviews;
+window.displayReviews = displayReviews; // CRITICAL FIX
 
-// Reorder functions
-window.reorderFromHistory = reorderFromHistory;
-window.confirmReorder = confirmReorder;
+// Owner Access Button Logic
+window.showOwnerDashboardDirect = showOwnerDashboardDirect;
+window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
+// Note: handleOwnerLogin is removed here to avoid conflict with owner.js
 
-// Location confirmation functions
-window.showLocationConfirmation = showLocationConfirmation;
-window.confirmCurrentLocation = confirmCurrentLocation;
-window.changeDeliveryLocation = changeDeliveryLocation;
-window.openCheckoutModal = openCheckoutModal;
+// Make confirmLocation globally accessible
+window.confirmLocation = confirmLocation;
 
-// Forgot password functions
-window.showForgotPasswordSection = showForgotPasswordSection;
-window.sendPasswordResetCode = sendPasswordResetCode;
-window.resetPassword = resetPassword;
-
-// Menu management functions (Owner)
-window.openMenuManager = openMenuManager;
-window.renderMenuManagerList = renderMenuManagerList;
-window.toggleFoodAvailability = toggleFoodAvailability;
-window.openAddFood = openAddFood;
-window.openEditFood = openEditFood;
-window.saveFoodItem = saveFoodItem;
-window.deleteFood = deleteFood;
-window.closeFoodEditor = closeFoodEditor;
-window.openAddCategory = openAddCategory;
-window.openEditCategory = openEditCategory;
-window.saveCategory = saveCategory;
-window.closeCategoryEditor = closeCategoryEditor;
-window.deleteCategory = deleteCategory;
-window.previewFoodImage = previewFoodImage;
-window.previewCategoryImage = previewCategoryImage;
-window.handleFoodImageUpload = handleFoodImageUpload;
-window.handleCategoryImageUpload = handleCategoryImageUpload;
-window.saveMenuData = saveMenuData;
-window.loadMenuData = loadMenuData;
-window.moveCategoryUp = moveCategoryUp;
-window.moveCategoryDown = moveCategoryDown;
-
-// Modal functions
-window.openModal = openModal;
-window.closeModal = closeModal;
 
 // ========================================
 // REVIEWS SYSTEM
 // ========================================
-
-let showingAllReviews = false;
 
 // Load reviews from localStorage
 function loadReviews() {
