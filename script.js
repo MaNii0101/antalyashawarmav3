@@ -2769,7 +2769,7 @@ function showVerificationModal(email, type) {
     const typeText = type === 'registration' ? 'Registration' : 'Login';
     const messageText = type === 'registration' ? 'Complete your registration' : 'Complete your login';
     
-    // REMOVED: Resend Code Button and Countdown DIV below
+    // REMOVED: Resend Code Button and Timer Logic
     modal.innerHTML = `
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('verificationModal')">&times;</button>
@@ -2795,8 +2795,6 @@ function showVerificationModal(email, type) {
     `;
     
     document.body.appendChild(modal);
-    
-    // REMOVED: setTimeout(() => startOTPCountdown(email), 100);
     
     // Auto-focus input
     setTimeout(() => {
@@ -2971,13 +2969,9 @@ function verifyCode() {
 }
 
 function resendCode() {
-    if (!pendingVerification) return;
-    
-    const newCode = generateVerificationCode();
-    pendingVerification.code = newCode;
-    
-    const email = pendingVerification.email || pendingVerification.user?.email;
-    sendVerificationEmail(email, newCode);
+    // Resend functionality disabled for Login/Signup
+    console.log('Resend code is disabled for this flow.');
+    return;
 }
 
 function loginWithGoogle() {
