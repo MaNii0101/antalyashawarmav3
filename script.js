@@ -2618,286 +2618,107 @@ function resetPassword() {
     }
 }
 
-async function handleEmailAuth(event) {
+// ========================================
+// FIXED: Direct Login & Signup (No Verification)
+// ========================================
+
+function handleEmailAuth(event) {
     event.preventDefault();
     
     const email = document.getElementById('authEmail').value.trim().toLowerCase();
     const password = document.getElementById('authPassword').value;
-    const name = document.getElementById('authName')?.value.trim();
-    const phone = document.getElementById('authPhone')?.value.trim();
-    const dob = document.getElementById('authDOB')?.value;
     
-    // Validate email
+    // 1. Validate Inputs
     const emailValidation = isValidEmail(email);
     if (!emailValidation.valid) {
         alert(emailValidation.message);
         return;
     }
-    
-    // Strong password validation
-    if (password.length < 8) {
-        alert('❌ Password must be at least 8 characters');
+    if (password.length < 6) {
+        alert('❌ Password must be at least 6 characters');
         return;
     }
-    
-    // Check password strength for new accounts
-    if (isSignUpMode && !isStrongPassword(password)) {
-        alert('❌ Password must contain:\n• Uppercase letter\n• Lowercase letter\n• Number\n• Special character (@$!%*?&#)');
+
+    // 2. Check Special Logins (Owner/Staff/Driver)
+    if (email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
+        closeModal('loginModal');
+        showOwnerPinEntry();
         return;
     }
-    
-    // Check for OWNER credentials - ONLY show if correct email
-    if (email === OWNER_CREDENTIALS.email) {
-        if (password === OWNER_CREDENTIALS.password) {
-            closeModal('loginModal');
-            showOwnerPinEntry();
-            return;
-        } else {
-            alert('❌ Invalid credentials');
-            return;
-        }
-    }
-    
-    // Check for RESTAURANT STAFF credentials
     if (email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
         closeModal('loginModal');
         isRestaurantLoggedIn = true;
         showRestaurantDashboard();
         return;
     }
-    
-    // Check for DRIVER credentials
-    const driver = window.driverSystem.getByEmail(email);
-    if (driver && driver.password === password) {
-        closeModal('loginModal');
-        window.driverSystem.currentDriver = driver;
-        window.driverSystem.showDriverDashboard(driver);
-        return;
+    if (window.driverSystem) {
+        const driver = window.driverSystem.getByEmail(email);
+        if (driver && driver.password === password) {
+            closeModal('loginModal');
+            window.driverSystem.currentDriver = driver;
+            window.driverSystem.showDriverDashboard(driver);
+            return;
+        }
     }
-    
+
+    // 3. Handle User Login or Signup
     if (isSignUpMode) {
-        // SIGN UP MODE
-        if (!name || name.length < 2) {
-            alert('❌ Please enter your full name');
+        // --- SIGN UP ---
+        const existing = userDatabase.find(u => u.email === email);
+        if (existing) {
+            alert('❌ Email already exists. Please login.');
             return;
         }
-        
-        if (phone && !isValidPhone(phone)) {
-            alert('❌ Invalid UK phone number');
-            return;
-        }
-        
-        // Check if user exists
-        const existingUser = userDatabase.find(u => u.email === email);
-        if (existingUser) {
-            alert('❌ An account with this email already exists');
-            return;
-        }
-        
-        // Generate verification code
-        const verificationCode = generateVerificationCode();
-        
-        // Send verification email
-        const emailSent = await sendVerificationEmail(email, verificationCode, 'verification');
-        
-        if (!emailSent) {
-            return; // Error already shown
-        }
-        
-        // Store pending registration
-        pendingVerification = {
-            email: email,
-            password: password,
-            name: name,
-            phone: phone || null,
-            dob: dob || null,
-            code: verificationCode,
-            type: 'registration',
-            expiresAt: Date.now() + 600000 // 10 minutes
-        };
-        
-        // Show verification modal
-        showVerificationModal(email, 'registration');
+        // Create account immediately (No verification)
+        completeSignUp();
         
     } else {
-        // LOGIN MODE
-        const user = userDatabase.find(u => u.email === email);
-        
-        if (!user) {
-            alert('❌ No account found with this email');
-            return;
+        // --- LOGIN ---
+        const user = userDatabase.find(u => u.email === email && u.password === password);
+        if (user) {
+            currentUser = user;
+            saveData();
+            closeModal('loginModal');
+            updateAuthUI();
+            alert('✅ Welcome back, ' + user.name + '!');
+        } else {
+            alert('❌ Invalid email or password');
         }
-        
-        if (user.password !== password) {
-            alert('❌ Incorrect password');
-            return;
-        }
-        
-        // Generate 2FA code
-        const verificationCode = generateVerificationCode();
-        
-        // Send 2FA email
-        const emailSent = await sendVerificationEmail(email, verificationCode, '2fa');
-        
-        if (!emailSent) {
-            return;
-        }
-        
-        // Store pending login
-        pendingVerification = {
-            email: email,
-            code: verificationCode,
-            type: 'login',
-            user: user,
-            expiresAt: Date.now() + 600000
-        };
-        
-        // Show verification modal
-        showVerificationModal(email, 'login');
     }
 }
 
-// New function to show verification modal
-function showVerificationModal(email, type) {
+function completeSignUp() {
+    // Get values from the form
+    const name = document.getElementById('authName').value.trim();
+    const email = document.getElementById('authEmail').value.trim().toLowerCase();
+    const password = document.getElementById('authPassword').value;
+    const phone = document.getElementById('authPhone') ? document.getElementById('authPhone').value.trim() : '';
+    const address = document.getElementById('authAddress') ? document.getElementById('authAddress').value.trim() : '';
+    const dob = document.getElementById('authDOB') ? document.getElementById('authDOB').value : '';
+
+    if (!name) { alert('❌ Name is required'); return; }
+
+    const newUser = {
+        id: 'USR-' + Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        phone: phone,
+        address: address,
+        dob: dob,
+        location: selectedLocation, // Saves map location if picked
+        joined: new Date().toISOString(),
+        profilePicture: null,
+        verified: true
+    };
+
+    userDatabase.push(newUser);
+    currentUser = newUser;
+    saveData();
+    
     closeModal('loginModal');
-    
-    const modal = document.createElement('div');
-    modal.id = 'verificationModal';
-    modal.className = 'modal';
-    modal.style.display = 'flex';
-    
-    const typeText = type === 'registration' ? 'Registration' : 'Login';
-    const messageText = type === 'registration' ? 'Complete your registration' : 'Complete your login';
-    
-    // REMOVED: Resend Code Button and Timer Logic
-    modal.innerHTML = `
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('verificationModal')">&times;</button>
-            <h2>🔐 Email Verification</h2>
-            <div style="background: rgba(230,57,70,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                <p style="color: rgba(255,255,255,0.9);">📧 Verification code sent to:</p>
-                <p style="color: #ff6b6b; font-weight: 600; margin-top: 0.5rem;">${email}</p>
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 1rem;">${messageText}</p>
-            </div>
-            <div class="form-group">
-                <label>Enter 6-Digit Code *</label>
-                <input type="text" id="verificationCodeInput" placeholder="000000" maxlength="6" 
-                    style="text-align: center; font-size: 1.8rem; letter-spacing: 0.5rem; font-weight: 600;"
-                    autocomplete="off">
-            </div>
-            
-            <button class="submit-btn" onclick="verifyEmailCode()" style="margin-top: 1rem;">✅ Verify Code</button>
-            
-            <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
-                Code expires in 10 minutes
-            </p>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Auto-focus input
-    setTimeout(() => {
-        const input = document.getElementById('verificationCodeInput');
-        if (input) input.focus();
-    }, 300);
-}
-
-// Verify email code
-function verifyEmailCode() {
-    const codeInput = document.getElementById('verificationCodeInput');
-    const enteredCode = codeInput.value.trim();
-    
-    if (!pendingVerification) {
-        alert('❌ No verification session found. Please try again.');
-        closeModal('verificationModal');
-        return;
-    }
-    
-    // Check expiration
-    if (Date.now() > pendingVerification.expiresAt) {
-        alert('❌ Verification code expired. Please request a new one.');
-        closeModal('verificationModal');
-        pendingVerification = null;
-        return;
-    }
-    
-    if (enteredCode !== pendingVerification.code) {
-        alert('❌ Invalid code. Please check and try again.');
-        codeInput.value = '';
-        codeInput.focus();
-        return;
-    }
-    
-    // Code is correct!
-    if (pendingVerification.type === 'registration') {
-        // Complete registration
-        const newUser = {
-            id: Date.now(),
-            email: pendingVerification.email,
-            password: pendingVerification.password,
-            name: pendingVerification.name,
-            phone: pendingVerification.phone,
-            dob: pendingVerification.dob,
-            address: null,
-            joinedDate: new Date().toLocaleDateString('en-GB'),
-            orders: [],
-            verified: true
-        };
-        
-        userDatabase.push(newUser);
-        currentUser = newUser;
-        saveData();
-        
-        closeModal('verificationModal');
-        alert('✅ Account created successfully!\n\nWelcome to Antalya Shawarma! 🏉');
-        updateAuthUI();
-        
-    } else if (pendingVerification.type === 'login') {
-        // Complete login
-    currentUser = pendingVerification.user;
-saveData();
-
-closeModal('verificationModal');
-alert('✅ Login successful!\n\nWelcome back! 👋');
-updateAuthUI();
-updateOwnerButtonVisibility(); // ADD THIS LINE
-
-    }
-    
-    pendingVerification = null;
-}
-
-// Resend verification code
-async function resendVerificationCode() {
-    if (!pendingVerification) {
-        alert('❌ No active verification session');
-        return;
-    }
-    
-    const email = pendingVerification.email;
-    
-    if (!canResendOTP(email)) {
-        const timer = otpTimers[email];
-        const waitTime = Math.ceil((timer.canResendAt - Date.now()) / 1000);
-        alert(`⏱️ Please wait ${waitTime} seconds before resending`);
-        return;
-    }
-    
-    // Generate new code
-    const newCode = generateVerificationCode();
-    const type = pendingVerification.type === 'registration' ? 'verification' : '2fa';
-    
-    // Send email
-    const sent = await sendVerificationEmail(email, newCode, type);
-    
-    if (sent) {
-        // Update pending verification
-        pendingVerification.code = newCode;
-        pendingVerification.expiresAt = Date.now() + 600000;
-        
-        alert('📧 New verification code sent!');
-    }
+    updateAuthUI();
+    alert('✅ Account created successfully! Welcome to Antalya Shawarma.');
 }
 
 // Show owner PIN entry modal
@@ -4331,6 +4152,9 @@ function updateAuthUI() {
     document.querySelectorAll('[data-logged-out]').forEach(el => {
         el.style.display = isLoggedIn ? 'none' : 'flex';
     });
+    
+    // THIS WAS MISSING: Update the "Login" button to "User Name"
+    updateHeaderForLoggedInUser(); 
     
     updateOwnerButtonVisibility();
 }
