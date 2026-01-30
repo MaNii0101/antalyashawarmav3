@@ -1881,8 +1881,8 @@ function showAccount() {
     
     if (!modal || !content) return;
     
-    // FIX: Filter user orders to EXCLUDE cancelled
-    const userOrders = orderHistory.filter(o => o.userId === currentUser.email && o.status !== 'cancelled');
+    // FIX: Exclude both CANCELLED and REJECTED
+    const userOrders = orderHistory.filter(o => o.userId === currentUser.email && o.status !== 'cancelled' && o.status !== 'rejected');
     
     // Keep active orders logic
     const activeOrders = pendingOrders.filter(o => o.userId === currentUser.email && o.status === 'out_for_delivery');

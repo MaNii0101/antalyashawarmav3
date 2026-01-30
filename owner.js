@@ -47,10 +47,11 @@ function showRestaurantDashboard() {
     const today = now.toDateString();
     
     // FIX 1: Use ONLY orderHistory to avoid double counting
-    // FIX 2: Exclude 'cancelled' orders from the count
+    
+   // FIX: Exclude both CANCELLED and REJECTED
     const dailyOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
-        return orderDate.toDateString() === today && o.status !== 'cancelled';
+        return orderDate.toDateString() === today && o.status !== 'cancelled' && o.status !== 'rejected';
     });
     
     // FIX 3: Stats count ONLY 'completed' (Delivered) orders for money
@@ -352,19 +353,23 @@ function driverAcceptOrder(orderId) {
 function rejectOrder(orderId) {
     const reason = prompt('Reason for rejection (optional):');
     
+    // 1. Find in Pending Orders
     const orderIndex = pendingOrders.findIndex(o => o.id === orderId);
     if (orderIndex === -1) return;
     
-    const order = pendingOrders[orderIndex];
-    order.status = 'rejected';
-    order.rejectionReason = reason;
+    // 2. FIX: Update the status in the main orderHistory
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = 'rejected';
+        historyOrder.rejectionReason = reason;
+    }
     
-    // Move to history
+    // 3. Remove from Pending Orders (it is no longer pending)
     pendingOrders.splice(orderIndex, 1);
     saveData();
     
-    // Send notification to customer
-    addNotification(order.userId, {
+    // 4. Send notification to customer
+    addNotification(orderHistory.find(o => o.id === orderId)?.userId, {
         type: 'order_rejected',
         title: '❌ Order Rejected',
         message: `Your order #${orderId} has been rejected.${reason ? ' Reason: ' + reason : ''}`,
@@ -849,8 +854,8 @@ function updateOwnerStats() {
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
 
-    // FIX: Count all orders EXCEPT cancelled
-    const totalOrders = orderHistory.filter(o => o.status !== 'cancelled').length;
+   // FIX: Count all orders EXCEPT cancelled AND rejected
+    const totalOrders = orderHistory.filter(o => o.status !== 'cancelled' && o.status !== 'rejected').length;
     
     // Pending should just check pending status
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
@@ -876,10 +881,10 @@ function updateOwnerStats() {
     // Today's stats
     const today = new Date().toDateString();
     
-    // FIX: Today's orders (exclude cancelled)
+   // FIX: Today's orders (exclude cancelled AND rejected)
     const todayOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
-        return orderDate.toDateString() === today && o.status !== 'cancelled';
+        return orderDate.toDateString() === today && o.status !== 'cancelled' && o.status !== 'rejected';
     });
     
     // FIX: Today's Revenue (exclude cancelled AND pending)
