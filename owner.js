@@ -52,11 +52,15 @@ function showRestaurantDashboard() {
         return orderDate.toDateString() === today;
     });
     
-    const dailyRevenue = dailyOrders.reduce((sum, o) => sum + o.total, 0);
+    // FIX 1: Stats count ONLY 'completed' (Delivered) orders
+    const dailyRevenue = dailyOrders
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + o.total, 0);
+
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
     const completedCount = dailyOrders.filter(o => o.status === 'completed').length;
     
-    // Update stats - Daily only (no total revenue for staff)
+    // Update stats UI
     const dailyRevenueEl = document.getElementById('monthlyRevenueStat');
     const dailyOrdersEl = document.getElementById('monthlyOrdersStat');
     const pendingOrdersEl = document.getElementById('pendingOrdersStat');
@@ -70,7 +74,10 @@ function showRestaurantDashboard() {
     // Render pending orders
     const ordersContainer = document.getElementById('restaurantPendingOrders');
     if (ordersContainer) {
-        if (pendingOrders.length === 0) {
+        // FIX 2: Filter out CANCELLED orders from view
+        const visibleOrders = pendingOrders.filter(o => o.status !== 'cancelled');
+
+        if (visibleOrders.length === 0) {
             ordersContainer.innerHTML = `
                 <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
                     <div style="font-size: 4rem;">📦</div>
@@ -78,7 +85,7 @@ function showRestaurantDashboard() {
                 </div>
             `;
         } else {
-            ordersContainer.innerHTML = pendingOrders.map(order => {
+            ordersContainer.innerHTML = visibleOrders.map(order => {
                 // Get user profile picture
                 const user = userDatabase.find(u => u.email === order.userId);
                 const profilePic = user && user.profilePicture 
@@ -92,7 +99,6 @@ function showRestaurantDashboard() {
                         <span style="background: ${order.status === 'pending' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${order.status === 'pending' ? '#f59e0b' : '#10b981'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">${order.status.toUpperCase()}</span>
                     </div>
                     
-                    <!-- Customer Info with Profile Picture -->
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
                         <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; flex-shrink: 0; border: 3px solid rgba(255,255,255,0.2);">
                             ${profilePic}
@@ -107,9 +113,8 @@ function showRestaurantDashboard() {
                     
                     <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">🕐 ${new Date(order.createdAt).toLocaleString()}</div>
                     
-                    <!-- Payment Method Badge -->
                     <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.2)' : order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                        ${order.paymentMethod === 'cash' ? '💷 CASH' : order.paymentMethod === 'applepay' ? '🍎 Apple Pay' : '💳 CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
+                        ${order.paymentMethod === 'cash' ? '💵 CASH' : order.paymentMethod === 'applepay' ? ' Apple Pay' : '💳 CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
                     </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -151,18 +156,10 @@ function showRestaurantDashboard() {
     
     modal.style.display = 'block';
     
-    // Hide navigation when dashboard opens
     if (typeof hideNavigation === 'function') {
         hideNavigation();
-    } else {
-        // Fallback if hideNavigation not available
-        const mobileNav = document.querySelector('.mobile-bottom-nav');
-        const header = document.querySelector('.header');
-        if (mobileNav) mobileNav.style.cssText = 'display: none !important;';
-        if (header) header.style.cssText = 'display: none !important;';
     }
     
-    // Update additional restaurant stats
     if (typeof updateRestaurantStats === 'function') {
         updateRestaurantStats();
     }
@@ -171,6 +168,13 @@ function showRestaurantDashboard() {
 function acceptOrder(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
+    
+    // FIX: Guard against cancelled orders
+    if (order.status === 'cancelled') {
+        alert('❌ Cannot accept: This order was cancelled by the user.');
+        showRestaurantDashboard(); // Refresh view to remove it
+        return;
+    }
     
     order.status = 'accepted';
     order.acceptedAt = new Date().toISOString();
@@ -838,9 +842,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateOwnerStats() {
-    const totalRevenue = orderHistory.reduce((sum, o) => sum + o.total, 0);
+    // FIX: Only sum revenue for COMPLETED orders
+    const totalRevenue = orderHistory
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + o.total, 0);
+
     const totalOrders = orderHistory.length;
+    
+    // Pending should just check pending status
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
+    
     const totalUsers = userDatabase.length;
     const totalDrivers = window.driverSystem.getAll().length;
     
@@ -861,15 +872,19 @@ function updateOwnerStats() {
     
     // Today's stats
     const today = new Date().toDateString();
+    
+    // FIX: Today's Revenue only for COMPLETED
     const todayOrders = [...pendingOrders, ...orderHistory].filter(o => {
         const orderDate = new Date(o.createdAt);
         return orderDate.toDateString() === today;
     });
     
-    const todayRevenue = todayOrders.reduce((sum, o) => sum + o.total, 0);
+    const todayRevenue = todayOrders
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + o.total, 0);
+
     const avgOrderVal = todayOrders.length > 0 ? todayRevenue / todayOrders.length : 0;
     
-    // Count new users today (simplified - just show total for now)
     const newUsersToday = userDatabase.filter(u => {
         if (!u.createdAt) return false;
         const userDate = new Date(u.createdAt);
@@ -886,7 +901,7 @@ function updateOwnerStats() {
     if (todayOrdersEl) todayOrdersEl.textContent = todayOrders.length;
     if (avgOrderEl) avgOrderEl.textContent = formatPrice(avgOrderVal);
     if (newCustomersEl) newCustomersEl.textContent = newUsersToday;
-    if (avgRatingEl) avgRatingEl.textContent = '5.0'; // Placeholder - can be calculated from reviews
+    if (avgRatingEl) avgRatingEl.textContent = '5.0'; 
 }
 
 // ========================================

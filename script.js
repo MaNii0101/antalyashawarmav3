@@ -764,7 +764,7 @@ function startOTPCountdown(email) {
             countdownElement.textContent = 'You can now request a new code';
             if (resendBtn) {
                 resendBtn.disabled = false;
-                resendBtn.textContent = '📧 Resend Code';
+                resendBtn.textContent = '📨 Resend Code';
             }
             clearInterval(timer.interval);
         }
@@ -1647,6 +1647,9 @@ function handlePayment(event) {
     event.preventDefault();
     event.stopPropagation();
     
+    // FIX: Prevent duplicate submission
+    if (window.isProcessingCheckout) return false;
+    
     const paymentMethod = document.getElementById('paymentMethod').value;
     
     if (!paymentMethod) {
@@ -1678,6 +1681,9 @@ function handlePayment(event) {
         }
     }
     
+    // LOCK SUBMISSION
+    window.isProcessingCheckout = true;
+    
     // Create order
     const orderId = 'ORD-' + Date.now();
     const subtotal = cart.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
@@ -1705,10 +1711,10 @@ function handlePayment(event) {
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
         address: selectedLocation?.address || currentUser.address,
-        deliveryLocation: selectedLocation, // Save location for distance calculation
-        distance: distance, // Save distance in miles
+        deliveryLocation: selectedLocation, 
+        distance: distance,
         paymentMethod: paymentMethod,
-        status: 'pending',
+        status: 'pending', // Initial status
         createdAt: new Date().toISOString()
     };
     
@@ -1740,6 +1746,11 @@ function handlePayment(event) {
     }
     
     playNotificationSound();
+    
+    // UNLOCK after short delay to prevent accidental double clicks on alert close
+    setTimeout(() => {
+        window.isProcessingCheckout = false;
+    }, 1000);
     
     alert(`✅ Order Placed Successfully!\n\nOrder ID: ${orderId}\nTotal: ${formatPrice(order.total)}\n\nYou will receive updates on your order status.`);
     
@@ -1978,11 +1989,24 @@ function showOrderHistory() {
     
     const userOrders = [...orderHistory.filter(o => o.userId === currentUser.email)];
     const pendingUserOrders = pendingOrders.filter(o => o.userId === currentUser.email);
+    
+    // Merge lists to show most recent updates
     const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
-    if (allOrders.length === 0) {
+    // Remove duplicates based on ID (keep the one from pendingOrders if exists as it's most active)
+    const uniqueOrders = [];
+    const seenIds = new Set();
+    
+    for (const order of allOrders) {
+        if (!seenIds.has(order.id)) {
+            uniqueOrders.push(order);
+            seenIds.add(order.id);
+        }
+    }
+    
+    if (uniqueOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
@@ -1991,16 +2015,16 @@ function showOrderHistory() {
             </div>
         `;
     } else {
-        content.innerHTML = allOrders.map(o => {
+        content.innerHTML = uniqueOrders.map(o => {
             const statusColor = o.status === 'completed' ? '#2a9d8f' : 
                                o.status === 'pending' ? '#f4a261' : 
+                               o.status === 'cancelled' ? '#ef4444' :
                                o.status === 'out_for_delivery' ? '#3b82f6' : 
                                o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
             const paymentIcon = o.paymentMethod === 'cash' ? '💷' : o.paymentMethod === 'applepay' ? '🍽' : '💳';
             
-            // Get driver info for active deliveries only
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2024,29 +2048,27 @@ function showOrderHistory() {
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${paymentIcon} ${o.paymentMethod || 'N/A'}</span>
                     </div>
                     
-                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5 ${o.driverRatingComment ? '- "' + o.driverRatingComment + '"' : ''}</div>` : ''}
+                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
                     
                     ${o.status === 'out_for_delivery' && driver ? `
-                        <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
-                            ${driver.profilePic ? `<img src="${driver.profilePic}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">` : '<div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🚗</div>'}
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; font-size: 0.9rem;">${driver.name || o.driverName || 'Driver'}</div>
-                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">On the way to you</div>
-                            </div>
+                        <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">${driver.name || o.driverName || 'Driver'}</div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">On the way</div>
                         </div>
                         <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
                             📍 Track Driver Live
                         </button>
                     ` : ''}
                     
-                    ${o.status === 'completed' && o.driverId && !o.driverRated ? `
-                        <button onclick="openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.9rem;">
-                            ⭐ Rate Driver
+                    ${/* CANCEL BUTTON: Only if status is pending */ ''}
+                    ${o.status === 'pending' ? `
+                        <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
+                            ❌ Cancel Order
                         </button>
                     ` : ''}
                     
                     <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
-                        🔞 Reorder
+                        🔁 Reorder
                     </button>
                 </div>
             `;
@@ -4208,3 +4230,44 @@ window.confirmLocation = confirmLocation;
 window.displayReviews = displayReviews;
 
 console.log('✅ Antalya Shawarma script loaded successfully');
+
+// ========================================
+// ORDER CANCELLATION
+// ========================================
+function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+
+    // 1. Find and update in Pending Orders
+    const pendingIndex = pendingOrders.findIndex(o => o.id === orderId);
+    if (pendingIndex !== -1) {
+        // Strict Check: Can only cancel if still pending
+        if (pendingOrders[pendingIndex].status !== 'pending') {
+            alert('⚠️ Cannot cancel: Order already accepted by restaurant.');
+            showOrderHistory(); // Refresh to show current status
+            return;
+        }
+        pendingOrders[pendingIndex].status = 'cancelled';
+    }
+
+    // 2. Find and update in History
+    const historyIndex = orderHistory.findIndex(o => o.id === orderId);
+    if (historyIndex !== -1) {
+        orderHistory[historyIndex].status = 'cancelled';
+    }
+
+    // 3. Save Changes
+    saveData();
+    
+    // 4. Update UI
+    showOrderHistory(); // Refresh list
+    updateOrdersBadge(); // Update header badge
+    
+    if (window.utils && window.utils.showToast) {
+        window.utils.showToast('✅ Order cancelled successfully', 'success');
+    } else {
+        alert('✅ Order cancelled successfully');
+    }
+}
+
+// Export function
+window.cancelOrder = cancelOrder;
