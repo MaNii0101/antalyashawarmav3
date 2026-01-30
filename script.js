@@ -1930,7 +1930,7 @@ function showAccount() {
                 <span style="text-align: right; max-width: 60%;">${currentUser.address || 'Not set'}</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📦 Member</span>
+                <span style="color: rgba(255,255,255,0.6);">📦 Member Since </span>
                 <span>${currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'N/A'}</span>
             </div>
         </div>
@@ -2031,7 +2031,7 @@ function showOrderHistory() {
                                o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
-            const paymentIcon = o.paymentMethod === 'cash' ? '💷' : o.paymentMethod === 'applepay' ? '🍽' : '💳';
+            const paymentIcon = o.paymentMethod === 'cash' ? '💵' : o.paymentMethod === 'applepay' ? '' : '💳';
             
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
