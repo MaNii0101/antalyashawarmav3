@@ -1942,7 +1942,7 @@ function showAccount() {
                 📧 Change Email
             </button>
             <button onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                🔙 Change Password
+                🔐 Change Password
             </button>
         </div>
         
@@ -2530,8 +2530,10 @@ function showForgotPasswordSection(show) {
     }
 }
 
-function sendPasswordResetCode() {
-    const email = document.getElementById('forgotPasswordEmail').value.trim();
+// FIXED: Sends real email via EmailJS
+async function sendPasswordResetCode() {
+    const emailInput = document.getElementById('forgotPasswordEmail');
+    const email = emailInput ? emailInput.value.trim() : null;
     
     if (!email) {
         alert('❌ Please enter your email');
@@ -2544,23 +2546,32 @@ function sendPasswordResetCode() {
         return;
     }
     
-    
     // Generate reset code
     const resetCode = generateVerificationCode();
+    
+    // SEND EMAIL via EmailJS (This was missing)
+    // We wait for it to send before showing the screen
+    const emailSent = await sendVerificationEmail(email, resetCode, 'password_reset');
+    
+    if (!emailSent) {
+        // If email failed, stop here. sendVerificationEmail already showed an alert.
+        return;
+    }
+    
     pendingVerification = {
         email: email,
         code: resetCode,
         type: 'password_reset'
     };
     
-    // Show code in console and alert (in real app, send email)
-    alert(`📧 Password reset Verification code sent to your email!`);
-    
-    // Show code entry
+    // Show code entry UI
     document.getElementById('forgotPasswordSection').innerHTML = `
         <div style="background: rgba(245,158,11,0.1); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
             <h3 style="color: #f59e0b;">🔑 Enter Reset Code</h3>
             <p style="color: rgba(255,255,255,0.8);">Code sent to <strong>${email}</strong></p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <a href="#" onclick="resendPasswordResetOnly('${email}'); return false;" style="color: #f59e0b; text-decoration: underline;">📨 Resend Code</a>
+            </p>
         </div>
         <div class="form-group">
             <label>Reset Code</label>
@@ -2580,6 +2591,24 @@ function sendPasswordResetCode() {
         </p>
     `;
 }
+
+// NEW HELPER: Resend code specifically for Password Reset
+async function resendPasswordResetOnly(email) {
+    if (!pendingVerification || pendingVerification.email !== email) {
+        alert('❌ Session expired. Please start over.');
+        location.reload();
+        return;
+    }
+
+    const newCode = generateVerificationCode();
+    const emailSent = await sendVerificationEmail(email, newCode, 'password_reset');
+
+    if (emailSent) {
+        pendingVerification.code = newCode;
+        // sendVerificationEmail automatically shows a success alert
+    }
+}
+
 
 function resetPassword() {
     const code = document.getElementById('passwordResetCode').value.trim();

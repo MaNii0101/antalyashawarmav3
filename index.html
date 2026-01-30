@@ -264,7 +264,7 @@
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('loginModal')">×</button>
-            <h2 id="authTitle">🔐 Login</h2>
+            <h2 id="authTitle">🔓 Login</h2>
             
             <!-- Email Verification Section -->
           <div id="emailVerificationSection" style="display: none;">
@@ -499,7 +499,7 @@
                 <span style="color: #667eea; font-weight: 600;">Restaurant Staff Mode</span>
                 <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">• Order management only</span>
                 <button onclick="goToOwnerDashboard()" style="background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-left: auto;">
-                    🔐 Owner Access
+                    🔓 Owner Access
                 </button>
             </div>
         </div>
@@ -1176,7 +1176,7 @@
         <div class="modal-content" style="max-width: 450px;">
             <button class="close-btn" onclick="closeModal('changePasswordModal')">×</button>
             <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔙</div>
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔐</div>
                 <h2 style="color: #ef4444;">Change Password</h2>
                 <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Create a strong password to protect your account</p>
             </div>
@@ -1280,7 +1280,7 @@
                 <p id="checkoutAddress" style="color: rgba(255,255,255,0.7);"></p>
             </div>
             <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                <h3>📦 Order Summary</h3>
+                <h3>🛎️ Order Summary</h3>
                 <div id="checkoutItems"></div>
             </div>
             <form onsubmit="handlePayment(event)">
@@ -1291,6 +1291,7 @@
                         <option value="cash">💵 Cash on Delivery</option>
                         <option value="card">💳 Card Payment</option>
                         <option value="applepay"> Apple Pay</option>
+                        
                     </select>
                 </div>
                 <div id="cardFieldsSection" style="display: none;">
@@ -1433,10 +1434,10 @@
 
     <!-- SCRIPTS -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-    <script src="script.js?v=4.7"></script>
-    <script src="owner.js?v=4.7"></script>
-    <script src="driver.js?v=4.7"></script>
-    <script src="utils.js?v=4.7"></script>
+    <script src="script.js?v=4.8"></script>
+    <script src="owner.js?v=4.8"></script>
+    <script src="driver.js?v=4.8"></script>
+    <script src="utils.js?v=4.8"></script>
     <script>
         // Card field toggle
         function toggleCardFields() {
