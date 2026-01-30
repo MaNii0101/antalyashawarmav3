@@ -1881,9 +1881,17 @@ function showAccount() {
     
     if (!modal || !content) return;
     
-    const userOrders = orderHistory.filter(o => o.userId === currentUser.email);
+    // FIX: Filter user orders to EXCLUDE cancelled
+    const userOrders = orderHistory.filter(o => o.userId === currentUser.email && o.status !== 'cancelled');
+    
+    // Keep active orders logic
     const activeOrders = pendingOrders.filter(o => o.userId === currentUser.email && o.status === 'out_for_delivery');
-    const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
+    
+    // FIX: Only sum money for COMPLETED (Delivered) orders
+    const totalSpent = userOrders
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + o.total, 0);
+        
     
     // Profile picture display
     const profilePic = currentUser.profilePicture 

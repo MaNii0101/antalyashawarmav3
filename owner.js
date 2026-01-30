@@ -46,17 +46,19 @@ function showRestaurantDashboard() {
     const now = new Date();
     const today = now.toDateString();
     
-    // Filter orders from today
-    const dailyOrders = [...pendingOrders, ...orderHistory].filter(o => {
+    // FIX 1: Use ONLY orderHistory to avoid double counting
+    // FIX 2: Exclude 'cancelled' orders from the count
+    const dailyOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
-        return orderDate.toDateString() === today;
+        return orderDate.toDateString() === today && o.status !== 'cancelled';
     });
     
-    // FIX 1: Stats count ONLY 'completed' (Delivered) orders
+    // FIX 3: Stats count ONLY 'completed' (Delivered) orders for money
     const dailyRevenue = dailyOrders
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
 
+    // Count specific statuses
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
     const completedCount = dailyOrders.filter(o => o.status === 'completed').length;
     
@@ -67,14 +69,14 @@ function showRestaurantDashboard() {
     const completedOrdersEl = document.getElementById('completedOrdersStat');
     
     if (dailyRevenueEl) dailyRevenueEl.textContent = formatPrice(dailyRevenue);
-    if (dailyOrdersEl) dailyOrdersEl.textContent = dailyOrders.length;
+    if (dailyOrdersEl) dailyOrdersEl.textContent = dailyOrders.length; // Now correct (1 order = 1 count)
     if (pendingOrdersEl) pendingOrdersEl.textContent = pendingCount;
     if (completedOrdersEl) completedOrdersEl.textContent = completedCount;
     
     // Render pending orders
     const ordersContainer = document.getElementById('restaurantPendingOrders');
     if (ordersContainer) {
-        // FIX 2: Filter out CANCELLED orders from view
+        // Filter out CANCELLED orders from view
         const visibleOrders = pendingOrders.filter(o => o.status !== 'cancelled');
 
         if (visibleOrders.length === 0) {
@@ -114,7 +116,7 @@ function showRestaurantDashboard() {
                     <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">🕐 ${new Date(order.createdAt).toLocaleString()}</div>
                     
                     <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.2)' : order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                        ${order.paymentMethod === 'cash' ? '💵 CASH' : order.paymentMethod === 'applepay' ? ' Apple Pay' : '💳 CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
+                        ${order.paymentMethod === 'cash' ? '💷 CASH' : order.paymentMethod === 'applepay' ? '🍎 Apple Pay' : '💳 CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
                     </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -847,7 +849,8 @@ function updateOwnerStats() {
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
 
-    const totalOrders = orderHistory.length;
+    // FIX: Count all orders EXCEPT cancelled
+    const totalOrders = orderHistory.filter(o => o.status !== 'cancelled').length;
     
     // Pending should just check pending status
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
@@ -873,12 +876,13 @@ function updateOwnerStats() {
     // Today's stats
     const today = new Date().toDateString();
     
-    // FIX: Today's Revenue only for COMPLETED
-    const todayOrders = [...pendingOrders, ...orderHistory].filter(o => {
+    // FIX: Today's orders (exclude cancelled)
+    const todayOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
-        return orderDate.toDateString() === today;
+        return orderDate.toDateString() === today && o.status !== 'cancelled';
     });
     
+    // FIX: Today's Revenue (exclude cancelled AND pending)
     const todayRevenue = todayOrders
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
