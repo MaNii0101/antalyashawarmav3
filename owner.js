@@ -166,6 +166,15 @@ function showRestaurantDashboard() {
     if (typeof updateRestaurantStats === 'function') {
         updateRestaurantStats();
     }
+
+renderPopularFoodStats();
+
+    // At the bottom of showRestaurantDashboard
+if (typeof renderPopularFoodStats === 'function') {
+        renderPopularFoodStats();
+    }
+    
+    modal.style.display = 'block';
 }
 
 function acceptOrder(orderId) {
@@ -1371,6 +1380,70 @@ function previewCategoryImage() {
     }
 }
 
+
+function renderPopularFoodStats() {
+    // Check if the calculation function exists
+    if (!window.getBestSellingItems) return;
+
+    const topItems = window.getBestSellingItems();
+    
+    let html = `
+        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem;">
+            <h3 style="color: #f59e0b; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                🔥 Popular Items (Real Data)
+            </h3>
+    `;
+    
+    if (topItems.length === 0) {
+        html += `<p style="color: rgba(255,255,255,0.5);">No sales data yet.</p>`;
+    } else {
+        html += `<div style="display: flex; flex-direction: column; gap: 0.8rem;">`;
+        
+        topItems.forEach((item, index) => {
+            const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'rgba(255,255,255,0.1)';
+            const rankIcon = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+            
+            // FIX: Use window.utils.formatPrice instead of formatPrice
+            const revenueDisplay = window.utils ? window.utils.formatPrice(item.revenue) : '£' + item.revenue.toFixed(2);
+
+            html += `
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; border-left: 3px solid ${rankColor};">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-weight: 700; font-size: 1.1rem; width: 30px; text-align: center;">${rankIcon}</span>
+                        <div>
+                            <div style="font-weight: 600;">${item.name}</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Revenue: ${revenueDisplay}</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700;">
+                        ${item.count} Sold
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+    
+    html += `</div>`;
+    
+    const container = document.getElementById('popularFoodContainer');
+    if (container) {
+        container.innerHTML = html;
+    } else {
+        // Fallback
+        const dashboardContent = document.getElementById('restaurantDashboard')?.querySelector('.modal-content');
+        if (dashboardContent) {
+            const existing = document.getElementById('generatedPopularFood');
+            if (existing) existing.remove();
+            
+            const div = document.createElement('div');
+            div.id = 'generatedPopularFood';
+            div.innerHTML = html;
+            dashboardContent.appendChild(div);
+        }
+    }
+}
+
 // ========================================
 // GLOBAL EXPORTS FOR OWNER.JS FUNCTIONS
 // ========================================
@@ -1409,3 +1482,4 @@ window.previewFoodImage = previewFoodImage;
 window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
+

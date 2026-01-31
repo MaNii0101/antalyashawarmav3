@@ -1944,13 +1944,13 @@ function showOrderHistory() {
     // 1. Get Completed History
     const userOrders = orderHistory.filter(o => o.userId === currentUser.email);
     
-    // 2. Get Pending Orders (FIX: Exclude any IDs that are already in History to prevent duplicates)
+    // 2. Get Pending Orders (FIX: Don't show duplicates. If it's in History, ignore the Pending version)
     const historyIds = new Set(userOrders.map(o => o.id));
     const pendingUserOrders = pendingOrders.filter(o => 
         o.userId === currentUser.email && !historyIds.has(o.id)
     );
     
-    // 3. Merge: History takes priority for status
+    // 3. Merge: Now we only have unique orders. History (Completed) takes priority.
     const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
@@ -2012,7 +2012,7 @@ function showOrderHistory() {
                         </button>
                     ` : ''}
 
-                    ${/* FIX: ADD RATE BUTTON FOR COMPLETED ORDERS */ ''}
+                    ${/* FIX: THIS IS THE RATE BUTTON CODE */ ''}
                     ${o.status === 'completed' && !o.driverRated ? `
                         <button onclick="if(window.openDriverRating) { window.openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); } else { alert('Rating system loading...'); }" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
                             ⭐ Rate Driver
@@ -4213,6 +4213,45 @@ function cancelOrder(orderId) {
         alert('✅ Order cancelled successfully');
     }
 }
+
+// ========================================
+// POPULARITY & SALES LOGIC
+// ========================================
+
+function getBestSellingItems() {
+    const itemCounts = {};
+
+    // 1. Count items from History (Completed orders only)
+    orderHistory.forEach(order => {
+        // Only count valid orders (not cancelled/rejected)
+        if (order.status !== 'cancelled' && order.status !== 'rejected') {
+            order.items.forEach(item => {
+                // Use ID as unique key
+                const id = item.id;
+                if (!itemCounts[id]) {
+                    itemCounts[id] = {
+                        id: id,
+                        name: item.name,
+                        icon: item.icon || '🍽️',
+                        count: 0,
+                        revenue: 0
+                    };
+                }
+                itemCounts[id].count += (item.quantity || 1);
+                itemCounts[id].revenue += (item.finalPrice * (item.quantity || 1));
+            });
+        }
+    });
+
+    // 2. Convert to array and sort by Count (Highest first)
+    const sortedItems = Object.values(itemCounts).sort((a, b) => b.count - a.count);
+    
+    // Return top 10
+    return sortedItems.slice(0, 10);
+}
+
+// Make it available globally
+window.getBestSellingItems = getBestSellingItems;
 
 // Export function
 window.cancelOrder = cancelOrder;
