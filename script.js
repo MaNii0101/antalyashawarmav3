@@ -1943,44 +1943,52 @@ function showOrderHistory() {
     
     if (!modal || !content) return;
     
-    // 1. Create a Map to ensure UNIQUE Orders by ID
+    // ============================================================
+    // FIX: SMART DEDUPLICATION (The "Ghost Card" Killer)
+    // ============================================================
     const uniqueOrders = new Map();
     
-    // 2. Load History first (Older status)
+    // 1. Load History first (Older status)
     orderHistory.filter(o => o.userId === currentUser.email).forEach(o => {
         uniqueOrders.set(o.id, o);
     });
     
-    // 3. Load Pending second (Newer/Live status)
+    // 2. Load Pending second (Newer/Live status)
     // This OVERWRITES the History entry if the ID is the same.
-    // This effectively "hides" the old pending card and shows the new status.
+    // This forces the UI to show the LIVE status (e.g. Accepted) instead of the old one (Pending).
     pendingOrders.filter(o => o.userId === currentUser.email).forEach(o => {
         uniqueOrders.set(o.id, o);
     });
     
-    // 4. Convert back to list and Sort
+    // 3. Convert Map back to Array and Sort (Newest first)
     const allOrders = Array.from(uniqueOrders.values()).sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
-    // 5. Render
     if (allOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
                 <p>No orders yet</p>
+                <p style="font-size: 0.85rem; margin-top: 0.5rem;">Your order history will appear here</p>
             </div>
         `;
     } else {
         content.innerHTML = allOrders.map(o => {
-            // Determine Status Color
-            let statusColor = '#f4a261'; // Default Pending
-            if (o.status === 'accepted') statusColor = '#10b981';
-            if (o.status === 'completed') statusColor = '#2a9d8f';
-            if (o.status === 'cancelled' || o.status === 'rejected') statusColor = '#ef4444';
-            if (o.status === 'out_for_delivery') statusColor = '#3b82f6';
+            // Determine Status Colors
+            let statusColor = '#f4a261'; // Default Orange (Pending)
+            if (o.status === 'accepted') statusColor = '#10b981'; // Green
+            if (o.status === 'completed') statusColor = '#2a9d8f'; // Teal
+            if (o.status === 'cancelled' || o.status === 'rejected') statusColor = '#ef4444'; // Red
+            if (o.status === 'out_for_delivery') statusColor = '#3b82f6'; // Blue
+            if (o.status === 'waiting_driver') statusColor = '#8b5cf6'; // Purple
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
+            
+            // Check for driver info (for tracking)
+            const driver = (o.status === 'out_for_delivery' || o.status === 'completed') && o.driverId 
+                ? (window.driverSystem && window.driverSystem.get(o.driverId)) 
+                : null;
             
             return `
                 <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border-left: 3px solid ${statusColor};">
@@ -2013,6 +2021,12 @@ function showOrderHistory() {
                     ${o.status === 'pending' ? `
                         <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
                             ❌ Cancel Order
+                        </button>
+                    ` : ''}
+                    
+                    ${o.status === 'completed' ? `
+                        <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
+                            🔁 Reorder
                         </button>
                     ` : ''}
                 </div>

@@ -188,7 +188,7 @@ function acceptOrder(orderId) {
         return;
     }
     
-    // 2. UPDATE STATUS
+    // 2. UPDATE STATUS to 'accepted'
     const newStatus = 'accepted';
     
     // Update Pending Reference
@@ -205,14 +205,16 @@ function acceptOrder(orderId) {
     saveData();
     
     // 3. Notify & Refresh
-    addNotification(order.userId, {
-        type: 'order_accepted',
-        title: '✅ Order Accepted!',
-        message: `Your order #${orderId} has been accepted and is being prepared.`,
-        orderId: orderId
-    });
+    if (window.addNotification) {
+        addNotification(order.userId, {
+            type: 'order_accepted',
+            title: '✅ Order Accepted!',
+            message: `Your order #${orderId} has been accepted and is being prepared.`,
+            orderId: orderId
+        });
+    }
     
-    playNotificationSound();
+    if (window.playNotificationSound) playNotificationSound();
     showRestaurantDashboard();
 }
 

@@ -429,48 +429,46 @@ function openDirections(address) {
 }
 
 function markOrderDelivered(orderId) {
-    if (!confirm('Mark this order as delivered?')) return;
+    // 1. Find order in Pending
+    const orderIndex = pendingOrders.findIndex(o => o.id === orderId);
+    if (orderIndex === -1) return;
     
-    const order = pendingOrders.find(o => o.id === orderId);
-    if (!order) return;
+    const order = pendingOrders[orderIndex];
     
-    // Update order status
-    order.status = 'completed';
-    order.completedAt = new Date().toISOString();
-    order.driverRated = false; // Flag for rating
+    // 2. Update Status details
+    const deliveredAt = new Date().toISOString();
     
-    // Move to order history
-    orderHistory.push(order);
-    pendingOrders = pendingOrders.filter(o => o.id !== orderId);
-    
-    // Update driver stats
-    const driverId = sessionStorage.getItem('loggedInDriver');
-    if (driverId) {
-        const driver = window.driverSystem.get(driverId);
-        if (driver) {
-            window.driverSystem.update(driverId, {
-                deliveries: (driver.deliveries || 0) + 1
-            });
-        }
+    // FIX: SYNC WITH HISTORY BEFORE REMOVING
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = 'completed';
+        historyOrder.deliveredAt = deliveredAt;
+        historyOrder.paymentStatus = 'paid'; // Ensure paid status
     }
     
-    // Notify customer (without driver details for completed orders)
-    addNotification(order.userId, {
-        type: 'order_completed',
-        title: '🎉 Order Delivered!',
-        message: `Your order #${orderId} has been delivered. Enjoy your meal!`,
-        orderId: orderId
-    });
+    // 3. REMOVE from Pending (It is finished, so it leaves the pending list)
+    pendingOrders.splice(orderIndex, 1);
     
     saveData();
-    playNotificationSound();
+    
+    // 4. UI Updates
     showDriverDashboard();
     
-    alert('✅ Order marked as delivered!');
+    // Notify User
+    if (window.addNotification) {
+        window.addNotification(order.userId, {
+            type: 'order_delivered',
+            title: '✅ Order Delivered',
+            message: 'Enjoy your meal! Please rate your driver.',
+            orderId: orderId
+        });
+    }
     
-    // Trigger rating popup for customer if they're logged in
-    if (currentUser && currentUser.email === order.userId) {
-        showDeliveryRatingPopup(orderId, order.driverId, order.driverName || 'Driver');
+    // Auto-Show Rating for Driver (if feature enabled)
+    if (window.openDriverRating) {
+        setTimeout(() => {
+            window.openDriverRating(orderId, order.driverId, order.driverName, true);
+        }, 2000);
     }
 }
 
