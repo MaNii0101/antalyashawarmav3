@@ -34,7 +34,7 @@ function handleRestaurantLogin(event) {
             showRestaurantDashboard();
         }, 300);
     } else {
-        alert('❌ Invalid credentials!\n\nDemo: staff@antalyashawarma.com / staff2024');
+        alert('❌ Invalid credentials!');
     }
 }
 

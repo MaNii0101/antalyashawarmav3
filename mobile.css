@@ -7,8 +7,8 @@
    ============================================ */
 
 :root {
-    --primary: #e63946;
-    --primary-dark: #c1121f;
+    --accent: #e63946;
+    --accent-dark: #c1121f;
     --success: #10b981;
     --success-dark: #059669;
     --dark: #0a0a0a;
@@ -123,7 +123,7 @@ html {
         top: 3px !important;
         right: 50% !important;
         transform: translateX(16px) !important;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
         color: white !important;
         font-size: 0.6rem !important;
         min-width: 18px !important;
@@ -378,7 +378,7 @@ html {
     .food-price {
         font-size: 1.2rem;
         font-weight: 800;
-        color: var(--primary);
+        color: var(--accent);
     }
     
     .add-btn {
@@ -387,7 +387,7 @@ html {
         border-radius: var(--radius);
         min-height: 42px;
         font-weight: 700;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
         box-shadow: 0 4px 12px rgba(230, 57, 70, 0.25);
         transition: all 0.2s;
     }
@@ -524,7 +524,7 @@ html {
     
     /* Specific button colors - allow inline styles to override */
     .submit-btn:not([style*="background"]) {
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
     }
     
     .submit-btn:active {

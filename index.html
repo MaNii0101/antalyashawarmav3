@@ -322,7 +322,7 @@
                     </div>
                     <div class="form-group">
                         <label>Password *</label>
-                        <input type="password" id="authPassword" class="form-input" placeholder="Min 6 characters" required>
+                        <input type="password" id="authPassword" class="form-input" placeholder="Min 8 characters" required>
                     </div>
                     <div id="forgotPasswordLink" style="text-align: right; margin-bottom: 1rem;">
                         <a href="#" onclick="showForgotPasswordSection(true); return false;" style="color: #6ba3ff; font-size: 0.9rem;">Forgot password?</a>
@@ -388,13 +388,7 @@
                 </div>
                 <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">🔓 Login to Dashboard</button>
             </form>
-            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.3);">
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
-                    <strong>Demo Credentials:</strong><br>
-                    Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33404752555573525d47525f4a52405b524452415e521d505c5e">[email&#160;protected]</a><br>
-                    Password: staff2024
-                </p>
-            </div>
+        
         </div>
     </div>
 
@@ -1188,8 +1182,8 @@
                 </div>
                 <div class="form-group">
                     <label>New Password *</label>
-                    <input type="password" id="newPassword" placeholder="Min 6 characters" minlength="6" required>
-                    <small style="color: rgba(255,255,255,0.5);">Minimum 6 characters</small>
+                    <input type="password" id="newPassword" placeholder="Min 8 characters" minlength="8" required>
+                    <small style="color: rgba(255,255,255,0.5);">Minimum 8 characters</small>
                 </div>
                 <div class="form-group">
                     <label>Confirm New Password *</label>
@@ -1434,10 +1428,12 @@
 
     <!-- SCRIPTS -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-    <script src="script.js?v=5.1"></script>
+    
     <script src="owner.js?v=5.1"></script>
     <script src="driver.js?v=5.1"></script>
     <script src="utils.js?v=5.1"></script>
+    <script src="script.js?v=5.1"></script>
+
     <script>
         // Card field toggle
         function toggleCardFields() {

@@ -264,7 +264,7 @@ function measurePerformance() {
     if (window.performance) {
         const perfData = window.performance.timing;
         const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-        console.log('Page load time:', pageLoadTime + 'ms');
+        // Performance metrics available via perfData if needed
     }
 }
 
@@ -287,5 +287,3 @@ window.utils = {
     markFormDirty,
     markFormClean
 };
-
-console.log('✅ Utilities loaded successfully');

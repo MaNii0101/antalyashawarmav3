@@ -150,7 +150,6 @@ function resetSelectedData() {
 
 function resetAllData() {
     // Deprecated - use showResetOptions() directly
-    console.warn('resetAllData() is deprecated. Use showResetOptions() instead.');
 }
 
 // ========================================
@@ -457,7 +456,7 @@ function loadMenuData() {
                     }
                 });
             }
-        } catch(e) { console.log('Error loading menu data'); }
+        } catch(e) { /* Error loading menu data */ }
     }
 if (savedCategories) {
     try {
@@ -468,7 +467,7 @@ if (savedCategories) {
             }
         });
     } catch (e) {
-        console.warn('⚠️ Bad category data, resetting...');
+        // Bad category data, resetting
         localStorage.removeItem('categories');
     }
 }
@@ -516,67 +515,19 @@ let selectedRating = 0;
 let showingAllReviews = false;
 
 let ownerBankDetails = {
-    bankName: 'Barclays Bank UK',
-    accountNumber: '12345678',
-    sortCode: '20-00-00',
-    iban: 'GB29 NWBK 6016 1331 9268 19',
-    cardNumber: '4532 **** **** 1234'
+    bankName: '',
+    accountNumber: '',
+    sortCode: '',
+    iban: '',
+    cardNumber: ''
 };
 
 // ========================================
 // DRIVER SYSTEM
 // ========================================
 window.driverSystem = {
-    drivers: {
-        'driver-001': {
-            id: 'driver-001',
-            name: 'Mohammed Ali',
-            email: 'mohammed@antalya.com',
-            phone: '+44 7700 900123',
-            password: 'driver123',
-            dob: '1990-05-15',
-            gender: 'male',
-            secretCode: 'DRV-001-MA',
-            deliveries: 247,
-            rating: 4.9,
-            active: true,      // Can login
-            available: true,   // Can receive orders
-            profilePicture: null,
-            currentLocation: null
-        },
-        'driver-002': {
-            id: 'driver-002',
-            name: 'Ahmed Hassan',
-            email: 'ahmed@antalya.com',
-            phone: '+44 7700 900124',
-            password: 'driver123',
-            dob: '1988-08-20',
-            gender: 'male',
-            secretCode: 'DRV-002-AH',
-            deliveries: 189,
-            rating: 4.8,
-            active: true,
-            available: true,
-            profilePicture: null,
-            currentLocation: null
-        },
-        'driver-003': {
-            id: 'driver-003',
-            name: 'Fatima Khan',
-            email: 'fatima@antalya.com',
-            phone: '+44 7700 900125',
-            password: 'driver123',
-            dob: '1992-12-10',
-            gender: 'female',
-            secretCode: 'DRV-003-FK',
-            deliveries: 156,
-            rating: 4.95,
-            active: true,
-            available: true,
-            profilePicture: null,
-            currentLocation: null
-        }
-    },
+    // Drivers will be added by owner through the dashboard
+    drivers: {},
     get: function(id) {
         return this.drivers[id] || null;
     },
@@ -690,15 +641,11 @@ function updateDistanceInfo() {
     distanceInfo.style.display = 'block';
 }
 
-// Format price in GBP
-function formatPrice(amount) {
-    return UK_CONFIG.currency + parseFloat(amount).toFixed(2);
-}
-
 // Email Verification System
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
 let otpTimers = {}; // Track OTP timers per email
 
 async function sendVerificationEmail(email, code, type = 'verification') {
@@ -734,11 +681,9 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         };
         
         startOTPCountdown(email);
-        console.log('✅ Verification email sent successfully');
-        alert('📧 Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.'); // ADD THIS
+        alert('📧 Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.');
         return true;
     } catch (error) {
-        console.error('❌ EmailJS Error:', error);
         alert('❌ Failed to send verification email. Please try again.');
         return false;
     }
@@ -2609,7 +2554,7 @@ async function sendPasswordResetCode() {
         </div>
         <div class="form-group">
             <label>New Password *</label>
-            <input type="password" id="newPasswordReset" placeholder="Min 6 characters">
+            <input type="password" id="newPasswordReset" placeholder="Min 8 characters">
         </div>
         <div class="form-group">
             <label>Confirm Password *</label>
@@ -2850,7 +2795,6 @@ function verifyCode() {
 
 function resendCode() {
     // Resend functionality disabled for Login/Signup
-    console.log('Resend code is disabled for this flow.');
     return;
 }
 
@@ -2870,8 +2814,7 @@ function loginWithGoogle() {
       // Mobile: Direct prompt
     google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            console.log('Google One Tap not available');
-            // Show clearer message
+            // Google One Tap not available
                alert('⚠️ Google Sign-In not available\n\nPlease use Email/Password login instead.');
            }
        });
@@ -2880,7 +2823,6 @@ function loginWithGoogle() {
             google.accounts.id.prompt();
         }
     } catch (error) {
-        console.error('Google Sign-In Error:', error);
         alert('❌ Google login unavailable. Please use email login.');
     }
 }
@@ -2888,7 +2830,6 @@ function loginWithGoogle() {
 function handleGoogleCallback(response) {
 
         if (!response || !response.credential) {
-        console.error('Google login failed:', response);
         alert('❌ Google login failed. Please try again or use email login.');
         return;
     }
@@ -3057,8 +2998,6 @@ function initMap() {
         selectedLocation = { lat, lng };
         updateDistanceInfo();
         googleMap.panTo(e.latLng);
-        
-        console.log('Location selected:', lat, lng);
     });
 }
 
@@ -3276,7 +3215,7 @@ function closeModal(modalId) {
         // SHOW NAVIGATION (if no other modals open)
         setTimeout(showNavigation, 50);
     } catch (e) {
-        console.error('Error closing modal:', e);
+        // Error closing modal - silently handled
     }
 }
 
@@ -3292,7 +3231,7 @@ function openModal(modalId) {
         // HIDE NAVIGATION
         hideNavigation();
     } catch (e) {
-        console.error('Error opening modal:', e);
+        // Error opening modal - silently handled
     }
 }
 
@@ -3396,10 +3335,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadBankDetails();
     loadMenuData(); // Load custom menu data from owner
     
-    // Debug: Check if data loaded correctly
-    console.log('📦 Categories:', Object.keys(categories).length);
-    console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
-    
     // Render categories FIRST
     renderCategories();
     
@@ -3411,7 +3346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         loadReviews();
     } catch(e) {
-        console.error('Error loading reviews:', e);
+        // Error loading reviews - silently handled
     }
     
     // Update badges
@@ -3476,7 +3411,6 @@ function setupMobileNavigation() {
             newBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Mobile nav clicked:', index);
                 actions[index]();
             });
             
@@ -4236,8 +4170,6 @@ function updateOwnerButtonVisibility() {
 // Make confirmLocation globally accessible
 window.confirmLocation = confirmLocation;
 window.displayReviews = displayReviews;
-
-console.log('✅ Antalya Shawarma script loaded successfully');
 
 // ========================================
 // ORDER CANCELLATION

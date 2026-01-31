@@ -41,7 +41,6 @@ const API = {
             
             return result;
         } catch (error) {
-            console.error('API Error:', error);
             throw error;
         }
     },
@@ -492,5 +491,5 @@ window.API = API;
 
 // Initialize - check for existing token
 if (API.token) {
-    console.log('🔐 Auth token found, user may be logged in');
+    // Auth token present - user may be logged in
 }
