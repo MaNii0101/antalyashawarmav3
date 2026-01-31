@@ -916,3 +916,4 @@ window.confirmLogoutDriver = confirmLogoutDriver;
 window.logoutDriver = logoutDriver;
 window.updateDriverLoginUI = updateDriverLoginUI;
 window.generateDriverSecretCode = generateDriverSecretCode;
+window.openDriverRating = openDriverRating;

@@ -1929,6 +1929,7 @@ function showAccount() {
 // ========================================
 // ORDER HISTORY (Separate from Account)
 // ========================================
+
 function showOrderHistory() {
     if (!currentUser) {
         showLogin();
@@ -1940,26 +1941,21 @@ function showOrderHistory() {
     
     if (!modal || !content) return;
     
-    const userOrders = [...orderHistory.filter(o => o.userId === currentUser.email)];
-    const pendingUserOrders = pendingOrders.filter(o => o.userId === currentUser.email);
+    // 1. Get Completed History
+    const userOrders = orderHistory.filter(o => o.userId === currentUser.email);
     
-    // Merge lists to show most recent updates
+    // 2. Get Pending Orders (FIX: Exclude any IDs that are already in History to prevent duplicates)
+    const historyIds = new Set(userOrders.map(o => o.id));
+    const pendingUserOrders = pendingOrders.filter(o => 
+        o.userId === currentUser.email && !historyIds.has(o.id)
+    );
+    
+    // 3. Merge: History takes priority for status
     const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
-    // Remove duplicates based on ID (keep the one from pendingOrders if exists as it's most active)
-    const uniqueOrders = [];
-    const seenIds = new Set();
-    
-    for (const order of allOrders) {
-        if (!seenIds.has(order.id)) {
-            uniqueOrders.push(order);
-            seenIds.add(order.id);
-        }
-    }
-    
-    if (uniqueOrders.length === 0) {
+    if (allOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
@@ -1968,7 +1964,7 @@ function showOrderHistory() {
             </div>
         `;
     } else {
-        content.innerHTML = uniqueOrders.map(o => {
+        content.innerHTML = allOrders.map(o => {
             const statusColor = o.status === 'completed' ? '#2a9d8f' : 
                                o.status === 'pending' ? '#f4a261' : 
                                o.status === 'cancelled' ? '#ef4444' :
@@ -1978,7 +1974,10 @@ function showOrderHistory() {
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
             const paymentIcon = o.paymentMethod === 'cash' ? '💵' : o.paymentMethod === 'applepay' ? '' : '💳';
             
-            const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
+            // Check for driver info
+            const driver = (o.status === 'out_for_delivery' || o.status === 'completed') && o.driverId 
+                ? (window.driverSystem && window.driverSystem.get(o.driverId)) 
+                : null;
             
             return `
                 <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border-left: 3px solid ${statusColor};">
@@ -2012,8 +2011,14 @@ function showOrderHistory() {
                             📍 Track Driver Live
                         </button>
                     ` : ''}
+
+                    ${/* FIX: ADD RATE BUTTON FOR COMPLETED ORDERS */ ''}
+                    ${o.status === 'completed' && !o.driverRated ? `
+                        <button onclick="if(window.openDriverRating) { window.openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); } else { alert('Rating system loading...'); }" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
+                            ⭐ Rate Driver
+                        </button>
+                    ` : ''}
                     
-                    ${/* CANCEL BUTTON: Only if status is pending */ ''}
                     ${o.status === 'pending' ? `
                         <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
                             ❌ Cancel Order
