@@ -178,21 +178,33 @@ if (typeof renderPopularFoodStats === 'function') {
 }
 
 function acceptOrder(orderId) {
+    // 1. Find in Pending
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
     
-    // FIX: Guard against cancelled orders
     if (order.status === 'cancelled') {
         alert('❌ Cannot accept: This order was cancelled by the user.');
-        showRestaurantDashboard(); // Refresh view to remove it
+        showRestaurantDashboard();
         return;
     }
     
-    order.status = 'accepted';
+    // 2. UPDATE STATUS
+    const newStatus = 'accepted';
+    
+    // Update Pending Reference
+    order.status = newStatus;
     order.acceptedAt = new Date().toISOString();
+    
+    // FIX: SYNC WITH HISTORY (Crucial!)
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = newStatus;
+        historyOrder.acceptedAt = order.acceptedAt;
+    }
+    
     saveData();
     
-    // Send notification to customer
+    // 3. Notify & Refresh
     addNotification(order.userId, {
         type: 'order_accepted',
         title: '✅ Order Accepted!',
@@ -202,8 +214,6 @@ function acceptOrder(orderId) {
     
     playNotificationSound();
     showRestaurantDashboard();
-    
-    alert(`✅ Order #${orderId} accepted!\n\nClick "Notify All Drivers" to alert available drivers.`);
 }
 
 function notifyAllAvailableDrivers(orderId) {
@@ -1380,34 +1390,34 @@ function previewCategoryImage() {
     }
 }
 
-
 function renderPopularFoodStats() {
-    // Check if the calculation function exists
+    // 1. Target YOUR specific ID from index.html
+    const container = document.getElementById('popularItemsList');
+    if (!container) return;
+
+    // 2. Check function existence
     if (!window.getBestSellingItems) return;
 
+    // 3. Get Real Data
     const topItems = window.getBestSellingItems();
     
-    let html = `
-        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem;">
-            <h3 style="color: #f59e0b; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                🔥 Popular Items (Real Data)
-            </h3>
-    `;
+    // 4. Generate HTML (Items ONLY, no outer box/header)
+    let html = '';
     
     if (topItems.length === 0) {
-        html += `<p style="color: rgba(255,255,255,0.5);">No sales data yet.</p>`;
+        html = `<div style="padding: 0.8rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center;">No sales data yet</div>`;
     } else {
-        html += `<div style="display: flex; flex-direction: column; gap: 0.8rem;">`;
-        
-        topItems.forEach((item, index) => {
+        // Show top 5 items
+        topItems.slice(0, 5).forEach((item, index) => {
+            // Your custom Ranking Logic
             const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'rgba(255,255,255,0.1)';
             const rankIcon = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
             
-            // FIX: Use window.utils.formatPrice instead of formatPrice
+            // Your Price Logic
             const revenueDisplay = window.utils ? window.utils.formatPrice(item.revenue) : '£' + item.revenue.toFixed(2);
 
             html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; border-left: 3px solid ${rankColor};">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; border-left: 3px solid ${rankColor}; margin-bottom: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span style="font-weight: 700; font-size: 1.1rem; width: 30px; text-align: center;">${rankIcon}</span>
                         <div>
@@ -1421,27 +1431,10 @@ function renderPopularFoodStats() {
                 </div>
             `;
         });
-        html += `</div>`;
     }
     
-    html += `</div>`;
-    
-    const container = document.getElementById('popularFoodContainer');
-    if (container) {
-        container.innerHTML = html;
-    } else {
-        // Fallback
-        const dashboardContent = document.getElementById('restaurantDashboard')?.querySelector('.modal-content');
-        if (dashboardContent) {
-            const existing = document.getElementById('generatedPopularFood');
-            if (existing) existing.remove();
-            
-            const div = document.createElement('div');
-            div.id = 'generatedPopularFood';
-            div.innerHTML = html;
-            dashboardContent.appendChild(div);
-        }
-    }
+    // 5. Inject into your existing list
+    container.innerHTML = html;
 }
 
 // ========================================

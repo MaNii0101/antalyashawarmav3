@@ -103,25 +103,27 @@ function resetSelectedData() {
     
     if (!confirm('⚠️ ' + message)) return;
     
-    // Reset selected items
-    if (resetUsers) {
+ if (resetUsers) {
         localStorage.removeItem('restaurantUsers');
         localStorage.removeItem('currentUser');
-        userDatabase = [];
-        currentUser = null;
-        
-        // Also delete all reviews since users are deleted
         localStorage.removeItem('restaurantReviews');
+        
+        // FIX: Clear the memory arrays INSTANTLY
+        userDatabase = [];
         restaurantReviews = [];
+        currentUser = null;
     }
-    
+
     if (resetOrders) {
         localStorage.removeItem('orderHistory');
         localStorage.removeItem('pendingOrders');
+        
+        // FIX: Clear the memory arrays INSTANTLY
         orderHistory = [];
         pendingOrders = [];
+        // Now if you click "All Orders" immediately, it will show 0
     }
-    
+
     if (resetDrivers) {
         localStorage.removeItem('drivers');
         localStorage.removeItem('driverLiveLocations');
@@ -1941,43 +1943,44 @@ function showOrderHistory() {
     
     if (!modal || !content) return;
     
-    // 1. Get Completed History
-    const userOrders = orderHistory.filter(o => o.userId === currentUser.email);
+    // 1. Create a Map to ensure UNIQUE Orders by ID
+    const uniqueOrders = new Map();
     
-    // 2. Get Pending Orders (FIX: Don't show duplicates. If it's in History, ignore the Pending version)
-    const historyIds = new Set(userOrders.map(o => o.id));
-    const pendingUserOrders = pendingOrders.filter(o => 
-        o.userId === currentUser.email && !historyIds.has(o.id)
-    );
+    // 2. Load History first (Older status)
+    orderHistory.filter(o => o.userId === currentUser.email).forEach(o => {
+        uniqueOrders.set(o.id, o);
+    });
     
-    // 3. Merge: Now we only have unique orders. History (Completed) takes priority.
-    const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
+    // 3. Load Pending second (Newer/Live status)
+    // This OVERWRITES the History entry if the ID is the same.
+    // This effectively "hides" the old pending card and shows the new status.
+    pendingOrders.filter(o => o.userId === currentUser.email).forEach(o => {
+        uniqueOrders.set(o.id, o);
+    });
+    
+    // 4. Convert back to list and Sort
+    const allOrders = Array.from(uniqueOrders.values()).sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
+    // 5. Render
     if (allOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
                 <p>No orders yet</p>
-                <p style="font-size: 0.85rem; margin-top: 0.5rem;">Your order history will appear here</p>
             </div>
         `;
     } else {
         content.innerHTML = allOrders.map(o => {
-            const statusColor = o.status === 'completed' ? '#2a9d8f' : 
-                               o.status === 'pending' ? '#f4a261' : 
-                               o.status === 'cancelled' ? '#ef4444' :
-                               o.status === 'out_for_delivery' ? '#3b82f6' : 
-                               o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
+            // Determine Status Color
+            let statusColor = '#f4a261'; // Default Pending
+            if (o.status === 'accepted') statusColor = '#10b981';
+            if (o.status === 'completed') statusColor = '#2a9d8f';
+            if (o.status === 'cancelled' || o.status === 'rejected') statusColor = '#ef4444';
+            if (o.status === 'out_for_delivery') statusColor = '#3b82f6';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
-            const paymentIcon = o.paymentMethod === 'cash' ? '💵' : o.paymentMethod === 'applepay' ? '' : '💳';
-            
-            // Check for driver info
-            const driver = (o.status === 'out_for_delivery' || o.status === 'completed') && o.driverId 
-                ? (window.driverSystem && window.driverSystem.get(o.driverId)) 
-                : null;
             
             return `
                 <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border-left: 3px solid ${statusColor};">
@@ -1987,47 +1990,31 @@ function showOrderHistory() {
                     </div>
                     
                     <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
-                        ${o.items.map(i => `${i.name}`).join(', ')}
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">${o.items.length} items</span>
-                        <span style="font-weight: 700; color: #2a9d8f;">${formatPrice(o.total)}</span>
+                        ${o.items.map(i => `${i.name} x${i.quantity}`).join(', ')}
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">${new Date(o.createdAt).toLocaleString()}</span>
-                        <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${paymentIcon} ${o.paymentMethod || 'N/A'}</span>
+                        <span style="font-weight: 700; color: #10b981;">${window.utils ? window.utils.formatPrice(o.total) : '£'+o.total.toFixed(2)}</span>
                     </div>
                     
-                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
-                    
-                    ${o.status === 'out_for_delivery' && driver ? `
-                        <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
-                            <div style="font-weight: 600; font-size: 0.9rem;">${driver.name || o.driverName || 'Driver'}</div>
-                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">On the way</div>
-                        </div>
-                        <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
-                            📍 Track Driver Live
+                    ${o.status === 'out_for_delivery' ? `
+                        <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.9rem;">
+                            📍 Track Driver
                         </button>
                     ` : ''}
 
-                    ${/* FIX: THIS IS THE RATE BUTTON CODE */ ''}
                     ${o.status === 'completed' && !o.driverRated ? `
-                        <button onclick="if(window.openDriverRating) { window.openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); } else { alert('Rating system loading...'); }" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
+                        <button onclick="if(window.openDriverRating) window.openDriverRating('${o.id}', '${o.driverId}', 'Driver');" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
                             ⭐ Rate Driver
                         </button>
                     ` : ''}
                     
                     ${o.status === 'pending' ? `
-                        <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
+                        <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
                             ❌ Cancel Order
                         </button>
                     ` : ''}
-                    
-                    <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
-                        🔁 Reorder
-                    </button>
                 </div>
             `;
         }).join('');
