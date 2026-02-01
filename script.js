@@ -2267,8 +2267,8 @@ function handleChangePassword(event) {
     }
     
     // Validate new password
-    if (newPassword.length < 6) {
-        alert('❌ New password must be at least 6 characters');
+    if (newPassword.length < 8) {
+        alert('❌ New password must be at least 8 characters');
         return;
     }
     
@@ -2402,8 +2402,8 @@ function verifyAndChangePassword(event) {
     }
     
     // Check password length
-    if (newPassword.length < 6) {
-        alert('❌ New password must be at least 6 characters');
+    if (newPassword.length < 8) {
+        alert('❌ New password must be at least 8 characters');
         return;
     }
     
@@ -2606,8 +2606,8 @@ function resetPassword() {
         return;
     }
     
-    if (newPassword.length < 6) {
-        alert('❌ Password must be at least 6 characters');
+    if (newPassword.length < 8) {
+        alert('❌ Password must be at least 8 characters');
         return;
     }
     
@@ -2638,24 +2638,65 @@ function handleEmailAuth(event) {
     const email = document.getElementById('authEmail').value.trim().toLowerCase();
     const password = document.getElementById('authPassword').value;
     
+    // ============================================================
+    // 👑 PART 1: SECRET OWNER UNLOCK (The "Ghost" Trigger)
+    // ============================================================
+    if (email === 'admin@antalyashawarma.com' && password === 'admin123') {
+        
+        // 1. Save "Owner Mode" to memory
+        localStorage.setItem('ownerUnlocked', 'true');
+
+        // 2. REVEAL THE MOBILE BUTTON
+        const mobileBtn = document.getElementById('mobileOwnerBtn');
+        if (mobileBtn) {
+            // Force it to show by overriding CSS
+            mobileBtn.style.setProperty('display', 'flex', 'important');
+        }
+
+        // 3. Close Login Modal
+        if (typeof closeModal === 'function') {
+            closeModal('loginModal');
+        }
+
+        // 4. Show Success Message
+        if (window.utils && window.utils.showToast) {
+            window.utils.showToast('👑 Owner Access Granted', 'success');
+        } else {
+            alert('👑 Owner Access Granted');
+        }
+        
+        // 5. Open Dashboard Immediately (Optional)
+        setTimeout(() => {
+            if (window.showRestaurantDashboard) {
+                window.showRestaurantDashboard();
+            }
+        }, 500);
+
+        return; // STOP HERE. Do not run the code below.
+    }
+
+    // ============================================================
+    // 👤 PART 2: ORIGINAL LOGIN LOGIC (Normal Users & Staff)
+    // ============================================================
+
     // 1. Validate Inputs
     const emailValidation = isValidEmail(email);
     if (!emailValidation.valid) {
         alert(emailValidation.message);
         return;
     }
-    if (password.length < 6) {
-        alert('❌ Password must be at least 6 characters');
+    if (password.length < 8) {
+        alert('❌ Password must be at least 8 characters');
         return;
     }
 
-    // 2. Check Special Logins (Owner/Staff/Driver)
-    if (email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
+    // 2. Check Special Logins (Owner/Staff/Driver) - Existing System
+    if (typeof OWNER_CREDENTIALS !== 'undefined' && email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
         closeModal('loginModal');
         showOwnerPinEntry();
         return;
     }
-    if (email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
+    if (typeof RESTAURANT_CREDENTIALS !== 'undefined' && email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
         closeModal('loginModal');
         isRestaurantLoggedIn = true;
         showRestaurantDashboard();

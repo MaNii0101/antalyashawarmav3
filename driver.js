@@ -274,7 +274,7 @@ function showDriverDashboard(driver = null) {
                     <!-- Payment Method for Driver -->
                     <div style="margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.3)' : 'rgba(42,157,143,0.3)'}; padding: 0.6rem; border-radius: 8px; text-align: center; font-weight: 700; color: ${order.paymentMethod === 'cash' ? '#f4a261' : '#2a9d8f'};">
-                            ${order.paymentMethod === 'cash' ? '💷 CASH - Collect £' + order.total.toFixed(2) : order.paymentMethod === 'applepay' ? '🍎 Apple Pay - PAID' : '💳 Card - PAID'}
+                            ${order.paymentMethod === 'cash' ? '💵 CASH - Collect £' + order.total.toFixed(2) : order.paymentMethod === 'applepay' ? ' Apple Pay - PAID' : '💳 Card - PAID'}
                         </div>
                     </div>
                 </div>

@@ -1478,3 +1478,18 @@ window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
 
+// ==========================================
+// RESTORE OWNER BUTTON ON LOAD
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if Owner Mode is active in storage
+    if (localStorage.getItem('ownerUnlocked') === 'true') {
+        
+        const mobileBtn = document.getElementById('mobileOwnerBtn');
+        
+        // Show the button again if it exists
+        if (mobileBtn) {
+            mobileBtn.style.setProperty('display', 'flex', 'important');
+        }
+    }
+});

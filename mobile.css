@@ -748,3 +748,8 @@ html {
         z-index: 3002 !important;
     }
 }
+
+/* GHOST MODE: Hide the mobile owner button by default */
+#mobileOwnerBtn {
+    display: none !important;
+}
