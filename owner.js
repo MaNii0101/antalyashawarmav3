@@ -1482,14 +1482,14 @@ window.handleCategoryImageUpload = handleCategoryImageUpload;
 // RESTORE OWNER BUTTON ON LOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if Owner Mode is active in storage
+    // Check if we unlocked the button before
     if (localStorage.getItem('ownerUnlocked') === 'true') {
         
+        const desktopBtn = document.getElementById('ownerAccessBtn');
         const mobileBtn = document.getElementById('mobileOwnerBtn');
-        
-        // Show the button again if it exists
-        if (mobileBtn) {
-            mobileBtn.style.setProperty('display', 'flex', 'important');
-        }
+
+        // Make both visible again
+        if (desktopBtn) desktopBtn.style.setProperty('display', 'flex', 'important');
+        if (mobileBtn) mobileBtn.style.setProperty('display', 'flex', 'important');
     }
 });

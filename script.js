@@ -2635,37 +2635,43 @@ function resetPassword() {
 function handleEmailAuth(event) {
     event.preventDefault();
     
+    // Get values from the login form
     const email = document.getElementById('authEmail').value.trim().toLowerCase();
     const password = document.getElementById('authPassword').value;
     
     // ============================================================
-    // 👑 PART 1: SECRET OWNER UNLOCK (The "Ghost" Trigger)
+    // 👑 PART 1: GHOST MODE (SECRET OWNER UNLOCK)
     // ============================================================
     if (email === 'admin@antalyashawarma.com' && password === 'admin123') {
         
         // 1. Save "Owner Mode" to memory
         localStorage.setItem('ownerUnlocked', 'true');
 
-        // 2. REVEAL THE MOBILE BUTTON
+        // 2. REVEAL MOBILE BUTTON
         const mobileBtn = document.getElementById('mobileOwnerBtn');
         if (mobileBtn) {
-            // Force it to show by overriding CSS
             mobileBtn.style.setProperty('display', 'flex', 'important');
         }
 
-        // 3. Close Login Modal
+        // 3. REVEAL DESKTOP BUTTON (If exists)
+        const desktopBtn = document.getElementById('ownerAccessBtn');
+        if (desktopBtn) {
+            desktopBtn.style.setProperty('display', 'flex', 'important');
+        }
+
+        // 4. Close Login Modal
         if (typeof closeModal === 'function') {
             closeModal('loginModal');
         }
 
-        // 4. Show Success Message
+        // 5. Show Success Message
         if (window.utils && window.utils.showToast) {
             window.utils.showToast('👑 Owner Access Granted', 'success');
         } else {
             alert('👑 Owner Access Granted');
         }
         
-        // 5. Open Dashboard Immediately (Optional)
+        // 6. Open Dashboard Immediately
         setTimeout(() => {
             if (window.showRestaurantDashboard) {
                 window.showRestaurantDashboard();
@@ -2676,7 +2682,7 @@ function handleEmailAuth(event) {
     }
 
     // ============================================================
-    // 👤 PART 2: ORIGINAL LOGIN LOGIC (Normal Users & Staff)
+    // 👤 PART 2: NORMAL LOGIN LOGIC (Customers, Staff, Drivers)
     // ============================================================
 
     // 1. Validate Inputs
@@ -2690,18 +2696,20 @@ function handleEmailAuth(event) {
         return;
     }
 
-    // 2. Check Special Logins (Owner/Staff/Driver) - Existing System
+    // 2. Check Special Logins (Legacy Owner / Staff / Driver)
     if (typeof OWNER_CREDENTIALS !== 'undefined' && email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
         closeModal('loginModal');
-        showOwnerPinEntry();
+        if (window.showOwnerPinEntry) window.showOwnerPinEntry();
         return;
     }
+    
     if (typeof RESTAURANT_CREDENTIALS !== 'undefined' && email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
         closeModal('loginModal');
         isRestaurantLoggedIn = true;
-        showRestaurantDashboard();
+        if (window.showRestaurantDashboard) window.showRestaurantDashboard();
         return;
     }
+    
     if (window.driverSystem) {
         const driver = window.driverSystem.getByEmail(email);
         if (driver && driver.password === password) {
@@ -2712,7 +2720,7 @@ function handleEmailAuth(event) {
         }
     }
 
-    // 3. Handle User Login or Signup
+    // 3. Handle Customer Login or Signup
     if (isSignUpMode) {
         // --- SIGN UP ---
         const existing = userDatabase.find(u => u.email === email);
@@ -2721,7 +2729,12 @@ function handleEmailAuth(event) {
             return;
         }
         // Create account immediately (No verification)
-        completeSignUp();
+        if (typeof completeSignUp === 'function') {
+            completeSignUp();
+        } else {
+            // Fallback if completeSignUp is missing
+            alert('❌ Error: Signup function missing');
+        }
         
     } else {
         // --- LOGIN ---
@@ -4199,18 +4212,34 @@ function updateAuthUI() {
     updateOwnerButtonVisibility();
 }
 
-// Show/hide owner button
+// Show/hide owner button (Corrected to respect Ghost Mode)
 function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    const shouldShow = currentUser && currentUser.email === 'admin@antalyashawarma.com';
+    // Check BOTH: Is Ghost Mode unlocked? OR Is Admin User logged in?
+    const isGhostUnlocked = localStorage.getItem('ownerUnlocked') === 'true';
+    const isAdminUser = currentUser && currentUser.email === 'admin@antalyashawarma.com';
+    
+    const shouldShow = isGhostUnlocked || isAdminUser;
     
     if (desktopOwnerBtn) {
-        desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
+        if (shouldShow) {
+            // Force Show (Override CSS)
+            desktopOwnerBtn.style.setProperty('display', 'flex', 'important');
+        } else {
+            desktopOwnerBtn.style.display = 'none';
+        }
     }
+    
     if (mobileOwnerBtn) {
-        mobileOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
+        if (shouldShow) {
+            // Force Show (Override CSS)
+            mobileOwnerBtn.style.setProperty('display', 'flex', 'important');
+        } else {
+            // Force Hide
+            mobileOwnerBtn.style.setProperty('display', 'none', 'important');
+        }
     }
 }
 
