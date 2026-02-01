@@ -71,6 +71,19 @@ html {
         visibility: hidden !important;
     }
     
+    /* HIDE NAV - WHEN FULLSCREEN DASHBOARDS ARE OPEN */
+    /* Driver Dashboard, Restaurant Dashboard, Owner Dashboard */
+    body:has(#driverDashboardModal[style*="display: block"]) .mobile-bottom-nav,
+    body:has(#driverDashboardModal[style*="display: block"]) .header,
+    body:has(#restaurantDashboard[style*="display: block"]) .mobile-bottom-nav,
+    body:has(#restaurantDashboard[style*="display: block"]) .header,
+    body:has(#ownerDashboard[style*="display: block"]) .mobile-bottom-nav,
+    body:has(#ownerDashboard[style*="display: block"]) .header {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    
     .mobile-nav-item {
         display: -webkit-box !important;
         display: -webkit-flex !important;
@@ -431,8 +444,8 @@ html {
         max-width: 460px !important;
         margin: auto !important;
         border-radius: var(--radius-xl) !important;
-        max-height: calc(90vh - 40px) !important;
-        padding: 2rem 1.5rem !important;
+        max-height: calc(92vh - 20px) !important;
+        padding: 1.75rem 1.3rem 1.5rem !important;
         background: rgba(18, 18, 18, 0.98) !important;
         backdrop-filter: blur(25px) !important;
         -webkit-backdrop-filter: blur(25px) !important;
@@ -479,13 +492,13 @@ html {
     
     /* FORMS */
     .form-group {
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
     }
     
     .form-group label {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
         display: block;
         letter-spacing: 0.2px;
     }
@@ -494,14 +507,23 @@ html {
     .form-group textarea,
     .form-group select {
         width: 100% !important;
-        font-size: 16px !important;
-        padding: 1rem !important;
+        font-size: 16px !important; /* Prevents iOS zoom on focus */
+        padding: 0.75rem 0.85rem !important;
         border-radius: var(--radius) !important;
-        min-height: 50px !important;
+        min-height: 46px !important;
         background: rgba(255, 255, 255, 0.04) !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
         color: white !important;
         transition: all 0.2s !important;
+    }
+    
+    /* Date input specific — prevent oversized native date picker on mobile */
+    .form-group input[type="date"] {
+        padding: 0.65rem 0.85rem !important;
+        min-height: 44px !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        line-height: 1.4 !important;
     }
     
     .form-group input:focus,
@@ -513,12 +535,12 @@ html {
     
     .submit-btn {
         width: 100% !important;
-        padding: 1.1rem !important;
-        font-size: 1.05rem !important;
-        font-weight: 800 !important;
-        border-radius: var(--radius-lg) !important;
-        min-height: 54px !important;
-        box-shadow: 0 6px 20px rgba(230, 57, 70, 0.3) !important;
+        padding: 0.85rem !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        border-radius: var(--radius) !important;
+        min-height: 48px !important;
+        box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2) !important;
         transition: all 0.3s !important;
     }
     
@@ -683,6 +705,92 @@ html {
     .mobile-owner-btn[style*="display: flex"] {
         display: flex !important;
     }
+    
+    /* ========================================
+       FULLSCREEN DASHBOARDS — MOBILE FIX
+       Ensures dashboards feel standalone
+       ======================================== */
+    #driverDashboardModal,
+    #restaurantDashboard,
+    #ownerDashboard {
+        padding-bottom: 0 !important;
+    }
+    
+    #driverDashboardModal > div,
+    #driverDashboardContent {
+        padding: 0.8rem !important;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+    }
+    
+    /* Driver dashboard buttons — balanced grid sizing */
+    #driverDashboardContent button {
+        font-size: 0.9rem !important;
+        min-height: 44px !important;
+    }
+    
+    /* Restaurant dashboard — fix padding on mobile */
+    #restaurantDashboard {
+        padding: 0.8rem !important;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+    }
+    
+    /* ========================================
+       SECONDARY / INLINE BUTTONS
+       Smaller buttons for non-primary actions
+       ======================================== */
+    
+    /* "Pick Location on Map" and similar action buttons inside forms */
+    .form-group .submit-btn,
+    .form-group button[type="button"] {
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.88rem !important;
+        min-height: 42px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Staff Access buttons (Employer / Driver) in login modal */
+    .modal-content [style*="grid-template-columns: 1fr 1fr"] > button {
+        padding: 0.75rem 0.5rem !important;
+        font-size: 0.85rem !important;
+        min-height: 44px !important;
+    }
+    
+    /* Staff button emoji icons — reduce from 1.8rem */
+    .modal-content [style*="grid-template-columns: 1fr 1fr"] > button > span:first-child {
+        font-size: 1.4rem !important;
+    }
+    
+    /* "Change Photo" and similar small action buttons */
+    .modal-content button[onclick*="click()"],
+    .modal-content button[onclick*="openChange"],
+    .modal-content button[onclick*="showDriver"] {
+        padding: 0.5rem 0.85rem !important;
+        font-size: 0.85rem !important;
+        min-height: 40px !important;
+    }
+    
+    /* Profile picture container — slightly smaller on mobile */
+    .modal-content [style*="width: 120px"][style*="height: 120px"] {
+        width: 90px !important;
+        height: 90px !important;
+        font-size: 2.2rem !important;
+    }
+    
+    /* Modal heading — tighter spacing */
+    .modal-content h2 {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        letter-spacing: -0.3px;
+    }
+    
+    /* Modal emoji icons above headings — reduce size */
+    .modal-content > div:first-child [style*="font-size: 4rem"],
+    .modal-content [style*="font-size: 3rem"] {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.3rem !important;
+    }
 }
 
 /* SMALL SCREENS */
@@ -747,9 +855,4 @@ html {
         position: relative !important;
         z-index: 3002 !important;
     }
-}
-
-/* GHOST MODE: Hide the mobile owner button by default */
-#mobileOwnerBtn {
-    display: none !important;
 }

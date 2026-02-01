@@ -103,27 +103,25 @@ function resetSelectedData() {
     
     if (!confirm('⚠️ ' + message)) return;
     
- if (resetUsers) {
+    // Reset selected items
+    if (resetUsers) {
         localStorage.removeItem('restaurantUsers');
         localStorage.removeItem('currentUser');
-        localStorage.removeItem('restaurantReviews');
-        
-        // FIX: Clear the memory arrays INSTANTLY
         userDatabase = [];
-        restaurantReviews = [];
         currentUser = null;
+        
+        // Also delete all reviews since users are deleted
+        localStorage.removeItem('restaurantReviews');
+        restaurantReviews = [];
     }
-
+    
     if (resetOrders) {
         localStorage.removeItem('orderHistory');
         localStorage.removeItem('pendingOrders');
-        
-        // FIX: Clear the memory arrays INSTANTLY
         orderHistory = [];
         pendingOrders = [];
-        // Now if you click "All Orders" immediately, it will show 0
     }
-
+    
     if (resetDrivers) {
         localStorage.removeItem('drivers');
         localStorage.removeItem('driverLiveLocations');
@@ -1931,7 +1929,6 @@ function showAccount() {
 // ========================================
 // ORDER HISTORY (Separate from Account)
 // ========================================
-
 function showOrderHistory() {
     if (!currentUser) {
         showLogin();
@@ -1943,29 +1940,26 @@ function showOrderHistory() {
     
     if (!modal || !content) return;
     
-    // ============================================================
-    // FIX: SMART DEDUPLICATION (The "Ghost Card" Killer)
-    // ============================================================
-    const uniqueOrders = new Map();
+    const userOrders = [...orderHistory.filter(o => o.userId === currentUser.email)];
+    const pendingUserOrders = pendingOrders.filter(o => o.userId === currentUser.email);
     
-    // 1. Load History first (Older status)
-    orderHistory.filter(o => o.userId === currentUser.email).forEach(o => {
-        uniqueOrders.set(o.id, o);
-    });
-    
-    // 2. Load Pending second (Newer/Live status)
-    // This OVERWRITES the History entry if the ID is the same.
-    // This forces the UI to show the LIVE status (e.g. Accepted) instead of the old one (Pending).
-    pendingOrders.filter(o => o.userId === currentUser.email).forEach(o => {
-        uniqueOrders.set(o.id, o);
-    });
-    
-    // 3. Convert Map back to Array and Sort (Newest first)
-    const allOrders = Array.from(uniqueOrders.values()).sort((a, b) => 
+    // Merge lists to show most recent updates
+    const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
-    if (allOrders.length === 0) {
+    // Remove duplicates based on ID (keep the one from pendingOrders if exists as it's most active)
+    const uniqueOrders = [];
+    const seenIds = new Set();
+    
+    for (const order of allOrders) {
+        if (!seenIds.has(order.id)) {
+            uniqueOrders.push(order);
+            seenIds.add(order.id);
+        }
+    }
+    
+    if (uniqueOrders.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
@@ -1974,21 +1968,17 @@ function showOrderHistory() {
             </div>
         `;
     } else {
-        content.innerHTML = allOrders.map(o => {
-            // Determine Status Colors
-            let statusColor = '#f4a261'; // Default Orange (Pending)
-            if (o.status === 'accepted') statusColor = '#10b981'; // Green
-            if (o.status === 'completed') statusColor = '#2a9d8f'; // Teal
-            if (o.status === 'cancelled' || o.status === 'rejected') statusColor = '#ef4444'; // Red
-            if (o.status === 'out_for_delivery') statusColor = '#3b82f6'; // Blue
-            if (o.status === 'waiting_driver') statusColor = '#8b5cf6'; // Purple
+        content.innerHTML = uniqueOrders.map(o => {
+            const statusColor = o.status === 'completed' ? '#2a9d8f' : 
+                               o.status === 'pending' ? '#f4a261' : 
+                               o.status === 'cancelled' ? '#ef4444' :
+                               o.status === 'out_for_delivery' ? '#3b82f6' : 
+                               o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
+            const paymentIcon = o.paymentMethod === 'cash' ? '💵' : o.paymentMethod === 'applepay' ? '' : '💳';
             
-            // Check for driver info (for tracking)
-            const driver = (o.status === 'out_for_delivery' || o.status === 'completed') && o.driverId 
-                ? (window.driverSystem && window.driverSystem.get(o.driverId)) 
-                : null;
+            const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
                 <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border-left: 3px solid ${statusColor};">
@@ -1998,37 +1988,41 @@ function showOrderHistory() {
                     </div>
                     
                     <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
-                        ${o.items.map(i => `${i.name} x${i.quantity}`).join(', ')}
+                        ${o.items.map(i => `${i.name}`).join(', ')}
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">${o.items.length} items</span>
+                        <span style="font-weight: 700; color: #2a9d8f;">${formatPrice(o.total)}</span>
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">${new Date(o.createdAt).toLocaleString()}</span>
-                        <span style="font-weight: 700; color: #10b981;">${window.utils ? window.utils.formatPrice(o.total) : '£'+o.total.toFixed(2)}</span>
+                        <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${paymentIcon} ${o.paymentMethod || 'N/A'}</span>
                     </div>
                     
-                    ${o.status === 'out_for_delivery' ? `
-                        <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.9rem;">
-                            📍 Track Driver
-                        </button>
-                    ` : ''}
-
-                    ${o.status === 'completed' && !o.driverRated ? `
-                        <button onclick="if(window.openDriverRating) window.openDriverRating('${o.id}', '${o.driverId}', 'Driver');" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
-                            ⭐ Rate Driver
+                    ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
+                    
+                    ${o.status === 'out_for_delivery' && driver ? `
+                        <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">${driver.name || o.driverName || 'Driver'}</div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">On the way</div>
+                        </div>
+                        <button onclick="trackDriver('${o.id}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
+                            📍 Track Driver Live
                         </button>
                     ` : ''}
                     
+                    ${/* CANCEL BUTTON: Only if status is pending */ ''}
                     ${o.status === 'pending' ? `
-                        <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
+                        <button onclick="cancelOrder('${o.id}')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
                             ❌ Cancel Order
                         </button>
                     ` : ''}
                     
-                    ${o.status === 'completed' ? `
-                        <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
-                            🔁 Reorder
-                        </button>
-                    ` : ''}
+                    <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
+                        🔁 Reorder
+                    </button>
                 </div>
             `;
         }).join('');
@@ -2267,8 +2261,8 @@ function handleChangePassword(event) {
     }
     
     // Validate new password
-    if (newPassword.length < 8) {
-        alert('❌ New password must be at least 8 characters');
+    if (newPassword.length < 6) {
+        alert('❌ New password must be at least 6 characters');
         return;
     }
     
@@ -2402,8 +2396,8 @@ function verifyAndChangePassword(event) {
     }
     
     // Check password length
-    if (newPassword.length < 8) {
-        alert('❌ New password must be at least 8 characters');
+    if (newPassword.length < 6) {
+        alert('❌ New password must be at least 6 characters');
         return;
     }
     
@@ -2606,8 +2600,8 @@ function resetPassword() {
         return;
     }
     
-    if (newPassword.length < 8) {
-        alert('❌ Password must be at least 8 characters');
+    if (newPassword.length < 6) {
+        alert('❌ Password must be at least 6 characters');
         return;
     }
     
@@ -2635,81 +2629,32 @@ function resetPassword() {
 function handleEmailAuth(event) {
     event.preventDefault();
     
-    // Get values from the login form
     const email = document.getElementById('authEmail').value.trim().toLowerCase();
     const password = document.getElementById('authPassword').value;
     
-    // ============================================================
-    // 👑 PART 1: GHOST MODE (SECRET OWNER UNLOCK)
-    // ============================================================
-    if (email === 'admin@antalyashawarma.com' && password === 'admin123') {
-        
-        // 1. Save "Owner Mode" to memory
-        localStorage.setItem('ownerUnlocked', 'true');
-
-        // 2. REVEAL MOBILE BUTTON
-        const mobileBtn = document.getElementById('mobileOwnerBtn');
-        if (mobileBtn) {
-            mobileBtn.style.setProperty('display', 'flex', 'important');
-        }
-
-        // 3. REVEAL DESKTOP BUTTON (If exists)
-        const desktopBtn = document.getElementById('ownerAccessBtn');
-        if (desktopBtn) {
-            desktopBtn.style.setProperty('display', 'flex', 'important');
-        }
-
-        // 4. Close Login Modal
-        if (typeof closeModal === 'function') {
-            closeModal('loginModal');
-        }
-
-        // 5. Show Success Message
-        if (window.utils && window.utils.showToast) {
-            window.utils.showToast('👑 Owner Access Granted', 'success');
-        } else {
-            alert('👑 Owner Access Granted');
-        }
-        
-        // 6. Open Dashboard Immediately
-        setTimeout(() => {
-            if (window.showRestaurantDashboard) {
-                window.showRestaurantDashboard();
-            }
-        }, 500);
-
-        return; // STOP HERE. Do not run the code below.
-    }
-
-    // ============================================================
-    // 👤 PART 2: NORMAL LOGIN LOGIC (Customers, Staff, Drivers)
-    // ============================================================
-
     // 1. Validate Inputs
     const emailValidation = isValidEmail(email);
     if (!emailValidation.valid) {
         alert(emailValidation.message);
         return;
     }
-    if (password.length < 8) {
-        alert('❌ Password must be at least 8 characters');
+    if (password.length < 6) {
+        alert('❌ Password must be at least 6 characters');
         return;
     }
 
-    // 2. Check Special Logins (Legacy Owner / Staff / Driver)
-    if (typeof OWNER_CREDENTIALS !== 'undefined' && email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
+    // 2. Check Special Logins (Owner/Staff/Driver)
+    if (email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
         closeModal('loginModal');
-        if (window.showOwnerPinEntry) window.showOwnerPinEntry();
+        showOwnerPinEntry();
         return;
     }
-    
-    if (typeof RESTAURANT_CREDENTIALS !== 'undefined' && email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
+    if (email === RESTAURANT_CREDENTIALS.email && password === RESTAURANT_CREDENTIALS.password) {
         closeModal('loginModal');
         isRestaurantLoggedIn = true;
-        if (window.showRestaurantDashboard) window.showRestaurantDashboard();
+        showRestaurantDashboard();
         return;
     }
-    
     if (window.driverSystem) {
         const driver = window.driverSystem.getByEmail(email);
         if (driver && driver.password === password) {
@@ -2720,7 +2665,7 @@ function handleEmailAuth(event) {
         }
     }
 
-    // 3. Handle Customer Login or Signup
+    // 3. Handle User Login or Signup
     if (isSignUpMode) {
         // --- SIGN UP ---
         const existing = userDatabase.find(u => u.email === email);
@@ -2729,12 +2674,7 @@ function handleEmailAuth(event) {
             return;
         }
         // Create account immediately (No verification)
-        if (typeof completeSignUp === 'function') {
-            completeSignUp();
-        } else {
-            // Fallback if completeSignUp is missing
-            alert('❌ Error: Signup function missing');
-        }
+        completeSignUp();
         
     } else {
         // --- LOGIN ---
@@ -3297,14 +3237,13 @@ function openModal(modalId) {
 
 // Helper function to hide navigation
 function hideNavigation() {
+    // Add modal-open class to body - CSS handles the rest
     document.body.classList.add('modal-open');
-    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    
+    // Desktop fallback: hide header
     const header = document.querySelector('.header');
-    if (mobileNav) {
-        mobileNav.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
-    }
-    if (header) {
-        header.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
+    if (header && window.innerWidth > 768) {
+        header.style.display = 'none';
     }
 }
 
@@ -3326,14 +3265,13 @@ function showNavigation() {
     if (restDash && restDash.style.display !== 'none') anyModalOpen = true;
     
     if (!anyModalOpen) {
+        // Remove modal-open class - CSS will restore navigation
         document.body.classList.remove('modal-open');
-        const mobileNav = document.querySelector('.mobile-bottom-nav');
+        
+        // Desktop fallback: restore header
         const header = document.querySelector('.header');
-        if (mobileNav) {
-            mobileNav.style.cssText = '';
-        }
-        if (header) {
-            header.style.cssText = '';
+        if (header && window.innerWidth > 768) {
+            header.style.display = '';
         }
     }
 }
@@ -3358,33 +3296,6 @@ function toggleMobileMenu() {
 // MOBILE OWNER BUTTON FIX
 // ========================================
 
-
-
-// Call this after successful owner login
-function handleOwnerLogin() {
-    const email = document.getElementById('devEmail').value.trim();
-    const password = document.getElementById('devPassword').value;
-    const pin = document.getElementById('devPin').value;
-    
-    if (email !== OWNER_CREDENTIALS.email || 
-        password !== OWNER_CREDENTIALS.password || 
-        pin !== OWNER_CREDENTIALS.pin) {
-        alert('❌ Invalid credentials');
-        return;
-    }
-    
-    isOwnerLoggedIn = true;
-    
-    // Re-render reviews to show "Reply as Owner" buttons
-    displayReviews();
-
-    closeModal('ownerModal');
-    document.getElementById('ownerDashboard').style.display = 'block';
-    hideNavigation(); // Hide navigation when dashboard opens
-    updateOwnerStats();
-    
-    alert('✅ Owner access granted!');
-}
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -4190,7 +4101,6 @@ window.openForgotPasswordFromChangePassword = openForgotPasswordFromChangePasswo
 window.confirmDeleteAccount = confirmDeleteAccount;
 window.deleteUserAccount = deleteUserAccount;
 window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
-window.handleOwnerLogin = handleOwnerLogin;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
 
@@ -4212,34 +4122,19 @@ function updateAuthUI() {
     updateOwnerButtonVisibility();
 }
 
-// Show/hide owner button (Corrected to respect Ghost Mode)
+// Show/hide owner button
 function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    // Check BOTH: Is Ghost Mode unlocked? OR Is Admin User logged in?
-    const isGhostUnlocked = localStorage.getItem('ownerUnlocked') === 'true';
-    const isAdminUser = currentUser && currentUser.email === 'admin@antalyashawarma.com';
-    
-    const shouldShow = isGhostUnlocked || isAdminUser;
+    // Show button if owner is logged in (via secret email/password)
+    const shouldShow = isOwnerLoggedIn === true;
     
     if (desktopOwnerBtn) {
-        if (shouldShow) {
-            // Force Show (Override CSS)
-            desktopOwnerBtn.style.setProperty('display', 'flex', 'important');
-        } else {
-            desktopOwnerBtn.style.display = 'none';
-        }
+        desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
     }
-    
     if (mobileOwnerBtn) {
-        if (shouldShow) {
-            // Force Show (Override CSS)
-            mobileOwnerBtn.style.setProperty('display', 'flex', 'important');
-        } else {
-            // Force Hide
-            mobileOwnerBtn.style.setProperty('display', 'none', 'important');
-        }
+        mobileOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
     }
 }
 
@@ -4284,45 +4179,6 @@ function cancelOrder(orderId) {
         alert('✅ Order cancelled successfully');
     }
 }
-
-// ========================================
-// POPULARITY & SALES LOGIC
-// ========================================
-
-function getBestSellingItems() {
-    const itemCounts = {};
-
-    // 1. Count items from History (Completed orders only)
-    orderHistory.forEach(order => {
-        // Only count valid orders (not cancelled/rejected)
-        if (order.status !== 'cancelled' && order.status !== 'rejected') {
-            order.items.forEach(item => {
-                // Use ID as unique key
-                const id = item.id;
-                if (!itemCounts[id]) {
-                    itemCounts[id] = {
-                        id: id,
-                        name: item.name,
-                        icon: item.icon || '🍽️',
-                        count: 0,
-                        revenue: 0
-                    };
-                }
-                itemCounts[id].count += (item.quantity || 1);
-                itemCounts[id].revenue += (item.finalPrice * (item.quantity || 1));
-            });
-        }
-    });
-
-    // 2. Convert to array and sort by Count (Highest first)
-    const sortedItems = Object.values(itemCounts).sort((a, b) => b.count - a.count);
-    
-    // Return top 10
-    return sortedItems.slice(0, 10);
-}
-
-// Make it available globally
-window.getBestSellingItems = getBestSellingItems;
 
 // Export function
 window.cancelOrder = cancelOrder;

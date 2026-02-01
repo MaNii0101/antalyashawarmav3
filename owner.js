@@ -166,56 +166,35 @@ function showRestaurantDashboard() {
     if (typeof updateRestaurantStats === 'function') {
         updateRestaurantStats();
     }
-
-renderPopularFoodStats();
-
-    // At the bottom of showRestaurantDashboard
-if (typeof renderPopularFoodStats === 'function') {
-        renderPopularFoodStats();
-    }
-    
-    modal.style.display = 'block';
 }
 
 function acceptOrder(orderId) {
-    // 1. Find in Pending
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
     
+    // FIX: Guard against cancelled orders
     if (order.status === 'cancelled') {
         alert('❌ Cannot accept: This order was cancelled by the user.');
-        showRestaurantDashboard();
+        showRestaurantDashboard(); // Refresh view to remove it
         return;
     }
     
-    // 2. UPDATE STATUS to 'accepted'
-    const newStatus = 'accepted';
-    
-    // Update Pending Reference
-    order.status = newStatus;
+    order.status = 'accepted';
     order.acceptedAt = new Date().toISOString();
-    
-    // FIX: SYNC WITH HISTORY (Crucial!)
-    const historyOrder = orderHistory.find(o => o.id === orderId);
-    if (historyOrder) {
-        historyOrder.status = newStatus;
-        historyOrder.acceptedAt = order.acceptedAt;
-    }
-    
     saveData();
     
-    // 3. Notify & Refresh
-    if (window.addNotification) {
-        addNotification(order.userId, {
-            type: 'order_accepted',
-            title: '✅ Order Accepted!',
-            message: `Your order #${orderId} has been accepted and is being prepared.`,
-            orderId: orderId
-        });
-    }
+    // Send notification to customer
+    addNotification(order.userId, {
+        type: 'order_accepted',
+        title: '✅ Order Accepted!',
+        message: `Your order #${orderId} has been accepted and is being prepared.`,
+        orderId: orderId
+    });
     
-    if (window.playNotificationSound) playNotificationSound();
+    playNotificationSound();
     showRestaurantDashboard();
+    
+    alert(`✅ Order #${orderId} accepted!\n\nClick "Notify All Drivers" to alert available drivers.`);
 }
 
 function notifyAllAvailableDrivers(orderId) {
@@ -833,12 +812,10 @@ function handleOwnerLogin() {
     
     isOwnerLoggedIn = true;
     
-    // Show owner button on ALL devices (desktop + mobile)
-    const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
-    const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
-    
-    if (desktopOwnerBtn) desktopOwnerBtn.style.display = 'flex';
-    if (mobileOwnerBtn) mobileOwnerBtn.style.display = 'flex';
+    // Show owner button using the visibility function
+    if (typeof updateOwnerButtonVisibility === 'function') {
+        updateOwnerButtonVisibility();
+    }
     
     closeModal('ownerModal');
     document.getElementById('ownerDashboard').style.display = 'block';
@@ -853,10 +830,16 @@ function handleOwnerLogin() {
         if (header) header.style.cssText = 'display: none !important;';
     }
     
+    // Re-render reviews to show "Reply as Owner" buttons
+    if (typeof displayReviews === 'function') {
+        displayReviews();
+    }
+    
     updateOwnerStats();
     
     alert('✅ Owner access granted!');
     
+
 }
 // Add to your DOMContentLoaded event
 document.addEventListener('DOMContentLoaded', function() {
@@ -1392,53 +1375,6 @@ function previewCategoryImage() {
     }
 }
 
-function renderPopularFoodStats() {
-    // 1. Target YOUR specific ID from index.html
-    const container = document.getElementById('popularItemsList');
-    if (!container) return;
-
-    // 2. Check function existence
-    if (!window.getBestSellingItems) return;
-
-    // 3. Get Real Data
-    const topItems = window.getBestSellingItems();
-    
-    // 4. Generate HTML (Items ONLY, no outer box/header)
-    let html = '';
-    
-    if (topItems.length === 0) {
-        html = `<div style="padding: 0.8rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center;">No sales data yet</div>`;
-    } else {
-        // Show top 5 items
-        topItems.slice(0, 5).forEach((item, index) => {
-            // Your custom Ranking Logic
-            const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'rgba(255,255,255,0.1)';
-            const rankIcon = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
-            
-            // Your Price Logic
-            const revenueDisplay = window.utils ? window.utils.formatPrice(item.revenue) : '£' + item.revenue.toFixed(2);
-
-            html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; border-left: 3px solid ${rankColor}; margin-bottom: 0.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="font-weight: 700; font-size: 1.1rem; width: 30px; text-align: center;">${rankIcon}</span>
-                        <div>
-                            <div style="font-weight: 600;">${item.name}</div>
-                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Revenue: ${revenueDisplay}</div>
-                        </div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.1); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700;">
-                        ${item.count} Sold
-                    </div>
-                </div>
-            `;
-        });
-    }
-    
-    // 5. Inject into your existing list
-    container.innerHTML = html;
-}
-
 // ========================================
 // GLOBAL EXPORTS FOR OWNER.JS FUNCTIONS
 // ========================================
@@ -1447,6 +1383,7 @@ window.handleRestaurantLogin = handleRestaurantLogin;
 window.showRestaurantDashboard = showRestaurantDashboard;
 window.closeRestaurantDashboard = closeRestaurantDashboard;
 window.showOwnerLogin = showOwnerLogin;
+window.handleOwnerLogin = handleOwnerLogin;
 window.showDriverManagementModal = showDriverManagementModal;
 window.addNewDriver = addNewDriver;
 window.deleteDriver = deleteDriver;
@@ -1477,19 +1414,3 @@ window.previewFoodImage = previewFoodImage;
 window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
-
-// ==========================================
-// RESTORE OWNER BUTTON ON LOAD
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if we unlocked the button before
-    if (localStorage.getItem('ownerUnlocked') === 'true') {
-        
-        const desktopBtn = document.getElementById('ownerAccessBtn');
-        const mobileBtn = document.getElementById('mobileOwnerBtn');
-
-        // Make both visible again
-        if (desktopBtn) desktopBtn.style.setProperty('display', 'flex', 'important');
-        if (mobileBtn) mobileBtn.style.setProperty('display', 'flex', 'important');
-    }
-});

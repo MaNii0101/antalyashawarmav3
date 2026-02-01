@@ -274,7 +274,7 @@ function showDriverDashboard(driver = null) {
                     <!-- Payment Method for Driver -->
                     <div style="margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.3)' : 'rgba(42,157,143,0.3)'}; padding: 0.6rem; border-radius: 8px; text-align: center; font-weight: 700; color: ${order.paymentMethod === 'cash' ? '#f4a261' : '#2a9d8f'};">
-                            ${order.paymentMethod === 'cash' ? '💵 CASH - Collect £' + order.total.toFixed(2) : order.paymentMethod === 'applepay' ? ' Apple Pay - PAID' : '💳 Card - PAID'}
+                            ${order.paymentMethod === 'cash' ? '💷 CASH - Collect £' + order.total.toFixed(2) : order.paymentMethod === 'applepay' ? '🍎 Apple Pay - PAID' : '💳 Card - PAID'}
                         </div>
                     </div>
                 </div>
@@ -307,6 +307,13 @@ function showDriverDashboard(driver = null) {
     
     // Show fullscreen dashboard
     modal.style.display = 'block';
+    
+    // Hide navigation — dashboard is standalone fullscreen
+    document.body.classList.add('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) mobileNav.style.cssText = 'display: none !important;';
+    if (header) header.style.cssText = 'display: none !important;';
 }
 
 function callCustomer(phone) {
@@ -429,46 +436,48 @@ function openDirections(address) {
 }
 
 function markOrderDelivered(orderId) {
-    // 1. Find order in Pending
-    const orderIndex = pendingOrders.findIndex(o => o.id === orderId);
-    if (orderIndex === -1) return;
+    if (!confirm('Mark this order as delivered?')) return;
     
-    const order = pendingOrders[orderIndex];
+    const order = pendingOrders.find(o => o.id === orderId);
+    if (!order) return;
     
-    // 2. Update Status details
-    const deliveredAt = new Date().toISOString();
+    // Update order status
+    order.status = 'completed';
+    order.completedAt = new Date().toISOString();
+    order.driverRated = false; // Flag for rating
     
-    // FIX: SYNC WITH HISTORY BEFORE REMOVING
-    const historyOrder = orderHistory.find(o => o.id === orderId);
-    if (historyOrder) {
-        historyOrder.status = 'completed';
-        historyOrder.deliveredAt = deliveredAt;
-        historyOrder.paymentStatus = 'paid'; // Ensure paid status
+    // Move to order history
+    orderHistory.push(order);
+    pendingOrders = pendingOrders.filter(o => o.id !== orderId);
+    
+    // Update driver stats
+    const driverId = sessionStorage.getItem('loggedInDriver');
+    if (driverId) {
+        const driver = window.driverSystem.get(driverId);
+        if (driver) {
+            window.driverSystem.update(driverId, {
+                deliveries: (driver.deliveries || 0) + 1
+            });
+        }
     }
     
-    // 3. REMOVE from Pending (It is finished, so it leaves the pending list)
-    pendingOrders.splice(orderIndex, 1);
+    // Notify customer (without driver details for completed orders)
+    addNotification(order.userId, {
+        type: 'order_completed',
+        title: '🎉 Order Delivered!',
+        message: `Your order #${orderId} has been delivered. Enjoy your meal!`,
+        orderId: orderId
+    });
     
     saveData();
-    
-    // 4. UI Updates
+    playNotificationSound();
     showDriverDashboard();
     
-    // Notify User
-    if (window.addNotification) {
-        window.addNotification(order.userId, {
-            type: 'order_delivered',
-            title: '✅ Order Delivered',
-            message: 'Enjoy your meal! Please rate your driver.',
-            orderId: orderId
-        });
-    }
+    alert('✅ Order marked as delivered!');
     
-    // Auto-Show Rating for Driver (if feature enabled)
-    if (window.openDriverRating) {
-        setTimeout(() => {
-            window.openDriverRating(orderId, order.driverId, order.driverName, true);
-        }, 2000);
+    // Trigger rating popup for customer if they're logged in
+    if (currentUser && currentUser.email === order.userId) {
+        showDeliveryRatingPopup(orderId, order.driverId, order.driverName || 'Driver');
     }
 }
 
@@ -489,6 +498,13 @@ function logoutDriver() {
         modal.classList.remove('active');
         modal.style.display = 'none';
     }
+    
+    // Restore navigation
+    document.body.classList.remove('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) mobileNav.style.cssText = '';
+    if (header) header.style.cssText = '';
 }
 
 // ========================================
@@ -914,5 +930,3 @@ window.confirmLogoutDriver = confirmLogoutDriver;
 window.logoutDriver = logoutDriver;
 window.updateDriverLoginUI = updateDriverLoginUI;
 window.generateDriverSecretCode = generateDriverSecretCode;
-window.openDriverRating = openDriverRating;
-
