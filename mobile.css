@@ -442,6 +442,39 @@ html {
         overflow-y: auto !important;
     }
     
+    /* FOOD MODAL — full-bleed override */
+    #foodModal .modal-content {
+        padding: 0 !important;
+        max-height: 88vh !important;
+    }
+    
+    #foodModalHeader > div {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    #foodModalHeader #modalFoodIcon {
+        width: 120px !important;
+        height: 120px !important;
+        margin-bottom: 0.2rem;
+    }
+    
+    #foodModalHeader h2 {
+        font-size: 1.25rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+    
+    #foodModalHeader p {
+        font-size: 0.85rem !important;
+    }
+    
+    #foodModalAddBtn {
+        min-width: 0 !important;
+        font-size: 1rem !important;
+        padding: 0.9rem 0.5rem !important;
+    }
+    
     .modal-content h2 {
         font-size: 1.5rem;
         font-weight: 800;
@@ -509,23 +542,6 @@ html {
         background: rgba(255, 255, 255, 0.06) !important;
         border-color: rgba(230, 57, 70, 0.5) !important;
         outline: none !important;
-    }
-    
-    /* DOB / Date inputs — compact, touch-friendly */
-    .form-group input[type="date"] {
-        min-height: 44px !important;
-        max-height: 44px !important;
-        padding: 0.6rem 0.75rem !important;
-        font-size: 14px !important;
-        line-height: 1.2 !important;
-    }
-    
-    /* Global button overflow protection — mobile */
-    button, .submit-btn, [type="submit"], [type="button"] {
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        overflow-wrap: break-word !important;
-        word-wrap: break-word !important;
     }
     
     .submit-btn {

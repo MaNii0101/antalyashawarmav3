@@ -681,7 +681,7 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         };
         
         startOTPCountdown(email);
-        alert('📧 Verification code sent. Please check your inbox and spam folder.');
+        alert('📧 Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.');
         return true;
     } catch (error) {
         alert('❌ Failed to send verification email. Please try again.');
@@ -1592,7 +1592,7 @@ function handlePayment(event) {
     event.preventDefault();
     event.stopPropagation();
     
-    // Prevent duplicate submission
+    // FIX: Prevent duplicate submission
     if (window.isProcessingCheckout) return false;
     
     const paymentMethod = document.getElementById('paymentMethod').value;
@@ -1837,56 +1837,65 @@ function showAccount() {
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
     
-    // Profile picture display
+    const avgOrder = userOrders.length > 0 ? totalSpent / userOrders.length : 0;
+    
+    // Profile picture
     const profilePic = currentUser.profilePicture 
         ? `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">`
         : '👤';
     
     // Member since
-    const memberSince = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '';
+    const memberSince = currentUser.createdAt 
+        ? new Date(currentUser.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) 
+        : '';
+    
+    // DOB formatted
+    const dobFormatted = currentUser.dob 
+        ? new Date(currentUser.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) 
+        : '';
     
     content.innerHTML = `
-        <!-- Profile Header -->
+        <!-- Profile Header - No background, centered -->
         <div style="text-align: center; padding: 0.5rem 0 1.5rem;">
-            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #c1121f); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(230,57,70,0.4); box-shadow: 0 4px 20px rgba(230,57,70,0.25);">
+            <div style="width: 88px; height: 88px; border-radius: 50%; background: rgba(20,20,20,1); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; overflow: hidden; border: 3px solid #e63946; box-shadow: 0 0 20px rgba(230,57,70,0.3);">
                 ${profilePic}
             </div>
-            <h3 style="margin: 0 0 0.25rem; color: white; font-size: 1.2rem; font-weight: 700;">${currentUser.name}</h3>
-            <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.85rem;">${currentUser.email}</p>
-            ${memberSince ? `<p style="margin: 0.2rem 0 0; color: rgba(255,255,255,0.35); font-size: 0.75rem;">Member since ${memberSince}</p>` : ''}
+            <h3 style="margin: 0 0 0.3rem; color: white; font-size: 1.2rem; font-weight: 700;">${currentUser.name}</h3>
+            <p style="margin: 0 0 0.2rem; color: #10b981; font-size: 0.9rem;">${currentUser.email}</p>
+            ${memberSince ? `<p style="margin: 0; color: rgba(255,255,255,0.35); font-size: 0.8rem;">Member since ${memberSince}</p>` : ''}
         </div>
         
-        <!-- Stats Row -->
+        <!-- Stats Row - 3 columns -->
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem;">
-            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 1.15rem; font-weight: 700; color: #3b82f6;">${userOrders.length}</div>
-                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Orders</div>
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(59,130,246,0.2);">
+                <div style="font-size: 1.2rem; font-weight: 700; color: #3b82f6;">${userOrders.length}</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Orders</div>
             </div>
-            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">${formatPrice(totalSpent)}</div>
-                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Total Spent</div>
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(16,185,129,0.2);">
+                <div style="font-size: 1.2rem; font-weight: 700; color: #10b981;">${formatPrice(totalSpent)}</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Total Spent</div>
             </div>
-            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 1.15rem; font-weight: 700; color: #f59e0b;">${userOrders.length > 0 ? formatPrice(totalSpent / userOrders.length) : '£0.00'}</div>
-                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Avg Order</div>
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(239,68,68,0.2);">
+                <div style="font-size: 1.2rem; font-weight: 700; color: #ef4444;">${formatPrice(avgOrder)}</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Avg Order</div>
             </div>
         </div>
         
         <!-- Contact Details -->
         <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.06); overflow: hidden;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">📞 Phone</span>
-                <span style="font-size: 0.85rem; color: white;">${currentUser.phone || '<span style="color:rgba(255,255,255,0.3)">Not set</span>'}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">📞 Phone</span>
+                <span style="font-size: 0.88rem; color: white;">${currentUser.phone || 'Not set'}</span>
             </div>
-            ${currentUser.dob ? `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">🎂 Date of Birth</span>
-                <span style="font-size: 0.85rem; color: white;">${new Date(currentUser.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            ${dobFormatted ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">🎂 Date of Birth</span>
+                <span style="font-size: 0.88rem; color: white;">${dobFormatted}</span>
             </div>
             ` : ''}
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
-                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">📍 Address</span>
-                <span style="font-size: 0.85rem; color: white; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${currentUser.address || '<span style="color:rgba(255,255,255,0.3)">Not set</span>'}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem;">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">📍 Address</span>
+                <span style="font-size: 0.88rem; color: white; text-align: right; max-width: 58%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${currentUser.address || 'Not set'}</span>
             </div>
         </div>
         
@@ -1908,26 +1917,26 @@ function showAccount() {
         ` : ''}
         
         <!-- Action Buttons -->
-        <div style="display: grid; gap: 0.5rem; margin-bottom: 1rem;">
-            <button onclick="openEditProfile()" style="background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+        <div style="display: grid; gap: 0.5rem; margin-bottom: 0.8rem;">
+            <button onclick="openEditProfile()" style="background: rgba(59,130,246,0.12); color: #f59e0b; border: 1px solid rgba(59,130,246,0.3); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 ✏️ Edit Profile
             </button>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                <button onclick="openChangeEmail()" style="background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                <button onclick="openChangeEmail()" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.25); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
                     📧 Change Email
                 </button>
-                <button onclick="openChangePassword()" style="background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                <button onclick="openChangePassword()" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
                     🔐 Change Password
                 </button>
             </div>
         </div>
         
-        <button onclick="logout()" style="background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem; transition: all 0.2s;">
+        <button onclick="logout()" style="background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem;">
             🚪 Sign Out
         </button>
         
-        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center;">
-            <button onclick="confirmDeleteAccount()" style="background: transparent; color: rgba(239,68,68,0.5); border: none; cursor: pointer; font-size: 0.75rem; padding: 0.4rem;">
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+            <button onclick="confirmDeleteAccount()" style="background: transparent; color: rgba(239,68,68,0.4); border: none; cursor: pointer; font-size: 0.75rem; padding: 0.4rem;">
                 Delete Account
             </button>
         </div>
@@ -2516,7 +2525,7 @@ function showForgotPasswordSection(show) {
     }
 }
 
-// Send email via EmailJS
+// FIXED: Sends real email via EmailJS
 async function sendPasswordResetCode() {
     const emailInput = document.getElementById('forgotPasswordEmail');
     const email = emailInput ? emailInput.value.trim() : null;
@@ -2634,7 +2643,7 @@ function resetPassword() {
 }
 
 // ========================================
-// Direct Login & Signup
+// FIXED: Direct Login & Signup (No Verification)
 // ========================================
 
 function handleEmailAuth(event) {
@@ -2891,7 +2900,7 @@ function handleGoogleCallback(response) {
 }
 
 function loginWithApple() {
-    alert('Apple Sign-In is not available at this time. Please use Email or Google login.');
+    alert(`🍽 Apple Sign-In\n\nApple authentication would be configured here.\n\nFor demo, use email signup with iCloud.`);
 }
 
 // ========================================
@@ -3328,6 +3337,9 @@ function handleOwnerLogin() {
     
     // Re-render reviews to show "Reply as Owner" buttons
     displayReviews();
+
+    // Show owner button in nav
+    updateOwnerButtonVisibility();
 
     closeModal('ownerModal');
     document.getElementById('ownerDashboard').style.display = 'block';
@@ -4157,7 +4169,7 @@ function updateAuthUI() {
         el.style.display = isLoggedIn ? 'none' : 'flex';
     });
     
-    // Update header for logged in user
+    // THIS WAS MISSING: Update the "Login" button to "User Name"
     updateHeaderForLoggedInUser(); 
     
     updateOwnerButtonVisibility();
@@ -4168,7 +4180,7 @@ function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    const shouldShow = currentUser && currentUser.email === 'admin@antalyashawarma.com';
+    const shouldShow = isOwnerLoggedIn || (currentUser && currentUser.email === 'admin@antalyashawarma.com');
     
     if (desktopOwnerBtn) {
         desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
