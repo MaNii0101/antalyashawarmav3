@@ -1714,8 +1714,8 @@ function handlePayment(event) {
         createdAt: new Date().toISOString()
     };
     
-    // Save order
-    orderHistory.push(order);
+// Save order — only to pendingOrders initially
+    // It moves to orderHistory when completed/delivered via markOrderDelivered()
     pendingOrders.push(order);
     
     // Add notification
@@ -1734,12 +1734,8 @@ function handlePayment(event) {
     updateCartBadge();
     updateOrdersBadge();
     
-    // Force close checkout modal
-    const checkoutModal = document.getElementById('checkoutModal');
-    if (checkoutModal) {
-        checkoutModal.style.display = 'none';
-        checkoutModal.classList.remove('active');
-    }
+   // Close checkout modal properly (restores navigation)
+    closeModal('checkoutModal');
     
     playNotificationSound();
     
@@ -2053,6 +2049,12 @@ function showOrderHistory() {
                     </div>
                     
                     ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
+                    
+                    ${o.status === 'completed' && o.driverId && !o.driverRated ? `
+                        <button onclick="openDriverRating('${o.id}', '${o.driverId}', '${(o.driverName || 'Driver').replace(/'/g, "\\'")}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
+                            ⭐ Rate Driver
+                        </button>
+                    ` : ''}
                     
                     ${o.status === 'out_for_delivery' && driver ? `
                         <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
@@ -3379,7 +3381,10 @@ function handleOwnerLogin() {
         return;
     }
     
-    isOwnerLoggedIn = true;
+  isOwnerLoggedIn = true;
+    
+    // Show owner button in nav bar
+    updateOwnerButtonVisibility();
     
     // Re-render reviews to show "Reply as Owner" buttons
     displayReviews();
@@ -4228,7 +4233,7 @@ function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    const shouldShow = currentUser && currentUser.email === 'admin@antalyashawarma.com';
+    const shouldShow = isOwnerLoggedIn || (currentUser && currentUser.email === 'admin@antalyashawarma.com');
     
     if (desktopOwnerBtn) {
         desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
