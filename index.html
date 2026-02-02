@@ -18,6 +18,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <meta name="google-signin-client_id" content="888032224287-20qgalf8pvpg7s7589il4f025cva4944.apps.googleusercontent.com">
     
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
 </script>
@@ -187,7 +189,7 @@
             <div class="footer-section">
                 <h3>📞 Contact</h3>
                 <div style="color: rgba(255,255,255,0.7);">📞 +44 161 536 1862</div>
-                <div style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b4dddad2dbf4d5dac0d5d8cdd5c7dcd5c3d5c6d9d59ad7dbd9"><span class="__cf_email__" data-cfemail="92f3fce6f3feebf3e1faf3e5f3e0fff3d2f5fff3fbfebcf1fdff">[email&#160;protected]</span></a></div>
+                <div style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b4dddad2dbf4d5dac0d5d8cdd5c7dcd5c3d5c6d9d59ad7dbd9"><span class="__cf_email__" data-cfemail="87e6e9f3e6ebfee6f4efe6f0e6f5eae6c7e0eae6eeeba9e4e8ea">[email&#160;protected]</span></a></div>
                 <a href="https://instagram.com/antalyashawarma_" target="_blank" style="color: #e1306c; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">📸 @antalyashawarma_</a>
             </div>
             <div class="footer-section">
@@ -386,13 +388,7 @@
                 </div>
                 <button type="submit" class="submit-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">🔓 Login to Dashboard</button>
             </form>
-            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.3);">
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">
-                    <strong>Demo Credentials:</strong><br>
-                    Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33404752555573525d47525f4a52405b524452415e521d505c5e">[email&#160;protected]</a><br>
-                    Password: staff2024
-                </p>
-            </div>
+        
         </div>
     </div>
 
@@ -581,7 +577,7 @@
                     <div style="padding: 1rem; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; text-align: center;">
                         <span style="font-size: 1.5rem;">⭐</span>
                         <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0.3rem 0;">Rating</div>
-                        <div id="avgRatingStat" style="font-size: 1.3rem; font-weight: 700; color: #8b5cf6;">5.0</div>
+                        <div id="avgRatingStat" style="font-size: 1.3rem; font-weight: 700; color: #8b5cf6;">—</div>
                     </div>
                 </div>
             </div>
@@ -673,18 +669,7 @@
                 <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.2rem;">
                     <h3 style="color: #f59e0b; margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;">🔥 Popular</h3>
                     <div id="popularItemsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
-                            <span>🌯 Mix Grill Wrap</span>
-                            <span style="color: #10b981; font-weight: 600;">23</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
-                            <span>🍖 Chicken Portion</span>
-                            <span style="color: #10b981; font-weight: 600;">18</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
-                            <span>🥢 Lamb Kebab</span>
-                            <span style="color: #10b981; font-weight: 600;">15</span>
-                        </div>
+                        <div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; text-align: center; padding: 1rem 0;">No order data yet</div>
                     </div>
                 </div>
             </div>
@@ -1599,4 +1584,11 @@
             if (select && typeof categories !== 'undefined') {
                 select.innerHTML = '<option value="">Select category</option>' + 
                     Object.entries(categories).map(([key, cat]) => 
-                        `<option value="${key}">${cat.name}</opti
+                        `<option value="${key}">${cat.name}</option>`
+                    ).join('');
+            }
+            if (originalOpenEditFood) originalOpenEditFood(catKey, foodId);
+        };
+    </script>
+</body>
+</html>

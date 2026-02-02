@@ -522,6 +522,22 @@ body {
     background: rgba(255, 255, 255, 0.08);
 }
 
+/* Date inputs — compact, consistent sizing */
+.form-group input[type="date"] {
+    max-height: 44px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+/* Global button overflow protection */
+button, .submit-btn, [type="submit"], [type="button"] {
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 .form-group small {
     color: rgba(255, 255, 255, 0.5);
     font-size: clamp(0.75rem, 1.8vw, 0.85rem);

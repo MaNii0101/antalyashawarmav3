@@ -150,7 +150,6 @@ function resetSelectedData() {
 
 function resetAllData() {
     // Deprecated - use showResetOptions() directly
-    console.warn('resetAllData() is deprecated. Use showResetOptions() instead.');
 }
 
 // ========================================
@@ -457,7 +456,7 @@ function loadMenuData() {
                     }
                 });
             }
-        } catch(e) { console.log('Error loading menu data'); }
+        } catch(e) { /* Error loading menu data */ }
     }
 if (savedCategories) {
     try {
@@ -468,7 +467,7 @@ if (savedCategories) {
             }
         });
     } catch (e) {
-        console.warn('⚠️ Bad category data, resetting...');
+        // Bad category data, resetting
         localStorage.removeItem('categories');
     }
 }
@@ -516,67 +515,19 @@ let selectedRating = 0;
 let showingAllReviews = false;
 
 let ownerBankDetails = {
-    bankName: 'Barclays Bank UK',
-    accountNumber: '12345678',
-    sortCode: '20-00-00',
-    iban: 'GB29 NWBK 6016 1331 9268 19',
-    cardNumber: '4532 **** **** 1234'
+    bankName: '',
+    accountNumber: '',
+    sortCode: '',
+    iban: '',
+    cardNumber: ''
 };
 
 // ========================================
 // DRIVER SYSTEM
 // ========================================
 window.driverSystem = {
-    drivers: {
-        'driver-001': {
-            id: 'driver-001',
-            name: 'Mohammed Ali',
-            email: 'mohammed@antalya.com',
-            phone: '+44 7700 900123',
-            password: 'driver123',
-            dob: '1990-05-15',
-            gender: 'male',
-            secretCode: 'DRV-001-MA',
-            deliveries: 247,
-            rating: 4.9,
-            active: true,      // Can login
-            available: true,   // Can receive orders
-            profilePicture: null,
-            currentLocation: null
-        },
-        'driver-002': {
-            id: 'driver-002',
-            name: 'Ahmed Hassan',
-            email: 'ahmed@antalya.com',
-            phone: '+44 7700 900124',
-            password: 'driver123',
-            dob: '1988-08-20',
-            gender: 'male',
-            secretCode: 'DRV-002-AH',
-            deliveries: 189,
-            rating: 4.8,
-            active: true,
-            available: true,
-            profilePicture: null,
-            currentLocation: null
-        },
-        'driver-003': {
-            id: 'driver-003',
-            name: 'Fatima Khan',
-            email: 'fatima@antalya.com',
-            phone: '+44 7700 900125',
-            password: 'driver123',
-            dob: '1992-12-10',
-            gender: 'female',
-            secretCode: 'DRV-003-FK',
-            deliveries: 156,
-            rating: 4.95,
-            active: true,
-            available: true,
-            profilePicture: null,
-            currentLocation: null
-        }
-    },
+    // Drivers will be added by owner through the dashboard
+    drivers: {},
     get: function(id) {
         return this.drivers[id] || null;
     },
@@ -699,16 +650,13 @@ let otpTimers = {}; // Track OTP timers per email
 
 async function sendVerificationEmail(email, code, type = 'verification') {
     const now = Date.now();
-    const timer = otpTimers[email];
+    const lastSent = otpTimers[email]?.lastSent || 0;
+    const timeSinceLastSend = now - lastSent;
     
-    // Cooldown applies ONLY to resend attempts (not the first send)
-    if (timer && timer.lastSent > 0) {
-        const timeSinceLastSend = now - timer.lastSent;
-        if (timeSinceLastSend < 30000) {
-            const waitTime = Math.ceil((30000 - timeSinceLastSend) / 1000);
-            alert(`⏱️ Please wait ${waitTime} seconds before resending.`);
-            return false;
-        }
+    if (timeSinceLastSend < 90000) {
+        const waitTime = Math.ceil((90000 - timeSinceLastSend) / 1000);
+        alert(`⏱️ Please wait ${waitTime} seconds before requesting a new code.`);
+        return false;
     }
     
     try {
@@ -729,15 +677,13 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         otpTimers[email] = {
             lastSent: now,
             expiresAt: now + 600000,
-            canResendAt: now + 30000
+            canResendAt: now + 90000
         };
         
         startOTPCountdown(email);
-        console.log('✅ Verification email sent successfully');
-        alert('📧 Code sent! Check your email inbox.\n\nAlso check your spam/junk folder.');
+        alert('📧 Verification code sent. Please check your inbox and spam folder.');
         return true;
     } catch (error) {
-        console.error('❌ EmailJS Error:', error);
         alert('❌ Failed to send verification email. Please try again.');
         return false;
     }
@@ -746,11 +692,6 @@ async function sendVerificationEmail(email, code, type = 'verification') {
 function startOTPCountdown(email) {
     const timer = otpTimers[email];
     if (!timer) return;
-    
-    // Clear any existing countdown interval for this email
-    if (timer.interval) {
-        clearInterval(timer.interval);
-    }
     
     const countdownElement = document.getElementById('otpCountdown');
     const resendBtn = document.getElementById('resendCodeBtn');
@@ -782,6 +723,14 @@ function canResendOTP(email) {
     const timer = otpTimers[email];
     if (!timer) return true;
     return Date.now() >= timer.canResendAt;
+}
+
+function canSendCode() {
+    const last = localStorage.getItem("lastCodeTime");
+    if (!last) return true;
+
+    const diff = Date.now() - Number(last);
+    return diff > 60 * 1000; // 1 minute
 }
 
 
@@ -1643,7 +1592,7 @@ function handlePayment(event) {
     event.preventDefault();
     event.stopPropagation();
     
-    // FIX: Prevent duplicate submission
+    // Prevent duplicate submission
     if (window.isProcessingCheckout) return false;
     
     const paymentMethod = document.getElementById('paymentMethod').value;
@@ -1714,8 +1663,8 @@ function handlePayment(event) {
         createdAt: new Date().toISOString()
     };
     
-// Save order — only to pendingOrders initially
-    // It moves to orderHistory when completed/delivered via markOrderDelivered()
+    // Save order
+    orderHistory.push(order);
     pendingOrders.push(order);
     
     // Add notification
@@ -1734,8 +1683,12 @@ function handlePayment(event) {
     updateCartBadge();
     updateOrdersBadge();
     
-   // Close checkout modal properly (restores navigation)
-    closeModal('checkoutModal');
+    // Force close checkout modal
+    const checkoutModal = document.getElementById('checkoutModal');
+    if (checkoutModal) {
+        checkoutModal.style.display = 'none';
+        checkoutModal.classList.remove('active');
+    }
     
     playNotificationSound();
     
@@ -1873,71 +1826,81 @@ function showAccount() {
     
     if (!modal || !content) return;
     
-    // FIX: Exclude both CANCELLED and REJECTED
+    // Exclude cancelled and rejected
     const userOrders = orderHistory.filter(o => o.userId === currentUser.email && o.status !== 'cancelled' && o.status !== 'rejected');
     
-    // Keep active orders logic
+    // Active deliveries
     const activeOrders = pendingOrders.filter(o => o.userId === currentUser.email && o.status === 'out_for_delivery');
     
-    // FIX: Only sum money for COMPLETED (Delivered) orders
+    // Revenue from completed orders only
     const totalSpent = userOrders
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
-        
     
     // Profile picture display
     const profilePic = currentUser.profilePicture 
         ? `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">`
         : '👤';
     
+    // Member since
+    const memberSince = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '';
+    
     content.innerHTML = `
-        <div style="background: linear-gradient(135deg, #e63946, #c1121f); padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem;">
-            <div style="width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 0.8rem; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
+        <!-- Profile Header -->
+        <div style="text-align: center; padding: 0.5rem 0 1.5rem;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #c1121f); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(230,57,70,0.4); box-shadow: 0 4px 20px rgba(230,57,70,0.25);">
                 ${profilePic}
             </div>
-            <h3 style="margin: 0; color: white; font-size: 1.2rem;">${currentUser.name}</h3>
-            <p style="margin: 0.3rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.9rem;">${currentUser.email}</p>
-            ${currentUser.dob ? `<p style="margin: 0.2rem 0 0; color: rgba(255,255,255,0.7); font-size: 0.85rem;">DOB: ${new Date(currentUser.dob).toLocaleDateString()}</p>` : ''}
+            <h3 style="margin: 0 0 0.25rem; color: white; font-size: 1.2rem; font-weight: 700;">${currentUser.name}</h3>
+            <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.85rem;">${currentUser.email}</p>
+            ${memberSince ? `<p style="margin: 0.2rem 0 0; color: rgba(255,255,255,0.35); font-size: 0.75rem;">Member since ${memberSince}</p>` : ''}
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem;">
-            <div style="background: rgba(42,157,143,0.15); padding: 0.8rem; border-radius: 10px; text-align: center; border: 1px solid rgba(42,157,143,0.3);">
-                <div style="font-size: 1.3rem; font-weight: 700; color: #2a9d8f;">${userOrders.length}</div>
-                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Orders</div>
+        <!-- Stats Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem;">
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 1.15rem; font-weight: 700; color: #3b82f6;">${userOrders.length}</div>
+                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Orders</div>
             </div>
-            <div style="background: rgba(230,57,70,0.15); padding: 0.8rem; border-radius: 10px; text-align: center; border: 1px solid rgba(230,57,70,0.3);">
-                <div style="font-size: 1.3rem; font-weight: 700; color: #e63946;">${formatPrice(totalSpent)}</div>
-                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total Spent</div>
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">${formatPrice(totalSpent)}</div>
+                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Total Spent</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); padding: 0.8rem 0.5rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 1.15rem; font-weight: 700; color: #f59e0b;">${userOrders.length > 0 ? formatPrice(totalSpent / userOrders.length) : '£0.00'}</div>
+                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem;">Avg Order</div>
             </div>
         </div>
         
-        <!-- User Details -->
-        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1.2rem; border: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📞 Phone</span>
-                <span>${currentUser.phone || 'Not set'}</span>
+        <!-- Contact Details -->
+        <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.06); overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">📞 Phone</span>
+                <span style="font-size: 0.85rem; color: white;">${currentUser.phone || '<span style="color:rgba(255,255,255,0.3)">Not set</span>'}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📍 Address</span>
-                <span style="text-align: right; max-width: 60%;">${currentUser.address || 'Not set'}</span>
+            ${currentUser.dob ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">🎂 Date of Birth</span>
+                <span style="font-size: 0.85rem; color: white;">${new Date(currentUser.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                <span style="color: rgba(255,255,255,0.6);">📦 Member Since </span>
-                <span>${currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'N/A'}</span>
+            ` : ''}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">📍 Address</span>
+                <span style="font-size: 0.85rem; color: white; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${currentUser.address || '<span style="color:rgba(255,255,255,0.3)">Not set</span>'}</span>
             </div>
         </div>
         
         <!-- Active Deliveries -->
         ${activeOrders.length > 0 ? `
-            <div style="background: linear-gradient(135deg, rgba(42,157,143,0.2), rgba(42,157,143,0.1)); padding: 1rem; border-radius: 12px; margin-bottom: 1.2rem; border: 2px solid rgba(42,157,143,0.4);">
-                <h4 style="margin: 0 0 0.8rem 0; color: #2a9d8f; font-size: 0.95rem;">🚗 Active Delivery</h4>
+            <div style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.06)); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(16,185,129,0.25);">
+                <h4 style="margin: 0 0 0.8rem 0; color: #10b981; font-size: 0.9rem; font-weight: 600;">🚗 Active Delivery</h4>
                 ${activeOrders.map(o => `
-                    <div style="background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; margin-bottom: 0.3rem;">#${o.id}</div>
-                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Driver: ${o.driverName || 'Assigned'}</div>
-                        ${o.estimatedTime ? `<div style="font-size: 0.85rem; color: #f4a261;">ETA: ~${o.estimatedTime} mins</div>` : ''}
+                    <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; margin-bottom: 0.2rem; font-size: 0.9rem;">#${o.id}</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Driver: ${o.driverName || 'Assigned'}</div>
+                        ${o.estimatedTime ? `<div style="font-size: 0.8rem; color: #f59e0b;">ETA: ~${o.estimatedTime} mins</div>` : ''}
                     </div>
-                    <button onclick="trackDriver('${o.id}')" style="background: linear-gradient(45deg, #2a9d8f, #218373); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.9rem;">
+                    <button onclick="trackDriver('${o.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.85rem;">
                         📍 Track Driver Live
                     </button>
                 `).join('')}
@@ -1945,26 +1908,27 @@ function showAccount() {
         ` : ''}
         
         <!-- Action Buttons -->
-        <div style="display: grid; gap: 0.6rem;">
-            <button onclick="openEditProfile()" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+        <div style="display: grid; gap: 0.5rem; margin-bottom: 1rem;">
+            <button onclick="openEditProfile()" style="background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
                 ✏️ Edit Profile
             </button>
-            <button onclick="openChangeEmail()" style="background: linear-gradient(45deg, #f4a261, #e76f51); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                📧 Change Email
-            </button>
-            <button onclick="openChangePassword()" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                🔐 Change Password
-            </button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <button onclick="openChangeEmail()" style="background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                    📧 Change Email
+                </button>
+                <button onclick="openChangePassword()" style="background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); padding: 0.75rem 0.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                    🔐 Change Password
+                </button>
+            </div>
         </div>
         
-        <button onclick="logout()" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 2px solid #ef4444; padding: 0.9rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 1rem; font-size: 0.95rem;">
-            🚪 Logout
+        <button onclick="logout()" style="background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem; transition: all 0.2s;">
+            🚪 Sign Out
         </button>
         
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; text-align: center; margin-bottom: 0.8rem;">Danger Zone</p>
-            <button onclick="confirmDeleteAccount()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 500; width: 100%; font-size: 0.85rem;">
-                🗑️ Delete My Account
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center;">
+            <button onclick="confirmDeleteAccount()" style="background: transparent; color: rgba(239,68,68,0.5); border: none; cursor: pointer; font-size: 0.75rem; padding: 0.4rem;">
+                Delete Account
             </button>
         </div>
     `;
@@ -2049,12 +2013,6 @@ function showOrderHistory() {
                     </div>
                     
                     ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
-                    
-                    ${o.status === 'completed' && o.driverId && !o.driverRated ? `
-                        <button onclick="openDriverRating('${o.id}', '${o.driverId}', '${(o.driverName || 'Driver').replace(/'/g, "\\'")}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.9rem;">
-                            ⭐ Rate Driver
-                        </button>
-                    ` : ''}
                     
                     ${o.status === 'out_for_delivery' && driver ? `
                         <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
@@ -2558,7 +2516,7 @@ function showForgotPasswordSection(show) {
     }
 }
 
-// FIXED: Sends real email via EmailJS
+// Send email via EmailJS
 async function sendPasswordResetCode() {
     const emailInput = document.getElementById('forgotPasswordEmail');
     const email = emailInput ? emailInput.value.trim() : null;
@@ -2676,7 +2634,7 @@ function resetPassword() {
 }
 
 // ========================================
-// FIXED: Direct Login & Signup (No Verification)
+// Direct Login & Signup
 // ========================================
 
 function handleEmailAuth(event) {
@@ -2848,7 +2806,6 @@ function verifyCode() {
 
 function resendCode() {
     // Resend functionality disabled for Login/Signup
-    console.log('Resend code is disabled for this flow.');
     return;
 }
 
@@ -2868,8 +2825,7 @@ function loginWithGoogle() {
       // Mobile: Direct prompt
     google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            console.log('Google One Tap not available');
-            // Show clearer message
+            // Google One Tap not available
                alert('⚠️ Google Sign-In not available\n\nPlease use Email/Password login instead.');
            }
        });
@@ -2878,7 +2834,6 @@ function loginWithGoogle() {
             google.accounts.id.prompt();
         }
     } catch (error) {
-        console.error('Google Sign-In Error:', error);
         alert('❌ Google login unavailable. Please use email login.');
     }
 }
@@ -2886,7 +2841,6 @@ function loginWithGoogle() {
 function handleGoogleCallback(response) {
 
         if (!response || !response.credential) {
-        console.error('Google login failed:', response);
         alert('❌ Google login failed. Please try again or use email login.');
         return;
     }
@@ -2937,7 +2891,7 @@ function handleGoogleCallback(response) {
 }
 
 function loginWithApple() {
-    alert(`🍽 Apple Sign-In\n\nApple authentication would be configured here.\n\nFor demo, use email signup with iCloud.`);
+    alert('Apple Sign-In is not available at this time. Please use Email or Google login.');
 }
 
 // ========================================
@@ -3055,8 +3009,6 @@ function initMap() {
         selectedLocation = { lat, lng };
         updateDistanceInfo();
         googleMap.panTo(e.latLng);
-        
-        console.log('Location selected:', lat, lng);
     });
 }
 
@@ -3266,13 +3218,6 @@ function closeModal(modalId) {
                 trackingInterval = null;
             }
             trackingOrderId = null;
-            
-            // Restore navigation — tracking view hides nav
-            document.body.classList.remove('modal-open');
-            const mobileNav = document.querySelector('.mobile-bottom-nav');
-            const header = document.querySelector('.header');
-            if (mobileNav) mobileNav.style.cssText = '';
-            if (header) header.style.cssText = '';
         }
         
         // Re-enable body scrolling
@@ -3281,7 +3226,7 @@ function closeModal(modalId) {
         // SHOW NAVIGATION (if no other modals open)
         setTimeout(showNavigation, 50);
     } catch (e) {
-        console.error('Error closing modal:', e);
+        // Error closing modal - silently handled
     }
 }
 
@@ -3297,7 +3242,7 @@ function openModal(modalId) {
         // HIDE NAVIGATION
         hideNavigation();
     } catch (e) {
-        console.error('Error opening modal:', e);
+        // Error opening modal - silently handled
     }
 }
 
@@ -3328,10 +3273,8 @@ function showNavigation() {
     // Also check dashboards
     const ownerDash = document.getElementById('ownerDashboard');
     const restDash = document.getElementById('restaurantDashboard');
-    const driverTrack = document.getElementById('driverTrackingModal');
     if (ownerDash && ownerDash.style.display !== 'none') anyModalOpen = true;
     if (restDash && restDash.style.display !== 'none') anyModalOpen = true;
-    if (driverTrack && driverTrack.style.display === 'block') anyModalOpen = true;
     
     if (!anyModalOpen) {
         document.body.classList.remove('modal-open');
@@ -3381,10 +3324,7 @@ function handleOwnerLogin() {
         return;
     }
     
-  isOwnerLoggedIn = true;
-    
-    // Show owner button in nav bar
-    updateOwnerButtonVisibility();
+    isOwnerLoggedIn = true;
     
     // Re-render reviews to show "Reply as Owner" buttons
     displayReviews();
@@ -3406,10 +3346,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadBankDetails();
     loadMenuData(); // Load custom menu data from owner
     
-    // Debug: Check if data loaded correctly
-    console.log('📦 Categories:', Object.keys(categories).length);
-    console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
-    
     // Render categories FIRST
     renderCategories();
     
@@ -3421,7 +3357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         loadReviews();
     } catch(e) {
-        console.error('Error loading reviews:', e);
+        // Error loading reviews - silently handled
     }
     
     // Update badges
@@ -3486,7 +3422,6 @@ function setupMobileNavigation() {
             newBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Mobile nav clicked:', index);
                 actions[index]();
             });
             
@@ -4222,7 +4157,7 @@ function updateAuthUI() {
         el.style.display = isLoggedIn ? 'none' : 'flex';
     });
     
-    // THIS WAS MISSING: Update the "Login" button to "User Name"
+    // Update header for logged in user
     updateHeaderForLoggedInUser(); 
     
     updateOwnerButtonVisibility();
@@ -4233,7 +4168,7 @@ function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    const shouldShow = isOwnerLoggedIn || (currentUser && currentUser.email === 'admin@antalyashawarma.com');
+    const shouldShow = currentUser && currentUser.email === 'admin@antalyashawarma.com';
     
     if (desktopOwnerBtn) {
         desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
@@ -4246,8 +4181,6 @@ function updateOwnerButtonVisibility() {
 // Make confirmLocation globally accessible
 window.confirmLocation = confirmLocation;
 window.displayReviews = displayReviews;
-
-console.log('✅ Antalya Shawarma script loaded successfully');
 
 // ========================================
 // ORDER CANCELLATION

@@ -71,14 +71,6 @@ html {
         visibility: hidden !important;
     }
     
-    /* HIDE NAV - WHEN LIVE DRIVER TRACKING IS OPEN */
-    body:has(#driverTrackingModal[style*="display: block"]) .mobile-bottom-nav,
-    body:has(#driverTrackingModal[style*="display: block"]) .header {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }
-    
     .mobile-nav-item {
         display: -webkit-box !important;
         display: -webkit-flex !important;
@@ -517,6 +509,23 @@ html {
         background: rgba(255, 255, 255, 0.06) !important;
         border-color: rgba(230, 57, 70, 0.5) !important;
         outline: none !important;
+    }
+    
+    /* DOB / Date inputs — compact, touch-friendly */
+    .form-group input[type="date"] {
+        min-height: 44px !important;
+        max-height: 44px !important;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Global button overflow protection — mobile */
+    button, .submit-btn, [type="submit"], [type="button"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
     }
     
     .submit-btn {

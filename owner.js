@@ -46,15 +46,15 @@ function showRestaurantDashboard() {
     const now = new Date();
     const today = now.toDateString();
     
-    // FIX 1: Use ONLY orderHistory to avoid double counting
+    // Use orderHistory to avoid double counting
     
-   // FIX: Exclude both CANCELLED and REJECTED
+   // Exclude cancelled and rejected
     const dailyOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
         return orderDate.toDateString() === today && o.status !== 'cancelled' && o.status !== 'rejected';
     });
     
-    // FIX 3: Stats count ONLY 'completed' (Delivered) orders for money
+    // Revenue from completed orders only
     const dailyRevenue = dailyOrders
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
@@ -172,7 +172,7 @@ function acceptOrder(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
     
-    // FIX: Guard against cancelled orders
+    // Guard against cancelled orders
     if (order.status === 'cancelled') {
         alert('❌ Cannot accept: This order was cancelled by the user.');
         showRestaurantDashboard(); // Refresh view to remove it
@@ -812,10 +812,12 @@ function handleOwnerLogin() {
     
     isOwnerLoggedIn = true;
     
-    // Show owner button using the visibility function
-    if (typeof updateOwnerButtonVisibility === 'function') {
-        updateOwnerButtonVisibility();
-    }
+    // Show owner button on ALL devices (desktop + mobile)
+    const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
+    const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
+    
+    if (desktopOwnerBtn) desktopOwnerBtn.style.display = 'flex';
+    if (mobileOwnerBtn) mobileOwnerBtn.style.display = 'flex';
     
     closeModal('ownerModal');
     document.getElementById('ownerDashboard').style.display = 'block';
@@ -830,16 +832,10 @@ function handleOwnerLogin() {
         if (header) header.style.cssText = 'display: none !important;';
     }
     
-    // Re-render reviews to show "Reply as Owner" buttons
-    if (typeof displayReviews === 'function') {
-        displayReviews();
-    }
-    
     updateOwnerStats();
     
     alert('✅ Owner access granted!');
     
-
 }
 // Add to your DOMContentLoaded event
 document.addEventListener('DOMContentLoaded', function() {
@@ -853,15 +849,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateOwnerStats() {
-    // FIX: Only sum revenue for COMPLETED orders
+    // Revenue from completed orders only
     const totalRevenue = orderHistory
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
 
-   // FIX: Count all orders EXCEPT cancelled AND rejected
+    // Exclude cancelled and rejected
     const totalOrders = orderHistory.filter(o => o.status !== 'cancelled' && o.status !== 'rejected').length;
     
-    // Pending should just check pending status
     const pendingCount = pendingOrders.filter(o => o.status === 'pending').length;
     
     const totalUsers = userDatabase.length;
@@ -885,13 +880,13 @@ function updateOwnerStats() {
     // Today's stats
     const today = new Date().toDateString();
     
-   // FIX: Today's orders (exclude cancelled AND rejected)
+    // Today's orders (exclude cancelled and rejected)
     const todayOrders = orderHistory.filter(o => {
         const orderDate = new Date(o.createdAt);
         return orderDate.toDateString() === today && o.status !== 'cancelled' && o.status !== 'rejected';
     });
     
-    // FIX: Today's Revenue (exclude cancelled AND pending)
+    // Today's revenue (completed only)
     const todayRevenue = todayOrders
         .filter(o => o.status === 'completed')
         .reduce((sum, o) => sum + o.total, 0);
@@ -914,7 +909,49 @@ function updateOwnerStats() {
     if (todayOrdersEl) todayOrdersEl.textContent = todayOrders.length;
     if (avgOrderEl) avgOrderEl.textContent = formatPrice(avgOrderVal);
     if (newCustomersEl) newCustomersEl.textContent = newUsersToday;
-    if (avgRatingEl) avgRatingEl.textContent = '5.0'; 
+    
+    // Average rating — computed from real driver ratings
+    if (avgRatingEl) {
+        const ratedOrders = orderHistory.filter(o => o.driverRated && o.driverRating);
+        if (ratedOrders.length > 0) {
+            const avgRating = ratedOrders.reduce((sum, o) => sum + o.driverRating, 0) / ratedOrders.length;
+            avgRatingEl.textContent = avgRating.toFixed(1);
+        } else {
+            avgRatingEl.textContent = '—';
+        }
+    }
+    
+    // Popular Items — computed from all completed orders
+    const popularEl = document.getElementById('popularItemsList');
+    if (popularEl) {
+        const completedOrders = orderHistory.filter(o => o.status === 'completed' && o.items);
+        const itemCounts = {};
+        
+        completedOrders.forEach(order => {
+            order.items.forEach(item => {
+                const name = item.name || 'Unknown';
+                const icon = item.icon || '🍽️';
+                const key = name;
+                if (!itemCounts[key]) {
+                    itemCounts[key] = { name, icon, count: 0 };
+                }
+                itemCounts[key].count += (item.quantity || 1);
+            });
+        });
+        
+        const sorted = Object.values(itemCounts).sort((a, b) => b.count - a.count).slice(0, 5);
+        
+        if (sorted.length === 0) {
+            popularEl.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; text-align: center; padding: 1rem 0;">No order data yet</div>';
+        } else {
+            popularEl.innerHTML = sorted.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
+                    <span>${item.icon} ${item.name}</span>
+                    <span style="color: #10b981; font-weight: 600;">${item.count}</span>
+                </div>
+            `).join('');
+        }
+    }
 }
 
 // ========================================
@@ -1383,7 +1420,6 @@ window.handleRestaurantLogin = handleRestaurantLogin;
 window.showRestaurantDashboard = showRestaurantDashboard;
 window.closeRestaurantDashboard = closeRestaurantDashboard;
 window.showOwnerLogin = showOwnerLogin;
-window.handleOwnerLogin = handleOwnerLogin;
 window.showDriverManagementModal = showDriverManagementModal;
 window.addNewDriver = addNewDriver;
 window.deleteDriver = deleteDriver;
