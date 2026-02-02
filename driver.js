@@ -307,13 +307,6 @@ function showDriverDashboard(driver = null) {
     
     // Show fullscreen dashboard
     modal.style.display = 'block';
-    
-    // Hide navigation — dashboard is standalone fullscreen
-    document.body.classList.add('modal-open');
-    const mobileNav = document.querySelector('.mobile-bottom-nav');
-    const header = document.querySelector('.header');
-    if (mobileNav) mobileNav.style.cssText = 'display: none !important;';
-    if (header) header.style.cssText = 'display: none !important;';
 }
 
 function callCustomer(phone) {
@@ -498,13 +491,6 @@ function logoutDriver() {
         modal.classList.remove('active');
         modal.style.display = 'none';
     }
-    
-    // Restore navigation
-    document.body.classList.remove('modal-open');
-    const mobileNav = document.querySelector('.mobile-bottom-nav');
-    const header = document.querySelector('.header');
-    if (mobileNav) mobileNav.style.cssText = '';
-    if (header) header.style.cssText = '';
 }
 
 // ========================================
@@ -580,6 +566,13 @@ function trackDriver(orderId) {
     }
     
     modal.style.display = 'block';
+    
+    // Hide navigation — tracking view is fullscreen
+    document.body.classList.add('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) mobileNav.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
+    if (header) header.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
     
     // Initialize tracking map
     setTimeout(() => {
@@ -758,6 +751,13 @@ function closeTrackingModal() {
     if (modal) {
         modal.style.display = 'none';
     }
+    
+    // Restore navigation
+    document.body.classList.remove('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) mobileNav.style.cssText = '';
+    if (header) header.style.cssText = '';
 }
 
 // ========================================
@@ -930,3 +930,9 @@ window.confirmLogoutDriver = confirmLogoutDriver;
 window.logoutDriver = logoutDriver;
 window.updateDriverLoginUI = updateDriverLoginUI;
 window.generateDriverSecretCode = generateDriverSecretCode;
+window.trackDriver = trackDriver;
+window.closeTrackingModal = closeTrackingModal;
+window.refreshDriverLocation = refreshDriverLocation;
+window.openDriverRating = openDriverRating;
+window.submitDriverRating = submitDriverRating;
+window.showDeliveryRatingPopup = showDeliveryRatingPopup;

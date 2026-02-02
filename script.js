@@ -150,6 +150,7 @@ function resetSelectedData() {
 
 function resetAllData() {
     // Deprecated - use showResetOptions() directly
+    console.warn('resetAllData() is deprecated. Use showResetOptions() instead.');
 }
 
 // ========================================
@@ -456,7 +457,7 @@ function loadMenuData() {
                     }
                 });
             }
-        } catch(e) { /* Error loading menu data */ }
+        } catch(e) { console.log('Error loading menu data'); }
     }
 if (savedCategories) {
     try {
@@ -467,7 +468,7 @@ if (savedCategories) {
             }
         });
     } catch (e) {
-        // Bad category data, resetting
+        console.warn('⚠️ Bad category data, resetting...');
         localStorage.removeItem('categories');
     }
 }
@@ -515,19 +516,67 @@ let selectedRating = 0;
 let showingAllReviews = false;
 
 let ownerBankDetails = {
-    bankName: '',
-    accountNumber: '',
-    sortCode: '',
-    iban: '',
-    cardNumber: ''
+    bankName: 'Barclays Bank UK',
+    accountNumber: '12345678',
+    sortCode: '20-00-00',
+    iban: 'GB29 NWBK 6016 1331 9268 19',
+    cardNumber: '4532 **** **** 1234'
 };
 
 // ========================================
 // DRIVER SYSTEM
 // ========================================
 window.driverSystem = {
-    // Drivers will be added by owner through the dashboard
-    drivers: {},
+    drivers: {
+        'driver-001': {
+            id: 'driver-001',
+            name: 'Mohammed Ali',
+            email: 'mohammed@antalya.com',
+            phone: '+44 7700 900123',
+            password: 'driver123',
+            dob: '1990-05-15',
+            gender: 'male',
+            secretCode: 'DRV-001-MA',
+            deliveries: 247,
+            rating: 4.9,
+            active: true,      // Can login
+            available: true,   // Can receive orders
+            profilePicture: null,
+            currentLocation: null
+        },
+        'driver-002': {
+            id: 'driver-002',
+            name: 'Ahmed Hassan',
+            email: 'ahmed@antalya.com',
+            phone: '+44 7700 900124',
+            password: 'driver123',
+            dob: '1988-08-20',
+            gender: 'male',
+            secretCode: 'DRV-002-AH',
+            deliveries: 189,
+            rating: 4.8,
+            active: true,
+            available: true,
+            profilePicture: null,
+            currentLocation: null
+        },
+        'driver-003': {
+            id: 'driver-003',
+            name: 'Fatima Khan',
+            email: 'fatima@antalya.com',
+            phone: '+44 7700 900125',
+            password: 'driver123',
+            dob: '1992-12-10',
+            gender: 'female',
+            secretCode: 'DRV-003-FK',
+            deliveries: 156,
+            rating: 4.95,
+            active: true,
+            available: true,
+            profilePicture: null,
+            currentLocation: null
+        }
+    },
     get: function(id) {
         return this.drivers[id] || null;
     },
@@ -650,13 +699,16 @@ let otpTimers = {}; // Track OTP timers per email
 
 async function sendVerificationEmail(email, code, type = 'verification') {
     const now = Date.now();
-    const lastSent = otpTimers[email]?.lastSent || 0;
-    const timeSinceLastSend = now - lastSent;
+    const timer = otpTimers[email];
     
-    if (timeSinceLastSend < 90000) {
-        const waitTime = Math.ceil((90000 - timeSinceLastSend) / 1000);
-        alert(`⏱️ Please wait ${waitTime} seconds before requesting a new code.`);
-        return false;
+    // Cooldown applies ONLY to resend attempts (not the first send)
+    if (timer && timer.lastSent > 0) {
+        const timeSinceLastSend = now - timer.lastSent;
+        if (timeSinceLastSend < 30000) {
+            const waitTime = Math.ceil((30000 - timeSinceLastSend) / 1000);
+            alert(`⏱️ Please wait ${waitTime} seconds before resending.`);
+            return false;
+        }
     }
     
     try {
@@ -677,13 +729,15 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         otpTimers[email] = {
             lastSent: now,
             expiresAt: now + 600000,
-            canResendAt: now + 90000
+            canResendAt: now + 30000
         };
         
         startOTPCountdown(email);
-        alert('📧 Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.');
+        console.log('✅ Verification email sent successfully');
+        alert('📧 Code sent! Check your email inbox.\n\nAlso check your spam/junk folder.');
         return true;
     } catch (error) {
+        console.error('❌ EmailJS Error:', error);
         alert('❌ Failed to send verification email. Please try again.');
         return false;
     }
@@ -692,6 +746,11 @@ async function sendVerificationEmail(email, code, type = 'verification') {
 function startOTPCountdown(email) {
     const timer = otpTimers[email];
     if (!timer) return;
+    
+    // Clear any existing countdown interval for this email
+    if (timer.interval) {
+        clearInterval(timer.interval);
+    }
     
     const countdownElement = document.getElementById('otpCountdown');
     const resendBtn = document.getElementById('resendCodeBtn');
@@ -723,14 +782,6 @@ function canResendOTP(email) {
     const timer = otpTimers[email];
     if (!timer) return true;
     return Date.now() >= timer.canResendAt;
-}
-
-function canSendCode() {
-    const last = localStorage.getItem("lastCodeTime");
-    if (!last) return true;
-
-    const diff = Date.now() - Number(last);
-    return diff > 60 * 1000; // 1 minute
 }
 
 
@@ -2795,6 +2846,7 @@ function verifyCode() {
 
 function resendCode() {
     // Resend functionality disabled for Login/Signup
+    console.log('Resend code is disabled for this flow.');
     return;
 }
 
@@ -2814,7 +2866,8 @@ function loginWithGoogle() {
       // Mobile: Direct prompt
     google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Google One Tap not available
+            console.log('Google One Tap not available');
+            // Show clearer message
                alert('⚠️ Google Sign-In not available\n\nPlease use Email/Password login instead.');
            }
        });
@@ -2823,6 +2876,7 @@ function loginWithGoogle() {
             google.accounts.id.prompt();
         }
     } catch (error) {
+        console.error('Google Sign-In Error:', error);
         alert('❌ Google login unavailable. Please use email login.');
     }
 }
@@ -2830,6 +2884,7 @@ function loginWithGoogle() {
 function handleGoogleCallback(response) {
 
         if (!response || !response.credential) {
+        console.error('Google login failed:', response);
         alert('❌ Google login failed. Please try again or use email login.');
         return;
     }
@@ -2998,6 +3053,8 @@ function initMap() {
         selectedLocation = { lat, lng };
         updateDistanceInfo();
         googleMap.panTo(e.latLng);
+        
+        console.log('Location selected:', lat, lng);
     });
 }
 
@@ -3207,6 +3264,13 @@ function closeModal(modalId) {
                 trackingInterval = null;
             }
             trackingOrderId = null;
+            
+            // Restore navigation — tracking view hides nav
+            document.body.classList.remove('modal-open');
+            const mobileNav = document.querySelector('.mobile-bottom-nav');
+            const header = document.querySelector('.header');
+            if (mobileNav) mobileNav.style.cssText = '';
+            if (header) header.style.cssText = '';
         }
         
         // Re-enable body scrolling
@@ -3215,7 +3279,7 @@ function closeModal(modalId) {
         // SHOW NAVIGATION (if no other modals open)
         setTimeout(showNavigation, 50);
     } catch (e) {
-        // Error closing modal - silently handled
+        console.error('Error closing modal:', e);
     }
 }
 
@@ -3231,19 +3295,20 @@ function openModal(modalId) {
         // HIDE NAVIGATION
         hideNavigation();
     } catch (e) {
-        // Error opening modal - silently handled
+        console.error('Error opening modal:', e);
     }
 }
 
 // Helper function to hide navigation
 function hideNavigation() {
-    // Add modal-open class to body - CSS handles the rest
     document.body.classList.add('modal-open');
-    
-    // Desktop fallback: hide header
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
     const header = document.querySelector('.header');
-    if (header && window.innerWidth > 768) {
-        header.style.display = 'none';
+    if (mobileNav) {
+        mobileNav.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
+    }
+    if (header) {
+        header.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
     }
 }
 
@@ -3261,17 +3326,20 @@ function showNavigation() {
     // Also check dashboards
     const ownerDash = document.getElementById('ownerDashboard');
     const restDash = document.getElementById('restaurantDashboard');
+    const driverTrack = document.getElementById('driverTrackingModal');
     if (ownerDash && ownerDash.style.display !== 'none') anyModalOpen = true;
     if (restDash && restDash.style.display !== 'none') anyModalOpen = true;
+    if (driverTrack && driverTrack.style.display === 'block') anyModalOpen = true;
     
     if (!anyModalOpen) {
-        // Remove modal-open class - CSS will restore navigation
         document.body.classList.remove('modal-open');
-        
-        // Desktop fallback: restore header
+        const mobileNav = document.querySelector('.mobile-bottom-nav');
         const header = document.querySelector('.header');
-        if (header && window.innerWidth > 768) {
-            header.style.display = '';
+        if (mobileNav) {
+            mobileNav.style.cssText = '';
+        }
+        if (header) {
+            header.style.cssText = '';
         }
     }
 }
@@ -3298,6 +3366,33 @@ function toggleMobileMenu() {
 
 
 
+// Call this after successful owner login
+function handleOwnerLogin() {
+    const email = document.getElementById('devEmail').value.trim();
+    const password = document.getElementById('devPassword').value;
+    const pin = document.getElementById('devPin').value;
+    
+    if (email !== OWNER_CREDENTIALS.email || 
+        password !== OWNER_CREDENTIALS.password || 
+        pin !== OWNER_CREDENTIALS.pin) {
+        alert('❌ Invalid credentials');
+        return;
+    }
+    
+    isOwnerLoggedIn = true;
+    
+    // Re-render reviews to show "Reply as Owner" buttons
+    displayReviews();
+
+    closeModal('ownerModal');
+    document.getElementById('ownerDashboard').style.display = 'block';
+    hideNavigation(); // Hide navigation when dashboard opens
+    updateOwnerStats();
+    
+    alert('✅ Owner access granted!');
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     updateOwnerButtonVisibility(); // Ensure owner button is hidden on load    
 
@@ -3305,6 +3400,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData();
     loadBankDetails();
     loadMenuData(); // Load custom menu data from owner
+    
+    // Debug: Check if data loaded correctly
+    console.log('📦 Categories:', Object.keys(categories).length);
+    console.log('🍽️ Menu items:', Object.values(menuData).flat().length);
     
     // Render categories FIRST
     renderCategories();
@@ -3317,7 +3416,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         loadReviews();
     } catch(e) {
-        // Error loading reviews - silently handled
+        console.error('Error loading reviews:', e);
     }
     
     // Update badges
@@ -3382,6 +3481,7 @@ function setupMobileNavigation() {
             newBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('Mobile nav clicked:', index);
                 actions[index]();
             });
             
@@ -4101,6 +4201,7 @@ window.openForgotPasswordFromChangePassword = openForgotPasswordFromChangePasswo
 window.confirmDeleteAccount = confirmDeleteAccount;
 window.deleteUserAccount = deleteUserAccount;
 window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
+window.handleOwnerLogin = handleOwnerLogin;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithApple = loginWithApple;
 
@@ -4127,8 +4228,7 @@ function updateOwnerButtonVisibility() {
     const desktopOwnerBtn = document.getElementById('ownerAccessBtn');
     const mobileOwnerBtn = document.getElementById('mobileOwnerBtn');
     
-    // Show button if owner is logged in (via secret email/password)
-    const shouldShow = isOwnerLoggedIn === true;
+    const shouldShow = currentUser && currentUser.email === 'admin@antalyashawarma.com';
     
     if (desktopOwnerBtn) {
         desktopOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
@@ -4141,6 +4241,8 @@ function updateOwnerButtonVisibility() {
 // Make confirmLocation globally accessible
 window.confirmLocation = confirmLocation;
 window.displayReviews = displayReviews;
+
+console.log('✅ Antalya Shawarma script loaded successfully');
 
 // ========================================
 // ORDER CANCELLATION
