@@ -544,6 +544,15 @@ html {
         outline: none !important;
     }
     
+    /* Date inputs — constrained on mobile */
+    .form-group input[type="date"] {
+        max-width: 180px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 14px !important;
+    }
+    
     .submit-btn {
         width: 100% !important;
         padding: 1.1rem !important;
@@ -779,5 +788,106 @@ html {
     #writeReviewModal .form-group {
         position: relative !important;
         z-index: 3002 !important;
+    }
+    
+    /* ========================================
+       DRIVER MANAGEMENT - MOBILE
+       ======================================== */
+    
+    .driver-management-modal {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 1.2rem !important;
+    }
+    
+    .edit-driver-modal {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    .driver-modal-header .driver-modal-icon {
+        font-size: 2.5rem !important;
+    }
+    
+    .driver-modal-header h2 {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Form grid - single column on mobile */
+    .driver-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.7rem !important;
+    }
+    
+    .driver-form-grid .form-group input,
+    .driver-form-grid .form-group select {
+        padding: 0.8rem !important;
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+    
+    /* Driver cards - optimized for touch */
+    .driver-card {
+        padding: 0.9rem !important;
+    }
+    
+    .driver-card-header {
+        gap: 0.7rem !important;
+    }
+    
+    .driver-card-avatar {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.3rem !important;
+    }
+    
+    .driver-card-name {
+        font-size: 0.95rem !important;
+    }
+    
+    .driver-stats-row {
+        font-size: 0.75rem !important;
+        gap: 0.3rem 0.8rem !important;
+    }
+    
+    /* Action buttons - 2 rows on very small screens */
+    .driver-card-actions {
+        flex-wrap: wrap !important;
+    }
+    
+    .driver-action-btn {
+        flex: 1 1 calc(50% - 0.25rem) !important;
+        min-width: calc(50% - 0.25rem) !important;
+        padding: 0.6rem 0.4rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Delete button full width on second row */
+    .driver-action-btn.delete {
+        flex: 1 1 100% !important;
+        margin-top: 0.3rem !important;
+    }
+    
+    /* Add driver section */
+    .add-driver-section .section-header {
+        padding: 0.9rem 1rem !important;
+    }
+    
+    .add-driver-form {
+        padding: 1rem !important;
+    }
+    
+    .driver-pic-preview {
+        width: 64px !important;
+        height: 64px !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .add-driver-btn {
+        padding: 0.85rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .driver-list-title {
+        font-size: 0.9rem !important;
     }
 }

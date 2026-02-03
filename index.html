@@ -772,121 +772,137 @@
 
     <!-- DRIVER MANAGEMENT MODAL (OWNER ONLY) - COMPLETE -->
     <div class="modal" id="driverManagementModal" style="display: none; z-index: 10002;">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-content driver-management-modal">
             <button class="close-btn" onclick="closeModal('driverManagementModal')">×</button>
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="font-size: 4rem; margin-bottom: 0.5rem;">🚗</div>
-                <h2 style="color: #10b981;">Driver Management</h2>
-                <p style="color: rgba(255,255,255,0.6);">Manage delivery drivers</p>
+            
+            <!-- Header -->
+            <div class="driver-modal-header">
+                <div class="driver-modal-icon">🚗</div>
+                <h2>Driver Management</h2>
+                <p>Manage delivery drivers</p>
             </div>
             
             <!-- Add New Driver Form -->
-            <div style="background: rgba(16,185,129,0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid rgba(16,185,129,0.3);">
-                <h3 style="color: #10b981; margin: 0 0 1rem 0; font-size: 1.1rem;">➕ Add New Driver</h3>
-                
-                <!-- Profile Picture -->
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <div id="newDriverPicPreview" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(16,185,129,0.5);">🚗</div>
-                    <input type="file" id="newDriverPicInput" accept="image/*" style="display: none;" onchange="previewDriverPic(this)">
-                    <button type="button" onclick="document.getElementById('newDriverPicInput').click()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.3rem 0.8rem; border-radius: 15px; cursor: pointer; font-size: 0.8rem;">📷 Photo</button>
+            <div class="add-driver-section">
+                <div class="section-header" onclick="toggleAddDriverForm()">
+                    <h3>➕ Add New Driver</h3>
+                    <span id="addDriverToggle" class="toggle-icon">▼</span>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Full Name *</label>
-                        <input type="text" id="newDriverName" placeholder="Driver full name" style="width: 100%;">
+                <div id="addDriverFormContent" class="add-driver-form">
+                    <!-- Profile Picture -->
+                    <div class="driver-photo-upload">
+                        <div id="newDriverPicPreview" class="driver-pic-preview">🚗</div>
+                        <input type="file" id="newDriverPicInput" accept="image/*" style="display: none;" onchange="previewDriverPic(this)">
+                        <button type="button" onclick="document.getElementById('newDriverPicInput').click()" class="photo-btn">📷 Add Photo</button>
                     </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Email *</label>
-                        <input type="email" id="newDriverEmail" placeholder="driver@email.com" style="width: 100%;">
+                    
+                    <!-- Form Fields -->
+                    <div class="driver-form-grid">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="newDriverName" placeholder="Driver full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="newDriverEmail" placeholder="driver@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="newDriverPhone" placeholder="+44 7XXX XXX XXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="newDriverPassword" placeholder="Login password">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="newDriverBirth">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="newDriverGender">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Phone *</label>
-                        <input type="tel" id="newDriverPhone" placeholder="+44 7XXX XXX XXX" style="width: 100%;">
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Password *</label>
-                        <input type="password" id="newDriverPassword" placeholder="Login password" style="width: 100%;">
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Date of Birth</label>
-                        <input type="date" id="newDriverBirth" style="width: 100%;">
-                    </div>
-                    <div class="form-group" style="margin: 0;">
-                        <label style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Gender</label>
-                        <select id="newDriverGender" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
+                    
+                    <button onclick="addNewDriver()" class="add-driver-btn">➕ Add Driver</button>
                 </div>
-                <button onclick="addNewDriver()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 1rem; font-size: 1rem;">➕ Add Driver</button>
             </div>
             
             <!-- Driver List -->
-            <div id="driverListContainer">
-                <!-- Drivers will be rendered here -->
+            <div class="driver-list-section">
+                <h3 class="driver-list-title">📋 Registered Drivers</h3>
+                <div id="driverListContainer" class="driver-list-container">
+                    <!-- Drivers will be rendered here -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- EDIT DRIVER MODAL -->
     <div class="modal" id="editDriverModal" style="display: none; z-index: 10003;">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content edit-driver-modal">
             <button class="close-btn" onclick="closeModal('editDriverModal')">×</button>
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✏️</div>
+            
+            <div class="driver-modal-header" style="margin-bottom: 1.2rem;">
+                <div class="driver-modal-icon" style="font-size: 2.5rem;">✏️</div>
                 <h2 style="color: #3b82f6;">Edit Driver</h2>
             </div>
             
             <input type="hidden" id="editDriverId">
             
             <!-- Profile Picture -->
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div id="editDriverPicPreview" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; border: 3px solid rgba(59,130,246,0.5);">🚗</div>
+            <div class="driver-photo-upload" style="margin-bottom: 1.2rem;">
+                <div id="editDriverPicPreview" class="driver-pic-preview" style="border-color: rgba(59,130,246,0.5);">🚗</div>
                 <input type="file" id="editDriverPicInput" accept="image/*" style="display: none;" onchange="previewEditDriverPic(this)">
-                <button type="button" onclick="document.getElementById('editDriverPicInput').click()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.3rem 0.8rem; border-radius: 15px; cursor: pointer; font-size: 0.8rem;">📷 Change Photo</button>
+                <button type="button" onclick="document.getElementById('editDriverPicInput').click()" class="photo-btn">📷 Change Photo</button>
             </div>
             
-            <div class="form-group">
-                <label>Full Name *</label>
-                <input type="text" id="editDriverName" placeholder="Driver name">
+            <div class="driver-form-grid">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="editDriverName" placeholder="Driver name">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="editDriverEmail" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="editDriverPhone" placeholder="Phone">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="editDriverPassword" placeholder="Leave empty to keep current">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="editDriverBirth">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="editDriverGender">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Status</label>
+                    <select id="editDriverStatus">
+                        <option value="active">🟢 Active</option>
+                        <option value="inactive">🔴 Inactive</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Email *</label>
-                <input type="email" id="editDriverEmail" placeholder="Email">
-            </div>
-            <div class="form-group">
-                <label>Phone *</label>
-                <input type="tel" id="editDriverPhone" placeholder="Phone">
-            </div>
-            <div class="form-group">
-                <label>New Password (leave empty to keep current)</label>
-                <input type="password" id="editDriverPassword" placeholder="New password">
-            </div>
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" id="editDriverBirth">
-            </div>
-            <div class="form-group">
-                <label>Gender</label>
-                <select id="editDriverGender" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="editDriverStatus" style="width: 100%; padding: 0.8rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white;">
-                    <option value="active">🟢 Active</option>
-                    <option value="inactive">🔴 Inactive</option>
-                </select>
-            </div>
-            <button onclick="saveDriverChanges()" class="submit-btn" style="background: linear-gradient(45deg, #3b82f6, #2563eb);">💾 Save Changes</button>
+            
+            <button onclick="saveDriverChanges()" class="submit-btn" style="background: linear-gradient(45deg, #3b82f6, #2563eb); margin-top: 1rem;">💾 Save Changes</button>
         </div>
     </div>
 

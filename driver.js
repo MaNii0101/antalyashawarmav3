@@ -752,12 +752,24 @@ function closeTrackingModal() {
         modal.style.display = 'none';
     }
     
-    // Restore navigation
+    // Restore navigation properly
     document.body.classList.remove('modal-open');
     const mobileNav = document.querySelector('.mobile-bottom-nav');
     const header = document.querySelector('.header');
-    if (mobileNav) mobileNav.style.cssText = '';
-    if (header) header.style.cssText = '';
+    if (mobileNav) {
+        mobileNav.style.cssText = '';
+        mobileNav.style.display = 'flex';
+        mobileNav.style.visibility = 'visible';
+        mobileNav.style.opacity = '1';
+        mobileNav.style.pointerEvents = 'auto';
+    }
+    if (header) {
+        header.style.cssText = '';
+        header.style.display = 'flex';
+        header.style.visibility = 'visible';
+        header.style.opacity = '1';
+        header.style.pointerEvents = 'auto';
+    }
 }
 
 // ========================================

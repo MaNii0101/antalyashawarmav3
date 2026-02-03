@@ -522,6 +522,14 @@ body {
     background: rgba(255, 255, 255, 0.08);
 }
 
+/* Date inputs — constrained width, compact sizing */
+.form-group input[type="date"] {
+    max-width: 200px;
+    height: 44px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
 .form-group small {
     color: rgba(255, 255, 255, 0.5);
     font-size: clamp(0.75rem, 1.8vw, 0.85rem);
@@ -884,4 +892,348 @@ body {
 #writeReviewModal .form-group {
     position: relative;
     z-index: 50;
+}
+
+/* ========================================
+   DRIVER MANAGEMENT STYLES
+   ======================================== */
+
+.driver-management-modal {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem !important;
+}
+
+.edit-driver-modal {
+    max-width: 480px;
+}
+
+.driver-modal-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.driver-modal-header .driver-modal-icon {
+    font-size: 3rem;
+    margin-bottom: 0.3rem;
+}
+
+.driver-modal-header h2 {
+    color: #10b981;
+    margin: 0 0 0.3rem 0;
+    font-size: 1.4rem;
+}
+
+.driver-modal-header p {
+    color: rgba(255,255,255,0.5);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Add Driver Section */
+.add-driver-section {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.add-driver-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    background: rgba(16,185,129,0.1);
+}
+
+.add-driver-section .section-header h3 {
+    color: #10b981;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.add-driver-section .toggle-icon {
+    color: #10b981;
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.add-driver-form {
+    padding: 1.2rem;
+}
+
+.add-driver-form.collapsed {
+    display: none;
+}
+
+/* Driver Photo Upload */
+.driver-photo-upload {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.driver-pic-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    overflow: hidden;
+    border: 3px solid rgba(16,185,129,0.4);
+}
+
+.driver-pic-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-btn {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.photo-btn:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+/* Driver Form Grid */
+.driver-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.driver-form-grid .form-group {
+    margin: 0;
+}
+
+.driver-form-grid .form-group label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 0.3rem;
+}
+
+.driver-form-grid select {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* Add Driver Button */
+.add-driver-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-driver-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+}
+
+/* Driver List Section */
+.driver-list-section {
+    margin-top: 0.5rem;
+}
+
+.driver-list-title {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+}
+
+.driver-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Driver Card */
+.driver-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 4px solid #10b981;
+    transition: background 0.2s;
+}
+
+.driver-card:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.driver-card.inactive {
+    border-left-color: #ef4444;
+    opacity: 0.85;
+}
+
+.driver-card-header {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.driver-card-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #10b981;
+}
+
+.driver-card.inactive .driver-card-avatar {
+    border-color: #ef4444;
+}
+
+.driver-card-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.driver-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.driver-card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.2rem;
+}
+
+.driver-card-code {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+}
+
+.driver-card-code strong {
+    color: #f59e0b;
+}
+
+.driver-card-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.driver-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.driver-badge.active {
+    background: rgba(16,185,129,0.15);
+    color: #10b981;
+}
+
+.driver-badge.inactive {
+    background: rgba(239,68,68,0.15);
+    color: #ef4444;
+}
+
+.driver-badge.available {
+    background: rgba(59,130,246,0.15);
+    color: #3b82f6;
+}
+
+.driver-badge.unavailable {
+    background: rgba(245,158,11,0.15);
+    color: #f59e0b;
+}
+
+/* Driver Stats Row */
+.driver-stats-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem 1rem;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 0.8rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Driver Actions */
+.driver-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.driver-action-btn {
+    flex: 1;
+    padding: 0.55rem 0.3rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.driver-action-btn.edit {
+    background: rgba(59,130,246,0.15);
+    color: #3b82f6;
+    border: 1px solid rgba(59,130,246,0.3);
+}
+
+.driver-action-btn.toggle {
+    background: rgba(245,158,11,0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245,158,11,0.3);
+}
+
+.driver-action-btn.toggle.activate {
+    background: rgba(16,185,129,0.15);
+    color: #10b981;
+    border: 1px solid rgba(16,185,129,0.3);
+}
+
+.driver-action-btn.delete {
+    background: rgba(239,68,68,0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239,68,68,0.2);
 }

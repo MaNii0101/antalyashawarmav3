@@ -1893,10 +1893,16 @@ function showAccount() {
                 <span style="font-size: 0.88rem; color: white;">${dobFormatted}</span>
             </div>
             ` : ''}
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <span style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">📍 Address</span>
                 <span style="font-size: 0.88rem; color: white; text-align: right; max-width: 58%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${currentUser.address || 'Not set'}</span>
             </div>
+            ${memberSince ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem;">
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">📅 Member Since</span>
+                <span style="font-size: 0.88rem; color: white;">${memberSince}</span>
+            </div>
+            ` : ''}
         </div>
         
         <!-- Active Deliveries -->

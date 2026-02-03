@@ -491,6 +491,16 @@ function showDriverManagementModal() {
     openModal('driverManagementModal');
 }
 
+function toggleAddDriverForm() {
+    const formContent = document.getElementById('addDriverFormContent');
+    const toggleIcon = document.getElementById('addDriverToggle');
+    
+    if (formContent && toggleIcon) {
+        formContent.classList.toggle('collapsed');
+        toggleIcon.textContent = formContent.classList.contains('collapsed') ? '▶' : '▼';
+    }
+}
+
 function renderDriverList() {
     const container = document.getElementById('driverListContainer');
     if (!container) return;
@@ -499,9 +509,9 @@ function renderDriverList() {
     
     if (allDrivers.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 3rem;">🚗</div>
-                <p>No drivers registered yet</p>
+            <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚗</div>
+                <p style="margin: 0;">No drivers registered yet</p>
             </div>
         `;
         return;
@@ -509,41 +519,38 @@ function renderDriverList() {
     
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
-            ? `<img src="${driver.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
+            ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
             : '🚗';
-        const statusColor = driver.active ? '#10b981' : '#ef4444';
-        const statusText = driver.active ? '🟢 Active' : '🔴 Inactive';
-        const availableText = driver.available ? '✅ Available' : '⏸️ Unavailable';
+        const isActive = driver.active;
+        const isAvailable = driver.available;
         
         return `
-        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 4px solid ${statusColor};">
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; flex-shrink: 0; border: 3px solid ${statusColor};">
+        <div class="driver-card ${isActive ? '' : 'inactive'}">
+            <div class="driver-card-header">
+                <div class="driver-card-avatar">
                     ${profilePic}
                 </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 700; font-size: 1.1rem; color: white;">${driver.name}</div>
-                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Code: <strong>${driver.secretCode}</strong></div>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <span style="font-size: 0.8rem; color: ${driver.active ? '#10b981' : '#ef4444'};">${statusText}</span>
-                        <span style="font-size: 0.8rem; color: ${driver.available ? '#3b82f6' : '#f59e0b'};">${availableText}</span>
+                <div class="driver-card-info">
+                    <div class="driver-card-name">${driver.name}</div>
+                    <div class="driver-card-code">Code: <strong>${driver.secretCode}</strong></div>
+                    <div class="driver-card-badges">
+                        <span class="driver-badge ${isActive ? 'active' : 'inactive'}">${isActive ? '🟢 Active' : '🔴 Inactive'}</span>
+                        <span class="driver-badge ${isAvailable ? 'available' : 'unavailable'}">${isAvailable ? '✅ Available' : '⏸️ Busy'}</span>
                     </div>
                 </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;">
+            <div class="driver-stats-row">
                 <div>📧 ${driver.email}</div>
                 <div>📞 ${driver.phone}</div>
                 <div>📦 ${driver.deliveries || 0} deliveries</div>
-                <div>⭐ ${driver.rating || 5.0} rating</div>
-                ${driver.dob ? `<div>🎂 ${new Date(driver.dob).toLocaleDateString()}</div>` : ''}
-                ${driver.gender ? `<div>👤 ${driver.gender.charAt(0).toUpperCase() + driver.gender.slice(1)}</div>` : ''}
+                <div>⭐ ${(driver.rating || 5.0).toFixed(1)} rating</div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-                <button onclick="editDriver('${driver.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.6rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">✏️ Edit</button>
-                <button onclick="toggleDriverStatus('${driver.id}')" style="background: ${driver.active ? 'linear-gradient(45deg, #f59e0b, #d97706)' : 'linear-gradient(45deg, #10b981, #059669)'}; color: white; border: none; padding: 0.6rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">${driver.active ? '⏸️ Deactivate' : '▶️ Activate'}</button>
-                <button onclick="deleteDriver('${driver.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.6rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">🗑️ Remove</button>
+            <div class="driver-card-actions">
+                <button onclick="editDriver('${driver.id}')" class="driver-action-btn edit">✏️ Edit</button>
+                <button onclick="toggleDriverStatus('${driver.id}')" class="driver-action-btn toggle ${isActive ? '' : 'activate'}">${isActive ? '⏸️ Disable' : '▶️ Enable'}</button>
+                <button onclick="deleteDriver('${driver.id}')" class="driver-action-btn delete">🗑️ Remove</button>
             </div>
         </div>
     `}).join('');
@@ -911,6 +918,49 @@ function updateOwnerStats() {
     if (avgOrderEl) avgOrderEl.textContent = formatPrice(avgOrderVal);
     if (newCustomersEl) newCustomersEl.textContent = newUsersToday;
     if (avgRatingEl) avgRatingEl.textContent = '5.0'; 
+    
+    // Popular Food Stats - calculated from COMPLETED orders only
+    const popularItemsList = document.getElementById('popularItemsList');
+    if (popularItemsList) {
+        const itemCounts = {};
+        
+        // Count items from completed orders only
+        orderHistory
+            .filter(o => o.status === 'completed')
+            .forEach(order => {
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const key = item.name || item.id;
+                        if (key) {
+                            if (!itemCounts[key]) {
+                                itemCounts[key] = { name: item.name, icon: item.icon || '🍽️', count: 0 };
+                            }
+                            itemCounts[key].count += (item.quantity || 1);
+                        }
+                    });
+                }
+            });
+        
+        // Sort by count and get top 5
+        const topItems = Object.values(itemCounts)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+        
+        if (topItems.length > 0) {
+            popularItemsList.innerHTML = topItems.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
+                    <span>${item.icon} ${item.name}</span>
+                    <span style="color: #10b981; font-weight: 600;">${item.count}</span>
+                </div>
+            `).join('');
+        } else {
+            popularItemsList.innerHTML = `
+                <div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; text-align: center; padding: 1rem;">
+                    No completed orders yet
+                </div>
+            `;
+        }
+    }
 }
 
 // ========================================
@@ -1380,6 +1430,7 @@ window.showRestaurantDashboard = showRestaurantDashboard;
 window.closeRestaurantDashboard = closeRestaurantDashboard;
 window.showOwnerLogin = showOwnerLogin;
 window.showDriverManagementModal = showDriverManagementModal;
+window.toggleAddDriverForm = toggleAddDriverForm;
 window.addNewDriver = addNewDriver;
 window.deleteDriver = deleteDriver;
 window.editDriver = editDriver;
