@@ -280,7 +280,7 @@ function showDriverDashboard(driver = null) {
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
-                    <button onclick="openDirections('${encodeURIComponent(order.address)}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    <button onclick="openDirections('${encodeURIComponent(order.address)}', '${order.deliveryLocation?.lat || ''}', '${order.deliveryLocation?.lng || ''}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
                         🗺️ Directions
                     </button>
                     <button onclick="markOrderDelivered('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
@@ -422,9 +422,21 @@ setInterval(() => {
     }
 }, 30000); // Update every 30 seconds
 
-function openDirections(address) {
-    // Open Google Maps with directions
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${address}`;
+function openDirections(address, lat, lng) {
+    // Prevent double-click by disabling temporarily
+    if (window.directionsBtnCooldown) return;
+    window.directionsBtnCooldown = true;
+    setTimeout(() => { window.directionsBtnCooldown = false; }, 1000);
+    
+    // Use coordinates if available for more accurate directions
+    let destination;
+    if (lat && lng && lat !== 'undefined' && lng !== 'undefined') {
+        destination = `${lat},${lng}`;
+    } else {
+        destination = encodeURIComponent(address);
+    }
+    
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
     window.open(url, '_blank');
 }
 
@@ -698,10 +710,25 @@ function startLocationUpdates(order, driver) {
     const startLng = driver?.currentLocation?.lng || UK_CONFIG.restaurant.lng;
     const endLat = order.deliveryLocation?.lat || UK_CONFIG.restaurant.lat + 0.01;
     const endLng = order.deliveryLocation?.lng || UK_CONFIG.restaurant.lng + 0.01;
+    const orderId = order.id;
     
     trackingInterval = setInterval(() => {
         if (!driverMarker || !trackingMap) {
             clearInterval(trackingInterval);
+            trackingInterval = null;
+            return;
+        }
+        
+        // Check if order is still active (not completed/cancelled)
+        const currentOrder = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
+        if (!currentOrder || currentOrder.status === 'completed' || currentOrder.status === 'cancelled') {
+            clearInterval(trackingInterval);
+            trackingInterval = null;
+            // Auto-close tracking modal if order is done
+            if (currentOrder && (currentOrder.status === 'completed' || currentOrder.status === 'cancelled')) {
+                closeTrackingModal();
+                alert(currentOrder.status === 'completed' ? '🎉 Your order has been delivered!' : '❌ Order was cancelled');
+            }
             return;
         }
         
@@ -710,6 +737,7 @@ function startLocationUpdates(order, driver) {
         if (progress >= 1) {
             progress = 1;
             clearInterval(trackingInterval);
+            trackingInterval = null;
         }
         
         const newLat = startLat + (endLat - startLat) * progress;
@@ -724,8 +752,10 @@ function startLocationUpdates(order, driver) {
         ) || 0;
         
         const icon = driverMarker.getIcon();
-        icon.rotation = heading;
-        driverMarker.setIcon(icon);
+        if (icon) {
+            icon.rotation = heading;
+            driverMarker.setIcon(icon);
+        }
         
     }, 3000); // Update every 3 seconds
 }

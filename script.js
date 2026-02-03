@@ -1969,12 +1969,20 @@ function showOrderHistory() {
     const userOrders = [...orderHistory.filter(o => o.userId === currentUser.email)];
     const pendingUserOrders = pendingOrders.filter(o => o.userId === currentUser.email);
     
-    // Merge lists to show most recent updates
-    const allOrders = [...pendingUserOrders, ...userOrders].sort((a, b) => 
+    // Create a map of completed orders from orderHistory (these are authoritative)
+    const completedOrderIds = new Set(
+        userOrders.filter(o => o.status === 'completed' || o.status === 'cancelled').map(o => o.id)
+    );
+    
+    // Filter pending orders to exclude any that are already completed in history
+    const activePendingOrders = pendingUserOrders.filter(o => !completedOrderIds.has(o.id));
+    
+    // Merge: active pending first, then history orders
+    const allOrders = [...activePendingOrders, ...userOrders].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
     );
     
-    // Remove duplicates based on ID (keep the one from pendingOrders if exists as it's most active)
+    // Remove duplicates - keep first occurrence (pending if active, otherwise history)
     const uniqueOrders = [];
     const seenIds = new Set();
     
@@ -2028,6 +2036,13 @@ function showOrderHistory() {
                     </div>
                     
                     ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">⭐ Rated ${o.driverRating}/5</div>` : ''}
+                    
+                    ${/* RATE DRIVER: Show for completed orders with driver that haven't been rated */ ''}
+                    ${o.status === 'completed' && o.driverId && !o.driverRated ? `
+                        <button onclick="openDriverRating('${o.id}', '${o.driverId}', '${o.driverName || 'Driver'}'); closeModal('orderHistoryModal');" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem; font-size: 0.85rem;">
+                            ⭐ Rate Your Driver
+                        </button>
+                    ` : ''}
                     
                     ${o.status === 'out_for_delivery' && driver ? `
                         <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
