@@ -244,12 +244,10 @@ function notifyAllAvailableDrivers(orderId) {
 
 // Calculate delivery time based on distance
 function calculateDeliveryTime(distanceMiles) {
-    // Base time: 10 minutes per mile
-    // Plus 5 minutes for preparation
+    // Base time: 10 minutes per mile (driving time only)
     const timePerMile = 10; // minutes
-    const prepTime = 5; // minutes
     
-    const deliveryTime = Math.ceil(distanceMiles * timePerMile) + prepTime;
+    const deliveryTime = Math.ceil(distanceMiles * timePerMile);
     return deliveryTime;
 }
 

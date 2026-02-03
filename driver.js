@@ -307,6 +307,13 @@ function showDriverDashboard(driver = null) {
     
     // Show fullscreen dashboard
     modal.style.display = 'block';
+    
+    // Hide navigation bar for fullscreen dashboard
+    document.body.classList.add('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) mobileNav.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
+    if (header) header.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
 }
 
 function callCustomer(phone) {
@@ -423,17 +430,41 @@ setInterval(() => {
 }, 30000); // Update every 30 seconds
 
 function openDirections(address, lat, lng) {
-    // Prevent double-click by disabling temporarily
+    // Prevent double-click
     if (window.directionsBtnCooldown) return;
     window.directionsBtnCooldown = true;
     setTimeout(() => { window.directionsBtnCooldown = false; }, 1000);
     
-    // Use coordinates if available for more accurate directions
     let destination;
-    if (lat && lng && lat !== 'undefined' && lng !== 'undefined') {
-        destination = `${lat},${lng}`;
-    } else {
-        destination = encodeURIComponent(address);
+    
+    // First try: use provided lat/lng if valid numbers
+    if (lat && lng && lat !== '' && lng !== '' && lat !== 'undefined' && lng !== 'undefined') {
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+        if (!isNaN(latNum) && !isNaN(lngNum)) {
+            destination = `${latNum},${lngNum}`;
+        }
+    }
+    
+    // Second try: extract coordinates from address string like "Location: 53.4539, -2.0695 (0.5 miles)"
+    if (!destination && address) {
+        const decodedAddress = decodeURIComponent(address);
+        const coordMatch = decodedAddress.match(/(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
+        if (coordMatch) {
+            destination = `${coordMatch[1]},${coordMatch[2]}`;
+        }
+    }
+    
+    // Fallback: use cleaned address (remove Location: prefix and miles suffix)
+    if (!destination && address) {
+        let cleanAddress = decodeURIComponent(address);
+        cleanAddress = cleanAddress.replace(/^Location:\s*/i, '').replace(/\s*\([^)]*miles?\)/i, '').trim();
+        destination = encodeURIComponent(cleanAddress);
+    }
+    
+    if (!destination) {
+        alert('❌ No delivery address available');
+        return;
     }
     
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
@@ -502,6 +533,25 @@ function logoutDriver() {
     if (modal) {
         modal.classList.remove('active');
         modal.style.display = 'none';
+    }
+    
+    // Restore navigation bar
+    document.body.classList.remove('modal-open');
+    const mobileNav = document.querySelector('.mobile-bottom-nav');
+    const header = document.querySelector('.header');
+    if (mobileNav) {
+        mobileNav.style.cssText = '';
+        mobileNav.style.display = 'flex';
+        mobileNav.style.visibility = 'visible';
+        mobileNav.style.opacity = '1';
+        mobileNav.style.pointerEvents = 'auto';
+    }
+    if (header) {
+        header.style.cssText = '';
+        header.style.display = 'flex';
+        header.style.visibility = 'visible';
+        header.style.opacity = '1';
+        header.style.pointerEvents = 'auto';
     }
 }
 
