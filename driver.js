@@ -412,7 +412,7 @@ setInterval(() => {
     if (driverId) {
         startDriverLocationTracking();
     }
-}, 30000); // Update every 30 seconds
+}, 60000); // Update every 60 seconds
 
 function openDirections(address, lat, lng) {
     // Prevent double-click
@@ -571,51 +571,6 @@ let driverMarker = null;
 let customerMarker = null;
 let trackingInterval = null;
 let trackingOrderId = null;
-let markerAnimationId = null;
-
-// ========================================
-// SMOOTH MARKER ANIMATION
-// ========================================
-
-// Helper function to interpolate between two values (Linear Interpolation)
-function lerp(start, end, t) {
-    return start + (end - start) * t;
-}
-
-// Animate marker smoothly between two points
-function animateMarkerToPosition(marker, startPos, endPos, duration = 1000) {
-    if (!marker || !startPos || !endPos) return;
-    
-    // Cancel previous animation if exists
-    if (markerAnimationId) {
-        cancelAnimationFrame(markerAnimationId);
-    }
-    
-    const startTime = performance.now();
-    
-    function animationStep(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Smooth easing function (ease-in-out)
-        const easeProgress = progress < 0.5 
-            ? 2 * progress * progress 
-            : -1 + (4 - 2 * progress) * progress;
-        
-        const newLat = lerp(startPos.lat, endPos.lat, easeProgress);
-        const newLng = lerp(startPos.lng, endPos.lng, easeProgress);
-        
-        marker.setPosition({ lat: newLat, lng: newLng });
-        
-        if (progress < 1) {
-            markerAnimationId = requestAnimationFrame(animationStep);
-        } else {
-            markerAnimationId = null;
-        }
-    }
-    
-    markerAnimationId = requestAnimationFrame(animationStep);
-}
 
 function trackDriver(orderId) {
     const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
@@ -806,52 +761,27 @@ function startLocationUpdates(order, driver) {
         clearInterval(trackingInterval);
     }
     
-    // Get driver starting position
-    const liveDriverLocations = JSON.parse(localStorage.getItem('driverLiveLocations') || '{}');
-    let startLat = driver?.currentLocation?.lat || UK_CONFIG.restaurant.lat;
-    let startLng = driver?.currentLocation?.lng || UK_CONFIG.restaurant.lng;
-    
-    if (liveDriverLocations[order.driverId]) {
-        startLat = liveDriverLocations[order.driverId].lat;
-        startLng = liveDriverLocations[order.driverId].lng;
-    }
-    
+    // Simulate driver movement towards customer
+    let progress = 0;
+    const startLat = driver?.currentLocation?.lat || UK_CONFIG.restaurant.lat;
+    const startLng = driver?.currentLocation?.lng || UK_CONFIG.restaurant.lng;
     const endLat = order.deliveryLocation?.lat || UK_CONFIG.restaurant.lat + 0.01;
     const endLng = order.deliveryLocation?.lng || UK_CONFIG.restaurant.lng + 0.01;
     const orderId = order.id;
     
-    // Define animation waypoints for smooth path
-    const waypoints = [
-        { lat: startLat, lng: startLng },
-        { 
-            lat: startLat + (endLat - startLat) * 0.25, 
-            lng: startLng + (endLng - startLng) * 0.25 
-        },
-        { 
-            lat: startLat + (endLat - startLat) * 0.5, 
-            lng: startLng + (endLng - startLng) * 0.5 
-        },
-        { 
-            lat: startLat + (endLat - startLat) * 0.75, 
-            lng: startLng + (endLng - startLng) * 0.75 
-        },
-        { lat: endLat, lng: endLng }
-    ];
-    
-    let currentWaypointIndex = 0;
-    
-    function moveToNextWaypoint() {
-        if (currentWaypointIndex >= waypoints.length - 1) {
+    trackingInterval = setInterval(() => {
+        if (!driverMarker || !trackingMap) {
             clearInterval(trackingInterval);
             trackingInterval = null;
             return;
         }
         
-        // Check if order is still active
+        // Check if order is still active (not completed/cancelled)
         const currentOrder = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
         if (!currentOrder || currentOrder.status === 'completed' || currentOrder.status === 'cancelled') {
             clearInterval(trackingInterval);
             trackingInterval = null;
+            // Auto-close tracking modal if order is done
             if (currentOrder && (currentOrder.status === 'completed' || currentOrder.status === 'cancelled')) {
                 closeTrackingModal();
                 alert(currentOrder.status === 'completed' ? '🎉 Your order has been delivered!' : '❌ Order was cancelled');
@@ -859,39 +789,40 @@ function startLocationUpdates(order, driver) {
             return;
         }
         
-        if (!driverMarker || !trackingMap) {
+        // Move driver closer to destination (simulation)
+        progress += 0.05;
+        if (progress >= 1) {
+            progress = 1;
             clearInterval(trackingInterval);
             trackingInterval = null;
-            return;
         }
         
-        const currentPos = waypoints[currentWaypointIndex];
-        const nextPos = waypoints[currentWaypointIndex + 1];
+   const newLat = startLat + (endLat - startLat) * progress;
+        const newLng = startLng + (endLng - startLng) * progress;
         
-        // Smooth animation to next waypoint (1.5 second duration)
-        animateMarkerToPosition(driverMarker, currentPos, nextPos, 1500);
+        // Smooth animation to new position
+        const oldPos = driverMarker.getPosition();
+        animateMarker(driverMarker, oldPos.lat(), oldPos.lng(), newLat, newLng);
         
-        // Update marker heading towards final destination
-        const heading = google.maps.geometry?.spherical?.computeHeading(
-            new google.maps.LatLng(nextPos.lat, nextPos.lng),
-            new google.maps.LatLng(endLat, endLng)
-        ) || 0;
-        
-        const icon = driverMarker.getIcon();
-        if (icon) {
-            icon.rotation = heading;
-            driverMarker.setIcon(icon);
-        }
-        
-        currentWaypointIndex++;
-    }
-    
-    // Start animation sequence (1.5 seconds per segment + buffer)
-    moveToNextWaypoint();
-    trackingInterval = setInterval(() => {
-        moveToNextWaypoint();
-    }, 2000); // Move to next waypoint every 2 seconds
+    }, 60000); // Update every 60 seconds
 }
+
+// Smooth marker animation
+function animateMarker(marker, fromLat, fromLng, toLat, toLng) {
+    let step = 0;
+    const steps = 30;
+    const interval = setInterval(() => {
+        step++;
+        const t = step / steps;
+        const ease = t * (2 - t); // ease-out
+        marker.setPosition({
+            lat: fromLat + (toLat - fromLat) * ease,
+            lng: fromLng + (toLng - fromLng) * ease
+        });
+        if (step >= steps) clearInterval(interval);
+    }, 50);
+}
+
 
 function refreshDriverLocation() {
     if (trackingOrderId) {
