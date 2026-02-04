@@ -4,6 +4,53 @@
 // ========================================
 
 // ========================================
+// SVG ICON LIBRARY (UI Icons)
+// ========================================
+const SVG_ICONS = {
+    // Navigation & Actions
+    close: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    refresh: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>',
+    logout: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
+    
+    // Status Icons
+    package: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    star: '<svg width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    bell: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+    
+    // Control Icons
+    pause: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
+    play: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+    
+    // Location & Map
+    location: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    mapPin: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    map: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',
+    
+    // People & Contact
+    user: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    phone: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    
+    // Transport & Delivery
+    car: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>',
+    motorcycle: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 12c-.93 0-1.78.28-2.5.76V11c0-1.1-.9-2-2-2h-2V7h1c.55 0 1-.45 1-1s-.45-1-1-1h-4c-.55 0-1 .45-1 1s.45 1 1 1h1v2H8c-1.1 0-2 .9-2 2v1.76c-.72-.48-1.57-.76-2.5-.76C1.57 12 0 13.57 0 15.5S1.57 19 3.5 19s3.5-1.57 3.5-3.5c0-.59-.15-1.15-.41-1.64L8 12.2V15c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-2.8l1.41 1.66c-.26.49-.41 1.05-.41 1.64 0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5zm-16 5c-.83 0-1.5-.67-1.5-1.5S2.67 14 3.5 14s1.5.67 1.5 1.5S4.33 17 3.5 17zm16 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>',
+    
+    // Checks & Confirmations  
+    check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    checkCircle: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    
+    // Finance
+    pound: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="6" y2="20"/><path d="M8 20V9a4 4 0 1 1 8 0"/><line x1="6" y1="13" x2="14" y2="13"/></svg>',
+    ruler: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>',
+    
+    // Status Indicators
+    signal: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>',
+    moon: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
+};
+
+// Motorcycle SVG path for map marker (pointing up by default)
+const MOTORCYCLE_MARKER_PATH = 'M12 2L15 8L22 9L17 14L18 22L12 18L6 22L7 14L2 9L9 8L12 2Z';
+
+// ========================================
 // DRIVER FUNCTIONS
 // ========================================
 function showDriverLogin() {
@@ -104,7 +151,7 @@ function loginDriver(driver) {
 function updateDriverLoginUI(driverName) {
     const loginBtn = document.querySelector('.login-btn');
     if (loginBtn) {
-        loginBtn.textContent = `🚗 ${driverName}`;
+        loginBtn.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.car} ${driverName}</span>`;
         loginBtn.onclick = function() { showDriverDashboard(); };
     }
 }
@@ -154,12 +201,12 @@ function showDriverDashboard(driver = null) {
     
     const profilePic = driver.profilePicture 
         ? `<img src="${driver.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
-        : '🚗';
+        : `<span style="color: white;">${SVG_ICONS.motorcycle}</span>`;
     
     content.innerHTML = `
         <!-- Header Bar -->
         <div style="background: linear-gradient(135deg, #10b981, #047857); padding: 1.2rem 1.5rem; border-radius: 20px; margin-bottom: 1rem; position: relative; box-shadow: 0 4px 20px rgba(16,185,129,0.35);">
-            <button onclick="closeDriverDashboard()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">✕</button>
+            <button onclick="closeDriverDashboard()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">${SVG_ICONS.close}</button>
             
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; border: 3px solid rgba(255,255,255,0.5); flex-shrink: 0;">
@@ -172,9 +219,9 @@ function showDriverDashboard(driver = null) {
                             ${driver.available ? '● ONLINE' : '● OFFLINE'}
                         </span>
                     </div>
-                    <div style="display: flex; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.95rem; color: rgba(255,255,255,0.95);">
-                        <span>📦 ${driver.deliveries || 0} trips</span>
-                        <span>⭐ ${(driver.rating || 5.0).toFixed(1)}</span>
+                    <div style="display: flex; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.95rem; color: rgba(255,255,255,0.95); align-items: center;">
+                        <span style="display: inline-flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.package} ${driver.deliveries || 0} trips</span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.star} ${(driver.rating || 5.0).toFixed(1)}</span>
                     </div>
                 </div>
             </div>
@@ -182,30 +229,30 @@ function showDriverDashboard(driver = null) {
         
         <!-- Quick Actions -->
         <div style="display: flex; gap: 0.6rem; margin-bottom: 1rem;">
-            <button onclick="toggleDriverAvailability()" style="flex: 1; background: ${driver.available ? '#fee2e2' : '#d1fae5'}; color: ${driver.available ? '#dc2626' : '#059669'}; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem;">
-                ${driver.available ? '⏸ Go Offline' : '▶ Go Online'}
+            <button onclick="toggleDriverAvailability()" style="flex: 1; background: ${driver.available ? '#fee2e2' : '#d1fae5'}; color: ${driver.available ? '#dc2626' : '#059669'}; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                ${driver.available ? SVG_ICONS.pause + ' Go Offline' : SVG_ICONS.play + ' Go Online'}
             </button>
-            <button onclick="updateDriverLocation()" style="flex: 1; background: #dbeafe; color: #2563eb; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem;">
-                📍 Location
+            <button onclick="updateDriverLocation()" style="flex: 1; background: #dbeafe; color: #2563eb; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                ${SVG_ICONS.location} Location
             </button>
-            <button onclick="showDriverDashboard()" style="background: #f3f4f6; color: #6b7280; border: none; padding: 0.9rem 1rem; border-radius: 14px; cursor: pointer; font-size: 1.1rem;">
-                🔄
+            <button onclick="showDriverDashboard()" style="background: #f3f4f6; color: #6b7280; border: none; padding: 0.9rem 1rem; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                ${SVG_ICONS.refresh}
             </button>
         </div>
         
         <!-- New Orders Alert -->
         ${driver.available && availableOrders.length > 0 ? `
             <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; border: 2px solid #f59e0b;">
-                <div style="font-weight: 700; color: #92400e; font-size: 1.1rem; margin-bottom: 0.8rem;">🔔 ${availableOrders.length} New Order${availableOrders.length > 1 ? 's' : ''}</div>
+                <div style="font-weight: 700; color: #92400e; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">${SVG_ICONS.bell} ${availableOrders.length} New Order${availableOrders.length > 1 ? 's' : ''}</div>
                 ${availableOrders.map(order => `
                     <div style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                             <span style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">#${order.id}</span>
                             <span style="font-weight: 800; color: #059669; font-size: 1.3rem;">${formatPrice(order.total)}</span>
                         </div>
-                        <div style="color: #6b7280; font-size: 0.95rem; margin-bottom: 0.6rem;">📍 ${order.address ? (order.address.length > 45 ? order.address.substring(0,45) + '...' : order.address) : 'Pending'}</div>
-                        <button onclick="driverAcceptOrder('${order.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem;">
-                            ✓ ACCEPT ORDER
+                        <div style="color: #6b7280; font-size: 0.95rem; margin-bottom: 0.6rem; display: flex; align-items: flex-start; gap: 0.3rem;">${SVG_ICONS.mapPin} ${order.address ? (order.address.length > 45 ? order.address.substring(0,45) + '...' : order.address) : 'Pending'}</div>
+                        <button onclick="driverAcceptOrder('${order.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            ${SVG_ICONS.check} ACCEPT ORDER
                         </button>
                     </div>
                 `).join('')}
@@ -215,14 +262,14 @@ function showDriverDashboard(driver = null) {
         <!-- Status Message (when no orders) -->
         ${driver.available && availableOrders.length === 0 && assignedOrders.length === 0 ? `
             <div style="background: #f8fafc; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
-                <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">📡</div>
+                <div style="margin-bottom: 0.5rem; color: #64748b;">${SVG_ICONS.signal}</div>
                 <p style="color: #64748b; margin: 0; font-size: 1.1rem; font-weight: 500;">Waiting for orders...</p>
             </div>
         ` : ''}
         
         ${!driver.available && assignedOrders.length === 0 ? `
             <div style="background: #fef2f2; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1rem; border: 2px solid #fecaca;">
-                <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">😴</div>
+                <div style="margin-bottom: 0.5rem; color: #dc2626;">${SVG_ICONS.moon}</div>
                 <p style="color: #dc2626; margin: 0; font-size: 1.1rem; font-weight: 600;">You're offline</p>
                 <p style="color: #9ca3af; margin: 0.3rem 0 0; font-size: 0.95rem;">Go online to receive orders</p>
             </div>
@@ -231,49 +278,49 @@ function showDriverDashboard(driver = null) {
         <!-- Active Deliveries -->
         ${assignedOrders.length > 0 ? `
             <div style="margin-bottom: 0.8rem;">
-                <div style="font-size: 1rem; color: #6b7280; font-weight: 600; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                    🚗 Active Delivery${assignedOrders.length > 1 ? ` (${assignedOrders.length})` : ''}
+                <div style="font-size: 1rem; color: #6b7280; font-weight: 600; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem;">
+                    ${SVG_ICONS.car} Active Delivery${assignedOrders.length > 1 ? ` (${assignedOrders.length})` : ''}
                 </div>
                 ${assignedOrders.map(order => `
                     <div style="background: white; border-radius: 18px; margin-bottom: 0.8rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e5e7eb;">
                         <!-- Order Header -->
                         <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 0.9rem 1.2rem; display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 700; color: white; font-size: 1.15rem;">#${order.id}</span>
-                            <span style="background: rgba(255,255,255,0.25); color: white; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
-                                ${order.status === 'out_for_delivery' ? '🚗 EN ROUTE' : order.status.replace(/_/g, ' ').toUpperCase()}
+                            <span style="background: rgba(255,255,255,0.25); color: white; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">
+                                ${order.status === 'out_for_delivery' ? SVG_ICONS.car + ' EN ROUTE' : order.status.replace(/_/g, ' ').toUpperCase()}
                             </span>
                         </div>
                         
                         <!-- Customer Details -->
                         <div style="padding: 1rem 1.2rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-                                <span style="color: #1f2937; font-weight: 600; font-size: 1.1rem;">👤 ${order.userName}</span>
-                                <a href="tel:${order.userPhone}" style="background: #dbeafe; color: #2563eb; text-decoration: none; padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600;">📞 Call</a>
+                                <span style="color: #1f2937; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.user} ${order.userName}</span>
+                                <a href="tel:${order.userPhone}" style="background: #dbeafe; color: #2563eb; text-decoration: none; padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.phone} Call</a>
                             </div>
                             
-                            <div style="color: #6b7280; font-size: 1rem; margin-bottom: 0.8rem; line-height: 1.4;">
-                                📍 ${order.address || 'Address N/A'}
+                            <div style="color: #6b7280; font-size: 1rem; margin-bottom: 0.8rem; line-height: 1.4; display: flex; align-items: flex-start; gap: 0.3rem;">
+                                ${SVG_ICONS.mapPin} ${order.address || 'Address N/A'}
                             </div>
                             
                             <!-- Payment & Distance -->
                             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: #f9fafb; border-radius: 12px; margin-bottom: 0.8rem;">
                                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                    <span style="background: ${order.paymentMethod === 'cash' ? '#fef3c7' : '#d1fae5'}; color: ${order.paymentMethod === 'cash' ? '#92400e' : '#065f46'}; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem;">
-                                        ${order.paymentMethod === 'cash' ? '💷 £' + order.total.toFixed(2) : '✓ PAID'}
+                                    <span style="background: ${order.paymentMethod === 'cash' ? '#fef3c7' : '#d1fae5'}; color: ${order.paymentMethod === 'cash' ? '#92400e' : '#065f46'}; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.3rem;">
+                                        ${order.paymentMethod === 'cash' ? SVG_ICONS.pound + ' £' + order.total.toFixed(2) : SVG_ICONS.checkCircle + ' PAID'}
                                     </span>
                                 </div>
                                 ${order.distanceMiles ? `
-                                    <span style="color: #6b7280; font-size: 1rem; font-weight: 600;">📏 ${order.distanceMiles} mi</span>
+                                    <span style="color: #6b7280; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.ruler} ${order.distanceMiles} mi</span>
                                 ` : ''}
                             </div>
                             
                             <!-- Action Buttons -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
                                 <button onclick="openDirections('${encodeURIComponent(order.address)}', '${order.deliveryLocation?.lat || ''}', '${order.deliveryLocation?.lng || ''}')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
-                                    🗺️ Directions
+                                    ${SVG_ICONS.map} Directions
                                 </button>
                                 <button onclick="markOrderDelivered('${order.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
-                                    ✅ Delivered
+                                    ${SVG_ICONS.checkCircle} Delivered
                                 </button>
                             </div>
                         </div>
@@ -284,8 +331,8 @@ function showDriverDashboard(driver = null) {
         
         <!-- Logout Footer -->
         <div style="margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid #e5e7eb;">
-            <button onclick="confirmLogoutDriver()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.4); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; width: 100%; font-weight: 500;">
-                🚪 Logout
+            <button onclick="confirmLogoutDriver()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.4); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; width: 100%; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                ${SVG_ICONS.logout} Logout
             </button>
         </div>
     `;
@@ -719,18 +766,19 @@ function initTrackingMap(order, driver) {
         }
     });
     
-    // Driver marker - Car icon
+    // Driver marker - Motorcycle delivery icon with rotation support
     driverMarker = new google.maps.Marker({
         position: { lat: driverLat, lng: driverLng },
         map: trackingMap,
         title: order.driverName || 'Driver',
         icon: {
-            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 7,
+            path: 'M12 2C11.5 2 11 2.19 10.59 2.59L7.29 5.88C6.5 6.67 6 7.7 6 9V14.5C6 15.33 6.67 16 7.5 16H8.5L9 18H7V20H17V18H15L15.5 16H16.5C17.33 16 18 15.33 18 14.5V9C18 7.7 17.5 6.67 16.71 5.88L13.41 2.59C13 2.19 12.5 2 12 2M12 4L15 7H9L12 4M8 9H16V14H8V9M9.5 10C8.67 10 8 10.67 8 11.5S8.67 13 9.5 13 11 12.33 11 11.5 10.33 10 9.5 10M14.5 10C13.67 10 13 10.67 13 11.5S13.67 13 14.5 13 16 12.33 16 11.5 15.33 10 14.5 10Z',
             fillColor: '#3b82f6',
             fillOpacity: 1,
             strokeColor: '#ffffff',
-            strokeWeight: 2,
+            strokeWeight: 1.5,
+            scale: 1.8,
+            anchor: new google.maps.Point(12, 12),
             rotation: 0
         }
     });
@@ -811,10 +859,21 @@ function startLocationUpdates(order, driver) {
 function animateMarker(marker, fromLat, fromLng, toLat, toLng) {
     let step = 0;
     const steps = 30;
+    // Calculate bearing (rotation angle)
+    const dLng = (toLng - fromLng) * Math.PI / 180;
+    const y = Math.sin(dLng) * Math.cos(toLat * Math.PI / 180);
+    const x = Math.cos(fromLat * Math.PI / 180) * Math.sin(toLat * Math.PI / 180) -
+              Math.sin(fromLat * Math.PI / 180) * Math.cos(toLat * Math.PI / 180) * Math.cos(dLng);
+    const bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    
+    // Set icon rotation once at start
+    const icon = marker.getIcon();
+    if (icon) { icon.rotation = bearing; marker.setIcon(icon); }
+    
     const interval = setInterval(() => {
         step++;
         const t = step / steps;
-        const ease = t * (2 - t); // ease-out
+        const ease = t * (2 - t);
         marker.setPosition({
             lat: fromLat + (toLat - fromLat) * ease,
             lng: fromLng + (toLng - fromLng) * ease
