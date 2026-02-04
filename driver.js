@@ -157,152 +157,137 @@ function showDriverDashboard(driver = null) {
         : '🚗';
     
     content.innerHTML = `
-        <!-- Header -->
-        <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem; position: relative;">
-            <button onclick="confirmLogoutDriver()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">✕</button>
+        <!-- Header Bar -->
+        <div style="background: linear-gradient(135deg, #10b981, #047857); padding: 1.2rem 1.5rem; border-radius: 20px; margin-bottom: 1rem; position: relative; box-shadow: 0 4px 20px rgba(16,185,129,0.35);">
+            <button onclick="closeDriverDashboard()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.25); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">✕</button>
             
-            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 0.8rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; border: 3px solid rgba(255,255,255,0.3);">
-                ${profilePic}
-            </div>
-            <h2 style="margin: 0; color: white; font-size: 1.3rem;">${driver.name}</h2>
-            <p style="margin: 0.3rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.9rem;">${driver.secretCode}</p>
-            
-            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;">
-                <div><span style="font-size: 1.3rem; font-weight: 700;">${driver.deliveries || 0}</span><br><span style="font-size: 0.8rem; opacity: 0.9;">Deliveries</span></div>
-                <div><span style="font-size: 1.3rem; font-weight: 700;">⭐ ${driver.rating || 5.0}</span><br><span style="font-size: 0.8rem; opacity: 0.9;">Rating</span></div>
-            </div>
-            
-            <div style="margin-top: 1rem;">
-                <span style="background: ${driver.available ? 'rgba(255,255,255,0.3)' : 'rgba(239,68,68,0.5)'}; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                    ${driver.available ? '🟢 Online' : '🔴 Offline'}
-                </span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; border: 3px solid rgba(255,255,255,0.5); flex-shrink: 0;">
+                    ${profilePic}
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                        <h2 style="margin: 0; color: white; font-size: 1.3rem; font-weight: 700;">${driver.name}</h2>
+                        <span style="background: ${driver.available ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: white;">
+                            ${driver.available ? '● ONLINE' : '● OFFLINE'}
+                        </span>
+                    </div>
+                    <div style="display: flex; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.95rem; color: rgba(255,255,255,0.95);">
+                        <span>📦 ${driver.deliveries || 0} trips</span>
+                        <span>⭐ ${(driver.rating || 5.0).toFixed(1)}</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Status Toggle -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem;">
-            <button onclick="toggleDriverAvailability()" style="background: ${driver.available ? 'linear-gradient(45deg, #ef4444, #dc2626)' : 'linear-gradient(45deg, #10b981, #059669)'}; color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                ${driver.available ? '⏸️ Go Offline' : '▶️ Go Online'}
+        <!-- Quick Actions -->
+        <div style="display: flex; gap: 0.6rem; margin-bottom: 1rem;">
+            <button onclick="toggleDriverAvailability()" style="flex: 1; background: ${driver.available ? '#fee2e2' : '#d1fae5'}; color: ${driver.available ? '#dc2626' : '#059669'}; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem;">
+                ${driver.available ? '⏸ Go Offline' : '▶ Go Online'}
             </button>
-            <button onclick="updateDriverLocation()" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                📍 Update Location
+            <button onclick="updateDriverLocation()" style="flex: 1; background: #dbeafe; color: #2563eb; border: none; padding: 0.9rem 0.8rem; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 1rem;">
+                📍 Location
+            </button>
+            <button onclick="showDriverDashboard()" style="background: #f3f4f6; color: #6b7280; border: none; padding: 0.9rem 1rem; border-radius: 14px; cursor: pointer; font-size: 1.1rem;">
+                🔄
             </button>
         </div>
         
-        <!-- Available Orders Section -->
+        <!-- New Orders Alert -->
         ${driver.available && availableOrders.length > 0 ? `
-            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
-                <h3 style="color: white; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                    🔔 New Orders Available (${availableOrders.length})
-                </h3>
+            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; border: 2px solid #f59e0b;">
+                <div style="font-weight: 700; color: #92400e; font-size: 1.1rem; margin-bottom: 0.8rem;">🔔 ${availableOrders.length} New Order${availableOrders.length > 1 ? 's' : ''}</div>
                 ${availableOrders.map(order => `
-                    <div style="background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 10px; margin-bottom: 0.8rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
-                            <span style="font-weight: 700; font-size: 1.1rem; color: white;">#${order.id}</span>
-                            <span style="font-weight: 700; color: white; font-size: 1.1rem;">${formatPrice(order.total)}</span>
+                    <div style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">#${order.id}</span>
+                            <span style="font-weight: 800; color: #059669; font-size: 1.3rem;">${formatPrice(order.total)}</span>
                         </div>
-                        <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 0.8rem;">
-                            <div>📍 ${order.address || 'Address pending'}</div>
-                            <div>📦 ${order.items.length} item(s)</div>
-                        </div>
-                        <button onclick="driverAcceptOrder('${order.id}')" style="background: white; color: #d97706; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem;">
-                            ✅ ACCEPT ORDER
+                        <div style="color: #6b7280; font-size: 0.95rem; margin-bottom: 0.6rem;">📍 ${order.address ? (order.address.length > 45 ? order.address.substring(0,45) + '...' : order.address) : 'Pending'}</div>
+                        <button onclick="driverAcceptOrder('${order.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem;">
+                            ✓ ACCEPT ORDER
                         </button>
                     </div>
                 `).join('')}
             </div>
-        ` : driver.available ? `
-            <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 3rem;">📡</div>
-                <p style="color: rgba(255,255,255,0.7); margin: 0.5rem 0 0;">Waiting for new orders...</p>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin: 0.3rem 0 0;">You'll be notified when orders are available</p>
-            </div>
-        ` : `
-            <div style="background: rgba(239,68,68,0.1); padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 1.5rem; border: 2px solid rgba(239,68,68,0.3);">
-                <div style="font-size: 3rem;">🔴</div>
-                <p style="color: #ef4444; font-weight: 600; margin: 0.5rem 0 0;">You're Offline</p>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin: 0.3rem 0 0;">Go online to receive orders</p>
-            </div>
-        `}
+        ` : ''}
         
-        <!-- My Deliveries Section -->
-        <h3 style="color: white; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-            🚗 My Deliveries (${assignedOrders.length})
-        </h3>
-        
-        ${assignedOrders.length === 0 ? `
-            <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 2.5rem;">📦</div>
-                <p style="color: rgba(255,255,255,0.5); margin: 0.5rem 0 0;">No active deliveries</p>
+        <!-- Status Message (when no orders) -->
+        ${driver.available && availableOrders.length === 0 && assignedOrders.length === 0 ? `
+            <div style="background: #f8fafc; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+                <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">📡</div>
+                <p style="color: #64748b; margin: 0; font-size: 1.1rem; font-weight: 500;">Waiting for orders...</p>
             </div>
-        ` : assignedOrders.map(order => `
-            <div style="background: rgba(59,130,246,0.1); padding: 1.2rem; border-radius: 12px; margin-bottom: 1rem; border: 2px solid rgba(59,130,246,0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <span style="font-weight: 700; font-size: 1.1rem; color: white;">#${order.id}</span>
-                    <span style="background: rgba(59,130,246,0.3); color: #3b82f6; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
-                        ${order.status === 'out_for_delivery' ? '🚗 EN ROUTE' : order.status.toUpperCase()}
-                    </span>
+        ` : ''}
+        
+        ${!driver.available && assignedOrders.length === 0 ? `
+            <div style="background: #fef2f2; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1rem; border: 2px solid #fecaca;">
+                <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">😴</div>
+                <p style="color: #dc2626; margin: 0; font-size: 1.1rem; font-weight: 600;">You're offline</p>
+                <p style="color: #9ca3af; margin: 0.3rem 0 0; font-size: 0.95rem;">Go online to receive orders</p>
+            </div>
+        ` : ''}
+        
+        <!-- Active Deliveries -->
+        ${assignedOrders.length > 0 ? `
+            <div style="margin-bottom: 0.8rem;">
+                <div style="font-size: 1rem; color: #6b7280; font-weight: 600; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                    🚗 Active Delivery${assignedOrders.length > 1 ? ` (${assignedOrders.length})` : ''}
                 </div>
-                
-                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <div style="margin-bottom: 0.5rem; font-size: 1rem;">
-                        👤 <strong>${order.userName}</strong>
-                    </div>
-                    <div style="margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">
-                        📞 <a href="tel:${order.userPhone}" style="color: #3b82f6; text-decoration: none;">${order.userPhone || 'N/A'}</a>
-                    </div>
-                    <div style="margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">
-                        📍 ${order.address || 'N/A'}
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <span style="color: rgba(255,255,255,0.6);">💰 Total:</span>
-                        <span style="font-weight: 700; color: #10b981; font-size: 1.1rem;">${formatPrice(order.total)}</span>
-                    </div>
-                    ${order.distanceMiles ? `
-                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
-                            <span style="color: rgba(255,255,255,0.6);">📏 Distance:</span>
-                            <span style="color: white;">${order.distanceMiles} miles</span>
+                ${assignedOrders.map(order => `
+                    <div style="background: white; border-radius: 18px; margin-bottom: 0.8rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e5e7eb;">
+                        <!-- Order Header -->
+                        <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 0.9rem 1.2rem; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 700; color: white; font-size: 1.15rem;">#${order.id}</span>
+                            <span style="background: rgba(255,255,255,0.25); color: white; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">
+                                ${order.status === 'out_for_delivery' ? '🚗 EN ROUTE' : order.status.replace(/_/g, ' ').toUpperCase()}
+                            </span>
                         </div>
-                    ` : ''}
-                    ${order.estimatedTime ? `
-                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
-                            <span style="color: rgba(255,255,255,0.6);">⏱️ ETA:</span>
-                            <span style="color: #f59e0b; font-weight: 600;">${order.estimatedTime} mins</span>
-                        </div>
-                    ` : ''}
-                    
-                    <!-- Payment Method for Driver -->
-                    <div style="margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.3)' : 'rgba(42,157,143,0.3)'}; padding: 0.6rem; border-radius: 8px; text-align: center; font-weight: 700; color: ${order.paymentMethod === 'cash' ? '#f4a261' : '#2a9d8f'};">
-                            ${order.paymentMethod === 'cash' ? '💷 CASH - Collect £' + order.total.toFixed(2) : order.paymentMethod === 'applepay' ? '🍎 Apple Pay - PAID' : '💳 Card - PAID'}
+                        
+                        <!-- Customer Details -->
+                        <div style="padding: 1rem 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                                <span style="color: #1f2937; font-weight: 600; font-size: 1.1rem;">👤 ${order.userName}</span>
+                                <a href="tel:${order.userPhone}" style="background: #dbeafe; color: #2563eb; text-decoration: none; padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600;">📞 Call</a>
+                            </div>
+                            
+                            <div style="color: #6b7280; font-size: 1rem; margin-bottom: 0.8rem; line-height: 1.4;">
+                                📍 ${order.address || 'Address N/A'}
+                            </div>
+                            
+                            <!-- Payment & Distance -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: #f9fafb; border-radius: 12px; margin-bottom: 0.8rem;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="background: ${order.paymentMethod === 'cash' ? '#fef3c7' : '#d1fae5'}; color: ${order.paymentMethod === 'cash' ? '#92400e' : '#065f46'}; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem;">
+                                        ${order.paymentMethod === 'cash' ? '💷 £' + order.total.toFixed(2) : '✓ PAID'}
+                                    </span>
+                                </div>
+                                ${order.distanceMiles ? `
+                                    <span style="color: #6b7280; font-size: 1rem; font-weight: 600;">📏 ${order.distanceMiles} mi</span>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                                <button onclick="openDirections('${encodeURIComponent(order.address)}', '${order.deliveryLocation?.lat || ''}', '${order.deliveryLocation?.lng || ''}')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                                    🗺️ Directions
+                                </button>
+                                <button onclick="markOrderDelivered('${order.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                                    ✅ Delivered
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
-                    <button onclick="openDirections('${encodeURIComponent(order.address)}', '${order.deliveryLocation?.lat || ''}', '${order.deliveryLocation?.lng || ''}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                        🗺️ Directions
-                    </button>
-                    <button onclick="markOrderDelivered('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                        ✅ Delivered
-                    </button>
-                </div>
-                
-                <button onclick="callCustomer('${order.userPhone}')" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.8rem;">
-                    📞 Call Customer
-                </button>
+                `).join('')}
             </div>
-        `).join('')}
+        ` : ''}
         
-        <!-- Logout Button -->
-        <button onclick="confirmLogoutDriver()" style="background: rgba(239,68,68,0.2); color: #ef4444; border: 2px solid #ef4444; padding: 1.2rem; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 1rem; font-size: 1rem;">
-            🚪 Logout
-        </button>
-        
-        <!-- Refresh Button -->
-        <button onclick="showDriverDashboard()" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 0.8rem; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 0.8rem;">
-            🔄 Refresh
-        </button>
+        <!-- Logout Footer -->
+        <div style="margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid #e5e7eb;">
+            <button onclick="confirmLogoutDriver()" style="background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.4); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.95rem; width: 100%; font-weight: 500;">
+                🚪 Logout
+            </button>
+        </div>
     `;
     
     // Show fullscreen dashboard
@@ -535,23 +520,46 @@ function logoutDriver() {
         modal.style.display = 'none';
     }
     
-    // Restore navigation bar
+    // Restore navigation bar and body scroll
+    restorePageState();
+}
+
+// Close dashboard without logging out (for X button)
+function closeDriverDashboard() {
+    const modal = document.getElementById('driverDashboardModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
+    
+    // Restore navigation bar and body scroll
+    restorePageState();
+}
+
+// Helper function to restore page state
+function restorePageState() {
+    // Remove modal-open class
     document.body.classList.remove('modal-open');
+    
+    // Restore body scroll (critical for desktop)
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.documentElement.style.overflow = '';
+    
+    // Restore navigation bar
     const mobileNav = document.querySelector('.mobile-bottom-nav');
     const header = document.querySelector('.header');
+    
+    // Mobile nav needs display:flex
     if (mobileNav) {
         mobileNav.style.cssText = '';
-        mobileNav.style.display = 'flex';
-        mobileNav.style.visibility = 'visible';
-        mobileNav.style.opacity = '1';
-        mobileNav.style.pointerEvents = 'auto';
     }
+    
+    // Header should NOT have display:flex - just clear inline styles
     if (header) {
         header.style.cssText = '';
-        header.style.display = 'flex';
-        header.style.visibility = 'visible';
-        header.style.opacity = '1';
-        header.style.pointerEvents = 'auto';
     }
 }
 
@@ -612,8 +620,7 @@ function trackDriver(orderId) {
                     ${driver?.rating ? `<div style="color: #f59e0b; font-size: 0.85rem;">⭐ ${driver.rating.toFixed(1)} rating</div>` : ''}
                 </div>
                 <div style="text-align: right;">
-                    ${order.estimatedTime ? `<div style="color: #f59e0b; font-weight: 700; font-size: 1.2rem;">~${order.estimatedTime} min</div>` : ''}
-                    ${order.distanceMiles ? `<div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">${order.distanceMiles} miles</div>` : ''}
+                    ${order.distanceMiles ? `<div style="color: #3b82f6; font-weight: 700; font-size: 1.1rem;">📍 ${order.distanceMiles} mi</div>` : ''}
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
@@ -832,23 +839,15 @@ function closeTrackingModal() {
         modal.style.display = 'none';
     }
     
-    // Restore navigation properly
+    // Restore navigation properly - just clear styles, let CSS handle display
     document.body.classList.remove('modal-open');
     const mobileNav = document.querySelector('.mobile-bottom-nav');
     const header = document.querySelector('.header');
     if (mobileNav) {
         mobileNav.style.cssText = '';
-        mobileNav.style.display = 'flex';
-        mobileNav.style.visibility = 'visible';
-        mobileNav.style.opacity = '1';
-        mobileNav.style.pointerEvents = 'auto';
     }
     if (header) {
         header.style.cssText = '';
-        header.style.display = 'flex';
-        header.style.visibility = 'visible';
-        header.style.opacity = '1';
-        header.style.pointerEvents = 'auto';
     }
 }
 
@@ -1020,6 +1019,7 @@ window.markOrderDelivered = markOrderDelivered;
 window.callCustomer = callCustomer;
 window.confirmLogoutDriver = confirmLogoutDriver;
 window.logoutDriver = logoutDriver;
+window.closeDriverDashboard = closeDriverDashboard;
 window.updateDriverLoginUI = updateDriverLoginUI;
 window.generateDriverSecretCode = generateDriverSecretCode;
 window.trackDriver = trackDriver;

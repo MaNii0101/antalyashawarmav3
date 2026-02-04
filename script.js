@@ -1772,7 +1772,6 @@ function showNotifications() {
                         <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem;">
                             <div style="margin-bottom: 0.5rem;">🚗 <strong>${n.driverName || 'Driver'}</strong></div>
                             ${n.driverPhone ? `<div style="margin-bottom: 0.5rem;">📞 <a href="tel:${n.driverPhone}" style="color: #3b82f6;">${n.driverPhone}</a></div>` : ''}
-                            ${n.estimatedTime ? `<div style="color: #f59e0b; font-weight: 600; font-size: 1.1rem;">⏱️ Arriving in ~${n.estimatedTime} minutes</div>` : ''}
                         </div>
                         <button onclick="trackDriver('${n.orderId}'); closeModal('notificationsModal');" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem;">
                             📍 Track Driver Live
@@ -1913,7 +1912,7 @@ function showAccount() {
                     <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem;">
                         <div style="font-weight: 600; margin-bottom: 0.2rem; font-size: 0.9rem;">#${o.id}</div>
                         <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Driver: ${o.driverName || 'Assigned'}</div>
-                        ${o.estimatedTime ? `<div style="font-size: 0.8rem; color: #f59e0b;">ETA: ~${o.estimatedTime} mins</div>` : ''}
+                        ${o.distanceMiles ? `<div style="font-size: 0.8rem; color: #3b82f6;">📍 ${o.distanceMiles} miles away</div>` : ''}
                     </div>
                     <button onclick="trackDriver('${o.id}')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.85rem;">
                         📍 Track Driver Live
@@ -3303,16 +3302,25 @@ function showNavigation() {
     // Also check dashboards
     const ownerDash = document.getElementById('ownerDashboard');
     const restDash = document.getElementById('restaurantDashboard');
+    const driverDash = document.getElementById('driverDashboardModal');
+    const driverTracking = document.getElementById('driverTrackingModal');
+    
     if (ownerDash && ownerDash.style.display !== 'none') anyModalOpen = true;
     if (restDash && restDash.style.display !== 'none') anyModalOpen = true;
+    if (driverDash && driverDash.style.display !== 'none' && driverDash.style.display !== '') anyModalOpen = true;
+    if (driverTracking && driverTracking.style.display !== 'none' && driverTracking.style.display !== '') anyModalOpen = true;
     
     if (!anyModalOpen) {
         document.body.classList.remove('modal-open');
         const mobileNav = document.querySelector('.mobile-bottom-nav');
         const header = document.querySelector('.header');
+        
+        // Mobile nav - just clear styles (CSS handles display)
         if (mobileNav) {
             mobileNav.style.cssText = '';
         }
+        
+        // Header - just clear styles (DO NOT set display:flex - it breaks layout!)
         if (header) {
             header.style.cssText = '';
         }
