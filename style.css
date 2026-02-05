@@ -32,13 +32,40 @@ body {
     overflow-x: hidden;
 }
 
-/* Emoji-specific font rendering */
-.category-icon,
-.food-icon,
-.emoji,
-.mobile-nav-icon {
-    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
-    font-style: normal;
+/* ========== SVG ICON SYSTEM ========== */
+.svg-icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: currentColor;
+    flex-shrink: 0;
+    line-height: 1;
+}
+/* Navigation (outline) - inherits currentColor */
+/* Actions (bold) - inherits currentColor */
+/* Status colors */
+.icon-accent { color: #e63946; }
+.icon-success { color: #10b981; }
+.icon-danger { color: #ef4444; }
+.icon-warning { color: #f59e0b; }
+.icon-blue { color: #3b82f6; }
+.icon-pink { color: #ec4899; }
+.icon-teal { color: #14b8a6; }
+.icon-muted { color: rgba(255,255,255,0.5); }
+.icon-star { color: #f59e0b; }
+.icon-fire { color: #ff6b6b; }
+.icon-halal { color: #22c55e; }
+/* Ensure SVG icons display inside buttons & flex containers */
+button .svg-icon,
+a .svg-icon,
+h2 .svg-icon,
+h3 .svg-icon,
+span .svg-icon,
+div .svg-icon,
+label .svg-icon,
+strong .svg-icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
 /* ==== RESPONSIVE HEADER ==== */

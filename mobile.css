@@ -902,8 +902,52 @@ html {
         line-height: 0 !important;
     }
 
-    .mobile-nav-icon .ui-icon {
+    .mobile-nav-icon .ui-icon,
+    .mobile-nav-icon .svg-icon {
         width: 24px !important;
         height: 24px !important;
         display: block !important;
     }
+
+    /* ======= MOBILE SVG ICON FIXES ======= */
+    .svg-icon {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        flex-shrink: 0 !important;
+        min-width: 0 !important;
+    }
+
+    /* Buttons with SVG icons */
+    button .svg-icon,
+    .submit-btn .svg-icon,
+    .add-btn .svg-icon {
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
+    /* Footer SVG icons */
+    .footer .svg-icon {
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
+    /* Dashboard stat icons */
+    .stat-card .svg-icon,
+    .dashboard .svg-icon {
+        display: inline-block !important;
+    }
+
+    /* Icon buttons (like favorite btn) */
+    .icon-btn .svg-icon,
+    .favorite-btn .svg-icon {
+        display: block !important;
+    }
+
+    /* Headers with icons */
+    h2 .svg-icon,
+    h3 .svg-icon {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        margin-right: 0.25rem !important;
+    }
+
