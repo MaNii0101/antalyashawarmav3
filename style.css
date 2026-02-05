@@ -1237,3 +1237,25 @@ body {
     color: #ef4444;
     border: 1px solid rgba(239,68,68,0.2);
 }
+
+/* =============================
+   SVG UI ICONS
+   ============================= */
+.ui-icon {
+    width: 1.15em;
+    height: 1.15em;
+    display: inline-block;
+    fill: currentColor;
+    vertical-align: middle;
+}
+
+.ui-icon-24 {
+    width: 24px;
+    height: 24px;
+}
+
+/* Ensure icon buttons don't shrink SVG */
+.icon-btn .ui-icon,
+.mobile-menu-btn .ui-icon {
+    flex: 0 0 auto;
+}

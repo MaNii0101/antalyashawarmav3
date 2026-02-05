@@ -156,6 +156,7 @@ html {
     }
 }
 
+
 /* ==================== MOBILE GENERAL ==================== */
 @media (max-width: 768px) {
     .header {
@@ -891,3 +892,18 @@ html {
         font-size: 0.9rem !important;
     }
 }
+
+
+    /* SVG icons inside mobile nav */
+    .mobile-nav-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 0 !important;
+    }
+
+    .mobile-nav-icon .ui-icon {
+        width: 24px !important;
+        height: 24px !important;
+        display: block !important;
+    }
