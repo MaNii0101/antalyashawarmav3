@@ -40,9 +40,10 @@ body {
     flex-shrink: 0;
     line-height: 1;
 }
-/* Navigation (outline) - inherits currentColor */
-/* Actions (bold) - inherits currentColor */
-/* Status colors */
+/* Navigation icons inherit text color automatically */
+/* Action icons are bolder by design (2px stroke in sprite) */
+
+/* ---- Colorful icon classes ---- */
 .icon-accent { color: #e63946; }
 .icon-success { color: #10b981; }
 .icon-danger { color: #ef4444; }
@@ -50,11 +51,18 @@ body {
 .icon-blue { color: #3b82f6; }
 .icon-pink { color: #ec4899; }
 .icon-teal { color: #14b8a6; }
+.icon-purple { color: #8b5cf6; }
+.icon-orange { color: #f97316; }
 .icon-muted { color: rgba(255,255,255,0.5); }
-.icon-star { color: #f59e0b; }
+.icon-star { color: #fbbf24; }
 .icon-fire { color: #ff6b6b; }
 .icon-halal { color: #22c55e; }
-/* Ensure SVG icons display inside buttons & flex containers */
+.icon-gold { color: #fbbf24; }
+
+/* Gradient-filled icons (star, fire, zap, crown, crescent) use SVG gradient defs */
+/* They don't need color classes - their fill comes from the sprite gradients */
+
+/* Ensure SVG icons render inside any container */
 button .svg-icon,
 a .svg-icon,
 h2 .svg-icon,
@@ -62,10 +70,18 @@ h3 .svg-icon,
 span .svg-icon,
 div .svg-icon,
 label .svg-icon,
-strong .svg-icon {
+strong .svg-icon,
+td .svg-icon {
     display: inline-block;
     vertical-align: middle;
     flex-shrink: 0;
+}
+
+/* Icon spacing when next to text */
+.svg-icon + span,
+.svg-icon + strong,
+.svg-icon + a {
+    margin-left: 0.25em;
 }
 
 /* ==== RESPONSIVE HEADER ==== */
