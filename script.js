@@ -1,9 +1,60 @@
 // ========================================
 
-// SVG Icon Helper - generates inline SVG icon markup
 function svgIcon(name, size = 16, cls = '', style = '') {
-    return `<svg class="svg-icon ${cls}" width="${size}" height="${size}" aria-hidden="true"${style ? ` style="${style}"` : ''}><use href="#i-${name}"></use></svg>`;
+
+    // ================================
+    // CUSTOM SVG FILE ICON OVERRIDES
+    // This is how to replace icons
+    // ================================
+
+    // 🔁 WARNING ICON
+    // Replaces svgIcon('warning') or svgIcon('alert')
+    if (name === 'warning' || name === 'alert') {
+        return `
+            <!-- CUSTOM SVG FILE: WARNING ICON -->
+            <img
+                src="assets/system/warning.svg"
+                width="${size}"
+                height="${size}"
+                class="svg-icon ${cls}"
+                style="${style}"
+                alt="warning"
+            >
+        `;
+    }
+
+
+    if (name === 'x' || name === 'close') {
+        return `
+            <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
+            <img
+                src="assets/system/close.svg"
+                width="${size}"
+                height="${size}"
+                class="svg-icon ${cls}"
+                style="${style}"
+                alt="close"
+            >
+        `;
+    }
+
+    // ================================
+    // DEFAULT ICON SYSTEM (DO NOT TOUCH)
+    // Uses existing SVG sprite
+    // ================================
+    return `
+        <svg
+            class="svg-icon ${cls}"
+            width="${size}"
+            height="${size}"
+            aria-hidden="true"
+            ${style ? `style="${style}"` : ''}
+        >
+            <use href="#i-${name}"></use>
+        </svg>
+    `;
 }
+
 
 // ANTALYA SHAWARMA UK - COMPLETE SYSTEM
 // VERSION: 3.0.0 - FULLY FEATURED UK SYSTEM
@@ -95,7 +146,8 @@ function resetSelectedData() {
     const resetMenu = document.getElementById('resetMenu')?.checked;
     
     if (!resetUsers && !resetOrders && !resetDrivers && !resetFavorites && !resetMenu) {
-        alert('⚠ Please select at least one option to reset');
+        // Warning: No options selected for reset
+        uiAlert('Please select at least one option to reset', 'warning');
         return;
     }
     
@@ -150,7 +202,8 @@ function resetSelectedData() {
     }
     
     closeModal('resetOptionsModal');
-    alert('✓ Selected data has been reset!');
+    // Success: Data reset completed
+    uiAlert('Selected data has been reset!', 'success');
     location.reload();
 }
 
@@ -661,7 +714,8 @@ async function sendVerificationEmail(email, code, type = 'verification') {
     
     if (timeSinceLastSend < 90000) {
         const waitTime = Math.ceil((90000 - timeSinceLastSend) / 1000);
-        alert(` Please wait ${waitTime} seconds before requesting a new code.`);
+        // Info: Rate limit - wait before requesting new code
+        uiAlert(`Please wait ${waitTime} seconds before requesting a new code.`, 'info');
         return false;
     }
     
@@ -687,10 +741,12 @@ async function sendVerificationEmail(email, code, type = 'verification') {
         };
         
         startOTPCountdown(email);
-        alert('✉ Code sent! Check your email.\n\n⏰ May take 1-3 minutes to arrive.\n\nCheck spam folder if needed.');
+        // Success: Verification email sent
+        uiAlert('Code sent! Check your email.<br><br>⏰ May take 1-3 minutes to arrive.<br><br>Check spam folder if needed.', 'success');
         return true;
     } catch (error) {
-        alert('✘ Failed to send verification email. Please try again.');
+        // Error: Failed to send verification email
+        uiAlert('Failed to send verification email. Please try again.', 'error');
         return false;
     }
 }
@@ -1127,7 +1183,8 @@ function openFoodModal(foodId) {
     
     // Check if food is available
     if (selectedFood.available === false) {
-        alert('✘ Sorry, this item is currently not available.');
+        // Error: Item not available
+        uiAlert('Sorry, this item is currently not available.', 'error');
         return;
     }
     
@@ -1228,7 +1285,8 @@ function updateTotalPrice() {
 
 function addToCart() {
     if (!currentUser) {
-        alert('⚠ Please login to add items to cart');
+        // Warning: Must login to add to cart
+        uiAlert('Please login to add items to cart', 'warning');
         showLogin();
         return;
     }
@@ -1277,7 +1335,8 @@ function addToCart() {
     closeModal('foodModal');
     
     playNotificationSound();
-    alert(`✓ Added to cart!\n\n${quantity}x ${selectedFood.name}\n${extras.length > 0 ? 'Extras: ' + extras.join(', ') : ''}`);
+    // Success: Item added to cart
+    uiAlert(`Added to cart!<br><br>${quantity}x ${selectedFood.name}<br>${extras.length > 0 ? 'Extras: ' + extras.join(', ') : ''}`, 'success');
 }
 
 // ========================================
@@ -1287,7 +1346,8 @@ function toggleFavorite(foodId, event) {
     event.stopPropagation();
     
     if (!currentUser) {
-        alert('⚠ Please login to add favorites');
+        // Warning: Must login to add favorites
+        uiAlert('Please login to add favorites', 'warning');
         showLogin();
         return;
     }
@@ -1315,7 +1375,8 @@ function toggleFavorite(foodId, event) {
 
 function showFavorites() {
     if (!currentUser) {
-        alert('⚠ Please login to view favorites');
+        // Warning: Must login to view favorites
+        uiAlert('Please login to view favorites', 'warning');
         showLogin();
         return;
     }
@@ -1389,7 +1450,9 @@ function showFavorites() {
 // ========================================
 function showCart() {
     if (!currentUser) {
-        alert('⚠ Please login to view cart');
+
+        // Warning: Must login to view cart
+        uiAlert('Please login to view cart', 'warning');
         showLogin();
         return;
     }
@@ -1458,19 +1521,22 @@ function removeCartItem(index) {
 
 function proceedToCheckout() {
     if (cart.length === 0) {
-        alert('✘ Your cart is empty!');
+        // Error: Cannot checkout with empty cart
+        uiAlert('Your cart is empty!', 'error');
         return;
     }
     
     // Check if restaurant is open
     const status = getRestaurantStatus();
     if (!status.open) {
-        alert(`⚠ Sorry, we're not accepting orders right now.\n\n${status.message}\n\nOpening hours: 11:00 - 23:00\nLast orders: 22:30`);
+        // Warning: Restaurant closed/not accepting orders
+        uiAlert(`Sorry, we're not accepting orders right now.<br><br>${status.message}<br><br><strong>Opening hours:</strong> 11:00 - 23:00<br><strong>Last orders:</strong> 22:30`, 'warning');
         return;
     }
     
     if (!currentUser) {
-        alert('✘ Please login first');
+        // Error: Must be logged in to checkout
+        uiAlert('Please login first', 'error');
         showLogin();
         return;
     }
@@ -1482,12 +1548,14 @@ function proceedToCheckout() {
     );
     
     if (activeOrder) {
-        alert(`⚠ You already have an active order!\n\nOrder #${activeOrder.id}\nStatus: ${activeOrder.status.replace('_', ' ').toUpperCase()}\n\nPlease wait until your current order is delivered before placing a new one.`);
+        // Warning: User has active order, cannot place new one
+        uiAlert(`You already have an active order!<br><br><strong>Order #${activeOrder.id}</strong><br>Status: ${activeOrder.status.replace('_', ' ').toUpperCase()}<br><br>Please wait until your current order is delivered before placing a new one.`, 'warning');
         return;
     }
     
     if (!currentUser.address && !selectedLocation) {
-        alert('✘ Please set your delivery address first');
+        // Error: No delivery address set
+        uiAlert('Please set your delivery address first', 'error');
         pickLocation();
         return;
     }
@@ -1545,7 +1613,8 @@ function openCheckoutModal() {
         );
         const deliveryInfo = getDeliveryCost(distance);
         if (!deliveryInfo.available) {
-            alert(deliveryInfo.message);
+            // Error: Delivery not available for this location
+            uiAlert(deliveryInfo.message, 'error');
             return;
         }
         deliveryFee = deliveryInfo.cost;
@@ -1604,7 +1673,8 @@ function handlePayment(event) {
     const paymentMethod = document.getElementById('paymentMethod').value;
     
     if (!paymentMethod) {
-        alert('✘ Please select a payment method');
+        // Error: No payment method selected
+        uiAlert('Please select a payment method', 'error');
         return false;
     }
     
@@ -1615,19 +1685,23 @@ function handlePayment(event) {
         const cvv = document.getElementById('paymentCVV').value;
         
         if (!isValidCardNumber(cardNumber)) {
-            alert('✘ Invalid card number');
+            // Error: Card number validation failed
+            uiAlert('Invalid card number', 'error');
             return false;
         }
         if (!cardName || cardName.length < 2) {
-            alert('✘ Please enter name on card');
+            // Error: Card name validation
+            uiAlert('Please enter name on card', 'error');
             return false;
         }
         if (!isValidExpiry(expiry)) {
-            alert('✘ Invalid expiry date');
+            // Error: Expiry date validation
+            uiAlert('Invalid expiry date', 'error');
             return false;
         }
         if (!isValidCVV(cvv)) {
-            alert('✘ Invalid CVV');
+            // Error: CVV validation
+            uiAlert('Invalid CVV', 'error');
             return false;
         }
     }
@@ -1703,7 +1777,8 @@ function handlePayment(event) {
         window.isProcessingCheckout = false;
     }, 1000);
     
-    alert(`✓ Order Placed Successfully!\n\nOrder ID: ${orderId}\nTotal: ${formatPrice(order.total)}\n\nYou will receive updates on your order status.`);
+    // Success: Order placed
+    uiAlert(`Order Placed Successfully!<br><br><strong>Order ID:</strong> ${orderId}<br><strong>Total:</strong> ${formatPrice(order.total)}<br><br>You will receive updates on your order status.`, 'success');
     
     return false;
 }
@@ -1729,7 +1804,8 @@ function addNotification(userId, notification) {
 
 function showNotifications() {
     if (!currentUser) {
-        alert('⚠ Please login to view notifications');
+        // Warning: Must login to view notifications
+        uiAlert('Please login to view notifications', 'warning');
         showLogin();
         return;
     }
@@ -2097,7 +2173,8 @@ let reorderData = null;
 function reorderFromHistory(orderId) {
     const order = orderHistory.find(o => o.id === orderId);
     if (!order) {
-        alert('✘ Order not found');
+        // Error: Order not found
+        uiAlert('Order not found', 'error');
         return;
     }
     
@@ -2136,7 +2213,8 @@ function confirmReorder() {
     });
     
     if (unavailableItems.length > 0) {
-        alert(`✘ Some items are no longer available:\n\n${unavailableItems.join('\n')}\n\nPlease order from the menu.`);
+        // Error: Some items unavailable for reorder
+        uiAlert(`Some items are no longer available:<br><br>${unavailableItems.join('<br>')}<br><br>Please order from the menu.`, 'error');
         closeModal('reorderModal');
         return;
     }
@@ -2216,7 +2294,8 @@ function saveProfileChanges(event) {
     const newPic = preview.dataset.newPic;
     
     if (!name) {
-        alert('✘ Name is required');
+        // Error: Name field required
+        uiAlert('Name is required', 'error');
         return false;
     }
     
@@ -2253,7 +2332,8 @@ function saveProfileChanges(event) {
     }
     
     // Show success and refresh account
-    alert('✓ Profile updated successfully!');
+    // Success: Profile updated
+    uiAlert('Profile updated successfully!', 'success');
     showAccount();
     
     return false;
@@ -2292,7 +2372,8 @@ function handleChangePassword(event) {
     event.preventDefault();
     
     if (!currentUser) {
-        alert('✘ Please login first');
+        // Error: Not logged in
+        uiAlert('Please login first', 'error');
         return;
     }
     
@@ -2302,19 +2383,22 @@ function handleChangePassword(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('✘ Current password is incorrect');
+        // Error: Wrong current password
+        uiAlert('Current password is incorrect', 'error');
         return;
     }
     
     // Validate new password
     if (newPassword.length < 6) {
-        alert('✘ New password must be at least 6 characters');
+        // Error: Password too short
+        uiAlert('New password must be at least 6 characters', 'error');
         return;
     }
     
     // Check match
     if (newPassword !== confirmPassword) {
-        alert('✘ New passwords do not match');
+        // Error: Passwords don't match
+        uiAlert('New passwords do not match', 'error');
         return;
     }
     
@@ -2332,7 +2416,8 @@ function handleChangePassword(event) {
     saveData();
     
     closeModal('changePasswordModal');
-    alert('✓ Password changed successfully!');
+    // Success: Password changed
+    uiAlert('Password changed successfully!', 'success');
 }
 
 // Open forgot password from change password modal
@@ -2359,19 +2444,22 @@ function verifyAndChangeEmail(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('✘ Current password is incorrect');
+        // Error: Wrong password
+        uiAlert('Current password is incorrect', 'error');
         return;
     }
     
     // Check email match
     if (newEmail !== confirmEmail) {
-        alert('✘ Emails do not match');
+        // Error: Emails don't match
+        uiAlert('Emails do not match', 'error');
         return;
     }
     
     // Check if email already exists
     if (userDatabase.some(u => u.email === newEmail && u.email !== currentUser.email)) {
-        alert('✘ This email is already registered');
+        // Error: Email already in use
+        uiAlert('This email is already registered', 'error');
         return;
     }
     
@@ -2411,7 +2499,8 @@ function verifyAndChangeEmail(event) {
     closeModal('changeEmailModal');
     showAccount();
     
-    alert('✓ Email changed successfully to: ' + newEmail);
+    // Success: Email changed
+    uiAlert('Email changed successfully to: ' + newEmail, 'success');
 }
 
 function openChangePassword() {
@@ -2437,25 +2526,29 @@ function verifyAndChangePassword(event) {
     
     // Verify current password
     if (currentPassword !== currentUser.password) {
-        alert('✘ Current password is incorrect');
+        // Error: Wrong current password
+        uiAlert('Current password is incorrect', 'error');
         return;
     }
     
     // Check password length
     if (newPassword.length < 6) {
-        alert('✘ New password must be at least 6 characters');
+        // Error: Password too short
+        uiAlert('New password must be at least 6 characters', 'error');
         return;
     }
     
     // Check password match
     if (newPassword !== confirmPassword) {
-        alert('✘ New passwords do not match');
+        // Error: Passwords don't match
+        uiAlert('New passwords do not match', 'error');
         return;
     }
     
     // Check if new password is same as old
     if (newPassword === currentPassword) {
-        alert('✘ New password must be different from current password');
+        // Error: Same password
+        uiAlert('New password must be different from current password', 'error');
         return;
     }
     
@@ -2475,7 +2568,8 @@ function verifyAndChangePassword(event) {
     closeModal('changePasswordModal');
     showAccount();
     
-    alert('✓ Password changed successfully!');
+    // Success: Password changed
+    uiAlert('Password changed successfully!', 'success');
 }
 
 function logout() {
@@ -2490,7 +2584,8 @@ function logout() {
     updateNotificationBadge();
     closeModal('accountModal');
     
-    alert('✓ Logged out successfully');
+    // Success: User logged out
+    uiAlert('Logged out successfully', 'success');
 }
 
 // ========================================
@@ -2557,13 +2652,15 @@ async function sendPasswordResetCode() {
     const email = emailInput ? emailInput.value.trim() : null;
     
     if (!email) {
-        alert('✘ Please enter your email');
+        // Error: Email required
+        uiAlert('Please enter your email', 'error');
         return;
     }
     
     const user = userDatabase.find(u => u.email === email);
     if (!user) {
-        alert('✘ No account found with this email');
+        // Error: Account not found
+        uiAlert('No account found with this email', 'error');
         return;
     }
     
@@ -2616,7 +2713,8 @@ async function sendPasswordResetCode() {
 // NEW HELPER: Resend code specifically for Password Reset
 async function resendPasswordResetOnly(email) {
     if (!pendingVerification || pendingVerification.email !== email) {
-        alert('✘ Session expired. Please start over.');
+        // Error: Session expired
+        uiAlert('Session expired. Please start over.', 'error');
         location.reload();
         return;
     }
@@ -2637,22 +2735,26 @@ function resetPassword() {
     const confirmPassword = document.getElementById('confirmPasswordReset').value;
     
     if (!pendingVerification || pendingVerification.type !== 'password_reset') {
-        alert('✘ Invalid reset session. Please try again.');
+        // Error: Invalid session
+        uiAlert('Invalid reset session. Please try again.', 'error');
         return;
     }
     
     if (code !== pendingVerification.code) {
-        alert('✘ Invalid code. Please check and try again.');
+        // Error: Wrong code
+        uiAlert('Invalid code. Please check and try again.', 'error');
         return;
     }
     
     if (newPassword.length < 6) {
-        alert('✘ Password must be at least 6 characters');
+        // Error: Password too short
+        uiAlert('Password must be at least 6 characters', 'error');
         return;
     }
     
     if (newPassword !== confirmPassword) {
-        alert('✘ Passwords do not match');
+        // Error: Passwords don't match
+        uiAlert('Passwords do not match', 'error');
         return;
     }
     
@@ -2663,7 +2765,8 @@ function resetPassword() {
         saveData();
         pendingVerification = null;
         
-        alert('✓ Password reset successfully!\n\nYou can now login with your new password.');
+        // Success: Password reset
+        uiAlert('Password reset successfully!<br><br>You can now login with your new password.', 'success');
         location.reload();
     }
 }
@@ -2681,11 +2784,13 @@ function handleEmailAuth(event) {
     // 1. Validate Inputs
     const emailValidation = isValidEmail(email);
     if (!emailValidation.valid) {
-        alert(emailValidation.message);
+        // Error: Invalid email format
+        uiAlert(emailValidation.message, 'error');
         return;
     }
     if (password.length < 6) {
-        alert('✘ Password must be at least 6 characters');
+        // Error: Password too short
+        uiAlert('Password must be at least 6 characters', 'error');
         return;
     }
 
@@ -2716,7 +2821,8 @@ function handleEmailAuth(event) {
         // --- SIGN UP ---
         const existing = userDatabase.find(u => u.email === email);
         if (existing) {
-            alert('✘ Email already exists. Please login.');
+            // Error: Email already registered
+            uiAlert('Email already exists. Please login.', 'error');
             return;
         }
         // Create account immediately (No verification)
@@ -2730,9 +2836,11 @@ function handleEmailAuth(event) {
             saveData();
             closeModal('loginModal');
             updateAuthUI();
-            alert('✓ Welcome back, ' + user.name + '!');
+            // Success: Login successful
+            uiAlert('Welcome back, ' + user.name + '!', 'success');
         } else {
-            alert('✘ Invalid email or password');
+            // Error: Invalid credentials
+            uiAlert('Invalid email or password', 'error');
         }
     }
 }
@@ -2746,7 +2854,11 @@ function completeSignUp() {
     const address = document.getElementById('authAddress') ? document.getElementById('authAddress').value.trim() : '';
     const dob = document.getElementById('authDOB') ? document.getElementById('authDOB').value : '';
 
-    if (!name) { alert('✘ Name is required'); return; }
+    if (!name) { 
+        // Error: Name required
+        uiAlert('Name is required', 'error'); 
+        return; 
+    }
 
     const newUser = {
         id: 'USR-' + Date.now(),
@@ -2768,7 +2880,8 @@ function completeSignUp() {
     
     closeModal('loginModal');
     updateAuthUI();
-    alert('✓ Account created successfully! Welcome to Antalya Shawarma.');
+    // Success: Account created
+    uiAlert('Account created successfully! Welcome to Antalya Shawarma.', 'success');
 }
 
 // Show owner PIN entry modal
@@ -2786,12 +2899,14 @@ function verifyCode() {
     const enteredCode = document.getElementById('verificationCode').value;
     
     if (!pendingVerification) {
-        alert('✘ No verification pending');
+        // Error: No pending verification
+        uiAlert('No verification pending', 'error');
         return;
     }
     
     if (enteredCode !== pendingVerification.code) {
-        alert('✘ Invalid verification code');
+        // Error: Invalid code
+        uiAlert('Invalid verification code', 'error');
         return;
     }
     
@@ -2836,7 +2951,8 @@ function verifyCode() {
     
     closeModal('loginModal');
     
-    alert(`✓ Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in.`);
+    // Success: Login completed
+    uiAlert(`Welcome${currentUser.name ? ', ' + currentUser.name : ''}!<br><br>You are now logged in.`, 'success');
 }
 
 function resendCode() {
@@ -2861,7 +2977,8 @@ function loginWithGoogle() {
     google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
             // Google One Tap not available
-               alert('⚠ Google Sign-In not available\n\nPlease use Email/Password login instead.');
+               // Warning: Google Sign-In not available
+               uiAlert('Google Sign-In not available<br><br>Please use Email/Password login instead.', 'warning');
            }
        });
         } else {
@@ -2869,14 +2986,16 @@ function loginWithGoogle() {
             google.accounts.id.prompt();
         }
     } catch (error) {
-        alert('✘ Google login unavailable. Please use email login.');
+        // Error: Google login unavailable
+        uiAlert('Google login unavailable. Please use email login.', 'error');
     }
 }
 
 function handleGoogleCallback(response) {
 
         if (!response || !response.credential) {
-        alert('✘ Google login failed. Please try again or use email login.');
+        // Error: Google login failed
+        uiAlert('Google login failed. Please try again or use email login.', 'error');
         return;
     }
 
@@ -2922,11 +3041,13 @@ function handleGoogleCallback(response) {
     updateHeaderForLoggedInUser();
     closeModal('loginModal');
     
-    alert(`✓ Welcome${currentUser.name ? ', ' + currentUser.name : ''}!\n\nYou are now logged in with Google.`);
+    // Success: Google login
+    uiAlert(`Welcome${currentUser.name ? ', ' + currentUser.name : ''}!<br><br>You are now logged in with Google.`, 'success');
 }
 
 function loginWithApple() {
-    alert(`Apple Sign-In\n\nApple authentication would be configured here.\n\nFor demo, use email signup with iCloud.`);
+    // Info: Apple Sign-In demo
+    uiAlert(`<strong>Apple Sign-In</strong><br><br>Apple authentication would be configured here.<br><br>For demo, use email signup with iCloud.`, 'info');
 }
 
 // ========================================
@@ -3115,7 +3236,8 @@ function addMarker(location) {
 
 function getCurrentLocation() {
     if (!navigator.geolocation) {
-        alert('✘ Geolocation not supported');
+        // Error: Geolocation not supported
+        uiAlert('Geolocation not supported', 'error');
         return;
     }
     
@@ -3139,12 +3261,14 @@ function getCurrentLocation() {
             
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert('✓ Location found!');
+            // Success: Location found
+            uiAlert('Location found!', 'success');
         },
         (error) => {
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert('✘ Could not get location');
+            // Error: Could not get location
+            uiAlert('Could not get location', 'error');
         },
         { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -3152,7 +3276,8 @@ function getCurrentLocation() {
 
 function confirmLocation() {
     if (!selectedLocation) {
-        alert('Please select a location on the map');
+        // Warning: No location selected
+        uiAlert('Please select a location on the map', 'warning');
         return;
     }
     
@@ -3165,14 +3290,16 @@ function confirmLocation() {
     );
     
     if (distance > 6) {
-        alert('⚠ Sorry! You are ' + distance.toFixed(1) + ' miles away. We only deliver within 6 miles of the restaurant.');
+        // Warning: Too far for delivery
+        uiAlert('Sorry! You are ' + distance.toFixed(1) + ' miles away. We only deliver within 6 miles of the restaurant.', 'warning');
         return;
     }
 
     const deliveryInfo = getDeliveryCost(distance);
     
     if (!deliveryInfo.available) {
-        alert(deliveryInfo.message);
+        // Error: Delivery not available
+        uiAlert(deliveryInfo.message, 'error');
         return;
     }
     
@@ -3212,9 +3339,11 @@ function confirmLocation() {
         }
         
         openEditProfile();
-        alert(`✓ Location set!\n\n${selectedLocation.address || 'Location confirmed'}`);
+        // Success: Location set for profile
+        uiAlert(`Location set!<br><br>${selectedLocation.address || 'Location confirmed'}`, 'success');
     } else {
-        alert(`✓ Location confirmed!\n\n${selectedLocation.address || 'Location set'}\n${deliveryInfo.message}`);
+        // Success: Location confirmed for checkout
+        uiAlert(`Location confirmed!<br><br>${selectedLocation.address || 'Location set'}<br>${deliveryInfo.message}`, 'success');
     }
 }
 
@@ -3364,7 +3493,8 @@ function handleOwnerLogin() {
     if (email !== OWNER_CREDENTIALS.email || 
         password !== OWNER_CREDENTIALS.password || 
         pin !== OWNER_CREDENTIALS.pin) {
-        alert('✘ Invalid credentials');
+        // Error: Invalid owner credentials
+        uiAlert('Invalid credentials', 'error');
         return;
     }
     
@@ -3381,7 +3511,8 @@ function handleOwnerLogin() {
     hideNavigation(); // Hide navigation when dashboard opens
     updateOwnerStats();
     
-    alert('✓ Owner access granted!');
+    // Success: Owner logged in
+    uiAlert('Owner access granted!', 'success');
 }
 
 
@@ -3599,7 +3730,8 @@ function saveReviews() {
 // Open write review modal
 function openWriteReview() {
     if (!currentUser) {
-        alert('⚠ Please login to write a review');
+        // Warning: Must login to review
+        uiAlert('Please login to write a review', 'warning');
         showLogin();
         return;
     }
@@ -3607,7 +3739,8 @@ function openWriteReview() {
     // Check if user already has a review
     const existingReview = restaurantReviews.find(r => r.userId === currentUser.email);
     if (existingReview) {
-        alert('⚠ You have already submitted a review. Each customer can only submit one review.');
+        // Warning: Already submitted review
+        uiAlert('You have already submitted a review. Each customer can only submit one review.', 'warning');
         return;
     }
     
@@ -3646,14 +3779,16 @@ function submitReview(event) {
     event.preventDefault();
     
     if (!currentUser) {
-        alert('✘ Please login first');
+        // Error: Not logged in
+        uiAlert('Please login first', 'error');
         return;
     }
     
     // Check if user already has a review
     const existingReview = restaurantReviews.find(r => r.userId === currentUser.email);
     if (existingReview) {
-        alert('⚠ You have already submitted a review.');
+        // Warning: Already submitted
+        uiAlert('You have already submitted a review.', 'warning');
         closeModal('writeReviewModal');
         return;
     }
@@ -3662,12 +3797,14 @@ function submitReview(event) {
     const text = document.getElementById('reviewText').value.trim();
     
     if (rating < 1 || rating > 5) {
-        alert('✘ Please select a rating (1-5 stars)');
+        // Error: Invalid rating
+        uiAlert('Please select a rating (1-5 stars)', 'error');
         return;
     }
     
     if (text.length < 10) {
-        alert('✘ Please write at least 10 characters');
+        // Error: Review too short
+        uiAlert('Please write at least 10 characters', 'error');
         return;
     }
     
@@ -3689,7 +3826,8 @@ function submitReview(event) {
     displayReviews();
     
     closeModal('writeReviewModal');
-    alert('✓ Thank you for your review!');
+    // Success: Review submitted
+    uiAlert('Thank you for your review!', 'success');
 }
 
 // Display reviews
@@ -3864,13 +4002,15 @@ function openReplies(reviewId) {
 // Submit owner reply
 function submitOwnerReply() {
     if (!isOwnerLoggedIn) {
-        alert('✘ Only restaurant owner can reply to reviews');
+        // Error: Not owner
+        uiAlert('Only restaurant owner can reply to reviews', 'error');
         return;
     }
     
     const text = document.getElementById('replyText').value.trim();
     if (text.length < 2) {
-        alert('✘ Please write a reply');
+        // Error: Reply too short
+        uiAlert('Please write a reply', 'error');
         return;
     }
     
@@ -3891,7 +4031,8 @@ function submitOwnerReply() {
     openReplies(currentReviewId);
     displayReviews();
     
-    alert('✓ Reply posted!');
+    // Success: Reply posted
+    uiAlert('Reply posted!', 'success');
 }
 
 // Delete review (owner or own review)
@@ -3902,7 +4043,8 @@ function deleteReview(reviewId) {
     const isOwn = currentUser && review.userId === currentUser.email;
     
     if (!isOwn && !isOwnerLoggedIn) {
-        alert('✘ You can only delete your own reviews');
+        // Error: Cannot delete others' reviews
+        uiAlert('You can only delete your own reviews', 'error');
         return;
     }
     
@@ -3911,13 +4053,15 @@ function deleteReview(reviewId) {
     restaurantReviews = restaurantReviews.filter(r => r.id !== reviewId);
     saveReviews();
     displayReviews();
-    alert('✓ Review deleted');
+    // Success: Review deleted
+    uiAlert('Review deleted', 'success');
 }
 
 // Delete owner reply
 function deleteOwnerReply(reviewId, replyIndex) {
     if (!isOwnerLoggedIn) {
-        alert('✘ Only owner can delete replies');
+        // Error: Only owner can delete
+        uiAlert('Only owner can delete replies', 'error');
         return;
     }
     
@@ -3952,11 +4096,13 @@ window.closeOwnerDashboard = closeOwnerDashboard;
 
 // Quick Action Functions for Owner Dashboard
 function showAllOrders() {
-    alert('All Orders\n\nTotal Orders: ' + (orderHistory.length + pendingOrders.length) + '\nPending: ' + pendingOrders.length + '\nCompleted: ' + orderHistory.length);
+    // Info: Order summary
+    uiAlert(`<strong>All Orders</strong><br><br>Total Orders: ${orderHistory.length + pendingOrders.length}<br>Pending: ${pendingOrders.length}<br>Completed: ${orderHistory.length}`, 'info');
 }
 
 function showAllUsers() {
-    alert('All Users\n\nTotal Registered Users: ' + userDatabase.length + '\n\nUse the Reset Data Options to manage user accounts.');
+    // Info: User summary
+    uiAlert(`<strong>All Users</strong><br><br>Total Registered Users: ${userDatabase.length}<br><br>Use the Reset Data Options to manage user accounts.`, 'info');
 }
 
 function showAllReviews() {
@@ -3970,15 +4116,18 @@ function showAllReviews() {
 function showAnalytics() {
     const totalRevenue = orderHistory.reduce((sum, o) => sum + o.total, 0);
     const avgOrder = orderHistory.length > 0 ? totalRevenue / orderHistory.length : 0;
-    alert('Analytics Summary\n\nTotal Revenue: ' + formatPrice(totalRevenue) + '\nTotal Orders: ' + orderHistory.length + '\nAvg Order Value: ' + formatPrice(avgOrder) + '\nTotal Users: ' + userDatabase.length);
+    // Info: Analytics summary
+    uiAlert(`<strong>Analytics Summary</strong><br><br>Total Revenue: ${formatPrice(totalRevenue)}<br>Total Orders: ${orderHistory.length}<br>Avg Order Value: ${formatPrice(avgOrder)}<br>Total Users: ${userDatabase.length}`, 'info');
 }
 
 function showNotificationCenter() {
-    alert('Notification Center\n\nNo new system notifications.\n\nCustomer notifications are managed through the order system.');
+    // Info: Notifications
+    uiAlert('<strong>Notification Center</strong><br><br>No new system notifications.<br><br>Customer notifications are managed through the order system.', 'info');
 }
 
 function showSettings() {
-    alert('Settings\n\nRestaurant: ' + UK_CONFIG.restaurant.name + '\nAddress: ' + UK_CONFIG.restaurant.address + '\nPhone: ' + UK_CONFIG.restaurant.phone + '\n\nHours: 11:00 AM - 11:00 PM\nLast Orders: 10:30 PM\nMax Delivery: ' + UK_CONFIG.maxDeliveryDistance + ' miles');
+    // Info: Restaurant settings
+    uiAlert(`<strong>Settings</strong><br><br>Restaurant: ${UK_CONFIG.restaurant.name}<br>Address: ${UK_CONFIG.restaurant.address}<br>Phone: ${UK_CONFIG.restaurant.phone}<br><br>Hours: 11:00 AM - 11:00 PM<br>Last Orders: 10:30 PM<br>Max Delivery: ${UK_CONFIG.maxDeliveryDistance} miles`, 'info');
 }
 
 // Make functions globally available
@@ -4029,12 +4178,13 @@ function showAllOrdersRestaurant() {
     const delivery = pendingOrders.filter(o => o.status === 'out_for_delivery' || o.status === 'driver_assigned').length;
     const completed = orderHistory.length;
     
-    alert('All Orders Summary\n\n' +
-        '⏳ Pending: ' + pending + '\n' +
-        'Accepted: ' + accepted + '\n' +
-        'Out for Delivery: ' + delivery + '\n' +
-        'Completed: ' + completed + '\n\n' +
-        'Total: ' + total);
+    // Info: Order summary
+    uiAlert('<strong>All Orders Summary</strong><br><br>' +
+        '⏳ Pending: ' + pending + '<br>' +
+        'Accepted: ' + accepted + '<br>' +
+        'Out for Delivery: ' + delivery + '<br>' +
+        'Completed: ' + completed + '<br><br>' +
+        'Total: ' + total, 'info');
 }
 
 function notifyAllDrivers() {
@@ -4086,7 +4236,8 @@ window.updateRestaurantStats = updateRestaurantStats;
 
 function confirmDeleteAccount() {
     if (!currentUser) {
-        alert('✘ Please login first');
+        // Error: Not logged in
+        uiAlert('Please login first', 'error');
         return;
     }
     
@@ -4094,7 +4245,8 @@ function confirmDeleteAccount() {
     const hasPendingOrders = pendingOrders.some(o => o.userId === currentUser.email && (o.status === 'pending' || o.status === 'preparing' || o.status === 'out_for_delivery'));
     
     if (hasPendingOrders) {
-        alert('⚠ You cannot delete your account while you have active orders.\n\nPlease wait for your orders to be completed.');
+        // Warning: Has active orders
+        uiAlert('You cannot delete your account while you have active orders.<br><br>Please wait for your orders to be completed.', 'warning');
         return;
     }
     
@@ -4117,7 +4269,8 @@ function confirmDeleteAccount() {
     if (confirmation === 'DELETE') {
         deleteUserAccount();
     } else if (confirmation !== null) {
-        alert('✘ Account deletion cancelled.\n\nYou must type "DELETE" exactly to confirm.');
+        // Error: Confirmation failed
+        uiAlert('Account deletion cancelled.<br><br>You must type "DELETE" exactly to confirm.', 'error');
     }
 }
 
@@ -4155,7 +4308,8 @@ function deleteUserAccount() {
     // Close modal and show confirmation
     closeModal('accountModal');
     
-    alert('✓ Your account has been permanently deleted.\n\nThank you for being our customer. We hope to see you again!');
+    // Success: Account deleted
+    uiAlert('Your account has been permanently deleted.<br><br>Thank you for being our customer. We hope to see you again!', 'success');
     
     // Refresh page
     location.reload();
@@ -4240,7 +4394,8 @@ function cancelOrder(orderId) {
     if (pendingIndex !== -1) {
         // Strict Check: Can only cancel if still pending
         if (pendingOrders[pendingIndex].status !== 'pending') {
-            alert('⚠ Cannot cancel: Order already accepted by restaurant.');
+            // Warning: Cannot cancel accepted order
+            uiAlert('Cannot cancel: Order already accepted by restaurant.', 'warning');
             showOrderHistory(); // Refresh to show current status
             return;
         }
@@ -4263,7 +4418,8 @@ function cancelOrder(orderId) {
     if (window.utils && window.utils.showToast) {
         window.utils.showToast('Order cancelled successfully', 'success');
     } else {
-        alert('✓ Order cancelled successfully');
+        // Success: Order cancelled
+        uiAlert('Order cancelled successfully', 'success');
     }
 }
 

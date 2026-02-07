@@ -34,7 +34,7 @@ function handleRestaurantLogin(event) {
             showRestaurantDashboard();
         }, 300);
     } else {
-        alert('✘ Invalid credentials!');
+        uiAlert('Invalid credentials!', 'error');
     }
 }
 
@@ -174,7 +174,7 @@ function acceptOrder(orderId) {
     
     // FIX: Guard against cancelled orders
     if (order.status === 'cancelled') {
-        alert('✘ Cannot accept: This order was cancelled by the user.');
+        uiAlert('Cannot accept: This order was cancelled by the user.', 'error');
         showRestaurantDashboard(); // Refresh view to remove it
         return;
     }
@@ -194,7 +194,7 @@ function acceptOrder(orderId) {
     playNotificationSound();
     showRestaurantDashboard();
     
-    alert(`✓ Order #${orderId} accepted!\n\nClick "Notify All Drivers" to alert available drivers.`);
+    uiAlert(`Order #${orderId} accepted!<br><br>Click "Notify All Drivers" to alert available drivers.`, 'success');
 }
 
 function notifyAllAvailableDrivers(orderId) {
@@ -202,14 +202,14 @@ function notifyAllAvailableDrivers(orderId) {
     if (!order) return;
     
     if (order.driverId) {
-        alert('⚠ This order already has a driver assigned!');
+        uiAlert('This order already has a driver assigned!', 'warning');
         return;
     }
     
     const availableDrivers = window.driverSystem.getAvailable();
     
     if (availableDrivers.length === 0) {
-        alert('⚠ No available drivers at the moment!');
+        uiAlert('No available drivers at the moment!', 'warning');
         return;
     }
     
@@ -239,7 +239,7 @@ function notifyAllAvailableDrivers(orderId) {
     
     playNotificationSound();
     showRestaurantDashboard();
-    alert(notifiedList + `\n${availableDrivers.length} driver(s) notified!\n\nFirst driver to accept will get the order.`);
+    uiAlert(notifiedList + `<br>${availableDrivers.length} driver(s) notified!<br><br>First driver to accept will get the order.`, 'info');
 }
 
 // Calculate delivery time based on distance
@@ -267,7 +267,7 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
 function driverAcceptOrder(orderId) {
     const driverId = sessionStorage.getItem('loggedInDriver');
     if (!driverId) {
-        alert('✘ Please login first');
+        uiAlert('Please login first', 'error');
         return;
     }
     
@@ -277,13 +277,13 @@ function driverAcceptOrder(orderId) {
     // Check if order is still available
     const availableOrder = window.availableOrdersForDrivers?.[orderId];
     if (!availableOrder) {
-        alert('✘ This order is no longer available!');
+        uiAlert('This order is no longer available!', 'error');
         showDriverDashboard();
         return;
     }
     
     if (availableOrder.claimedBy && availableOrder.claimedBy !== driverId) {
-        alert('✘ Sorry, another driver already accepted this order!');
+        uiAlert('Sorry, another driver already accepted this order!', 'error');
         showDriverDashboard();
         return;
     }
@@ -291,7 +291,7 @@ function driverAcceptOrder(orderId) {
     // Find the actual order
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) {
-        alert('✘ Order not found!');
+        uiAlert('Order not found!', 'error');
         return;
     }
     
@@ -343,7 +343,7 @@ function driverAcceptOrder(orderId) {
     
     playNotificationSound();
     
-    alert(`✓ Order #${orderId} accepted!\n\nDistance: Distance: ${distanceMiles.toFixed(1)} miles\nEst. Estimated time: ${estimatedTime} minutes\n\nClick "Directions" to navigate to customer.`);
+    uiAlert(`Order #${orderId} accepted!<br><br><strong>Distance:</strong> ${distanceMiles.toFixed(1)} miles<br><strong>Est. time:</strong> ${estimatedTime} minutes<br><br>Click "Directions" to navigate to customer.`, 'success');
     
     showDriverDashboard();
 }
@@ -375,7 +375,7 @@ function rejectOrder(orderId) {
     });
     
     showRestaurantDashboard();
-    alert(`✘ Order #${orderId} rejected`);
+    uiAlert(`Order #${orderId} rejected`, 'error');
 }
 
 function assignDriver(orderId) {
@@ -385,7 +385,7 @@ function assignDriver(orderId) {
     const availableDrivers = window.driverSystem.getAvailable();
     
     if (availableDrivers.length === 0) {
-        alert('✘ No available drivers at the moment!\n\nAll drivers are either offline or inactive.');
+        uiAlert('No available drivers at the moment!<br><br>All drivers are either offline or inactive.', 'error');
         return;
     }
     
@@ -406,7 +406,7 @@ function assignDriver(orderId) {
     
     const driverIndex = parseInt(selection) - 1;
     if (isNaN(driverIndex) || driverIndex < 0 || driverIndex >= availableDrivers.length) {
-        alert('✘ Invalid selection');
+        uiAlert('Invalid selection', 'error');
         return;
     }
     
@@ -427,7 +427,7 @@ function assignDriver(orderId) {
     
     playNotificationSound();
     showRestaurantDashboard();
-    alert(`✓ Driver ${selectedDriver.name} assigned to order #${orderId}\n\nPhone: Driver phone: ${selectedDriver.phone}`);
+    uiAlert(`Driver ${selectedDriver.name} assigned to order #${orderId}<br><br><strong>Phone:</strong> ${selectedDriver.phone}`, 'success');
 }
 
 function completeOrder(orderId) {
@@ -458,7 +458,7 @@ function completeOrder(orderId) {
     
     showRestaurantDashboard();
     playNotificationSound();
-    alert(`✓ Order #${orderId} completed!`);
+    uiAlert(`Order #${orderId} completed!`, 'success');
 }
 
 function closeRestaurantDashboard() {
@@ -481,7 +481,7 @@ function closeRestaurantDashboard() {
 // ========================================
 function showDriverManagementModal() {
     if (!isOwnerLoggedIn) {
-        alert('✘ Owner access required!');
+        uiAlert('Owner access required!', 'error');
         return;
     }
     
@@ -630,7 +630,7 @@ function saveDriverChanges() {
     const newPic = preview.dataset.newPic;
     
     if (!name || !email || !phone) {
-        alert('✘ Name, email and phone are required');
+        uiAlert('Name, email and phone are required', 'error');
         return;
     }
     
@@ -657,7 +657,7 @@ function saveDriverChanges() {
     renderDriverList();
     updateOwnerStats();
     
-    alert('✓ Driver updated successfully!');
+    uiAlert('Driver updated successfully!', 'success');
 }
 
 function toggleDriverStatus(driverId) {
@@ -668,7 +668,7 @@ function toggleDriverStatus(driverId) {
     window.driverSystem.update(driverId, { active: newStatus, available: newStatus });
     
     renderDriverList();
-    alert(`✓ Driver ${driver.name} is now ${newStatus ? 'Active' : 'Inactive'}`);
+    uiAlert(`Driver ${driver.name} is now ${newStatus ? 'Active' : 'Inactive'}`, 'success');
 }
 
 function addNewDriver() {
@@ -682,13 +682,13 @@ function addNewDriver() {
     const profilePic = preview.dataset ? preview.dataset.newPic : null;
     
     if (!name || !email || !phone || !password) {
-        alert('✘ Please fill in name, email, phone and password');
+        uiAlert('Please fill in name, email, phone and password', 'error');
         return;
     }
     
     // Check if email already exists
     if (window.driverSystem.getByEmail(email)) {
-        alert('✘ A driver with this email already exists');
+        uiAlert('A driver with this email already exists', 'error');
         return;
     }
     
@@ -733,7 +733,7 @@ function addNewDriver() {
     renderDriverList();
     updateOwnerStats();
     
-    alert(`✓ Driver ${name} added!\n\nSecret Code: ${secretCode}\nPassword: ${password}\n\nDriver can login with either the code or email+password.`);
+    uiAlert(`Driver ${name} added!<br><br><strong>Secret Code:</strong> ${secretCode}<br><strong>Password:</strong> ${password}<br><br>Driver can login with either the code or email+password.`, 'success');
 }
 
 function deleteDriver(driverId) {
@@ -743,7 +743,7 @@ function deleteDriver(driverId) {
     renderDriverList();
     updateOwnerStats();
     
-    alert('✓ Driver removed');
+    uiAlert('Driver removed', 'success');
 }
 
 // ========================================
@@ -751,7 +751,7 @@ function deleteDriver(driverId) {
 // ========================================
 function showBankSettingsModal() {
     if (!isOwnerLoggedIn) {
-        alert('✘ Owner access required!');
+        uiAlert('Owner access required!', 'error');
         return;
     }
     
@@ -786,7 +786,7 @@ function saveBankSettings(event) {
     localStorage.setItem('ownerBankDetails', JSON.stringify(ownerBankDetails));
     
     closeModal('bankSettingsModal');
-    alert('✓ Bank details saved successfully!');
+    uiAlert('Bank details saved successfully!', 'success');
 }
 
 // Load bank details on init
@@ -812,7 +812,7 @@ function handleOwnerLogin() {
     if (email !== OWNER_CREDENTIALS.email || 
         password !== OWNER_CREDENTIALS.password || 
         pin !== OWNER_CREDENTIALS.pin) {
-        alert('✘ Invalid credentials');
+        uiAlert('Invalid credentials', 'error');
         return;
     }
     
@@ -840,7 +840,7 @@ function handleOwnerLogin() {
     
     updateOwnerStats();
     
-    alert('✓ Owner access granted!');
+    uiAlert('Owner access granted!', 'success');
     
 }
 // Add to your DOMContentLoaded event
@@ -1173,7 +1173,7 @@ function saveFoodItem() {
     const image = document.getElementById('foodEditImage').value.trim();
     
     if (!category || !name || isNaN(price)) {
-        alert('✘ Please fill category, name and price');
+        uiAlert('Please fill category, name and price', 'error');
         return;
     }
     
@@ -1222,7 +1222,7 @@ function saveFoodItem() {
     renderMenuManagerList();
     renderCategories();
     displayMenu(currentCategory);
-    alert('✓ Food item saved!');
+    uiAlert('Food item saved!', 'success');
 }
 
 function deleteFood(catKey, foodId) {
@@ -1324,7 +1324,7 @@ function deleteCategory() {
     }
     
     updateFavoritesBadge();
-    alert('✓ Category deleted');
+    uiAlert('Category deleted', 'success');
 }
 
 // Image upload handlers
@@ -1333,7 +1333,7 @@ function handleFoodImageUpload(event) {
     if (!file) return;
     
     if (file.size > 2 * 1024 * 1024) {
-        alert('✘ Image must be less than 2MB');
+        uiAlert('Image must be less than 2MB', 'error');
         return;
     }
     
@@ -1350,7 +1350,7 @@ function handleCategoryImageUpload(event) {
     if (!file) return;
     
     if (file.size > 2 * 1024 * 1024) {
-        alert('✘ Image must be less than 2MB');
+        uiAlert('Image must be less than 2MB', 'error');
         return;
     }
     
@@ -1369,7 +1369,7 @@ function saveCategory() {
     const image = document.getElementById('categoryEditImage').value.trim();
     
     if (!key || !name) {
-        alert('✘ Please fill key and name');
+        uiAlert('Please fill key and name', 'error');
         return;
     }
     
@@ -1381,7 +1381,7 @@ function saveCategory() {
     } else {
         // Add new
         if (categories[key]) {
-            alert('✘ Category key already exists');
+            uiAlert('Category key already exists', 'error');
             return;
         }
         categories[key] = { name, icon, image };
@@ -1392,7 +1392,7 @@ function saveCategory() {
     closeCategoryEditor();
     renderMenuManagerList();
     renderCategories();
-    alert('✓ Category saved!');
+    uiAlert('Category saved!', 'success');
 }
 
 function closeCategoryEditor() {

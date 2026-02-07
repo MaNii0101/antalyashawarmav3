@@ -77,19 +77,19 @@ function handleDriverCodeLogin(event) {
     const code = document.getElementById('driverSecretCode').value.trim().toUpperCase();
     
     if (!code) {
-        alert('✘ Please enter your secret code!');
+        uiAlert('Please enter your secret code!', 'error');
         return;
     }
     
     const driver = window.driverSystem.getByCode(code);
     
     if (!driver) {
-        alert('✘ Invalid secret code!');
+        uiAlert('Invalid secret code!', 'error');
         return;
     }
     
     if (!driver.active) {
-        alert('✘ Your account is inactive. Please contact management.');
+        uiAlert('Your account is inactive. Please contact management.', 'error');
         return;
     }
     
@@ -103,24 +103,24 @@ function handleDriverEmailPasswordLogin(event) {
     const password = document.getElementById('driverLoginPassword').value;
     
     if (!email || !password) {
-        alert('✘ Please enter email and password!');
+        uiAlert('Please enter email and password!', 'error');
         return;
     }
     
     const driver = window.driverSystem.getByEmail(email);
     
     if (!driver) {
-        alert('✘ Driver not found with this email!');
+        uiAlert('Driver not found with this email!', 'error');
         return;
     }
     
     if (!driver.active) {
-        alert('✘ Your account is inactive. Please contact management.');
+        uiAlert('Your account is inactive. Please contact management.', 'error');
         return;
     }
     
     if (driver.password !== password) {
-        alert('✘ Incorrect password!');
+        uiAlert('Incorrect password!', 'error');
         return;
     }
     
@@ -167,7 +167,7 @@ function showDriverDashboard(driver = null) {
     }
     
     if (!driver) {
-        alert('✘ Driver session expired. Please login again.');
+        uiAlert('Driver session expired. Please login again.', 'error');
         logoutDriver();
         return;
     }
@@ -352,7 +352,7 @@ function callCustomer(phone) {
     if (phone && phone !== 'N/A') {
         window.location.href = 'tel:' + phone;
     } else {
-        alert('✘ Customer phone number not available');
+        uiAlert('Customer phone number not available', 'error');
     }
 }
 
@@ -373,18 +373,18 @@ function toggleDriverAvailability() {
     window.driverSystem.update(driverId, { available: newStatus });
     
     showDriverDashboard();
-    alert(`✓ You are now ${newStatus ? 'Online - Ready for deliveries!' : 'Offline'}`);
+    uiAlert(`You are now ${newStatus ? 'Online - Ready for deliveries!' : 'Offline'}`, 'success');
 }
 
 function updateDriverLocation() {
     if (!navigator.geolocation) {
-        alert('✘ Geolocation is not supported by your browser');
+        uiAlert('Geolocation is not supported by your browser', 'error');
         return;
     }
     
     const driverId = sessionStorage.getItem('loggedInDriver');
     if (!driverId) {
-        alert('✘ Please login first');
+        uiAlert('Please login first', 'error');
         return;
     }
     
@@ -406,11 +406,11 @@ function updateDriverLocation() {
             liveLocations[driverId] = locationData;
             localStorage.setItem('driverLiveLocations', JSON.stringify(liveLocations));
             
-            alert('✓ Location updated!\n\nCustomers can now see your live location.');
+            uiAlert('Location updated!<br><br>Customers can now see your live location.', 'success');
             showDriverDashboard();
         },
         (error) => {
-            alert('✘ Unable to get your location: ' + error.message);
+            uiAlert('Unable to get your location: ' + error.message, 'error');
         },
         {
             enableHighAccuracy: true,
@@ -495,7 +495,7 @@ function openDirections(address, lat, lng) {
     }
     
     if (!destination) {
-        alert('✘ No delivery address available');
+        uiAlert('No delivery address available', 'error');
         return;
     }
     
@@ -541,7 +541,7 @@ function markOrderDelivered(orderId) {
     playNotificationSound();
     showDriverDashboard();
     
-    alert('✓ Order marked as delivered!');
+    uiAlert('Order marked as delivered!', 'success');
     
     // Trigger rating popup for customer if they're logged in
     if (currentUser && currentUser.email === order.userId) {
@@ -622,18 +622,18 @@ let trackingOrderId = null;
 function trackDriver(orderId) {
     const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
     if (!order) {
-        alert('✘ Order not found');
+        uiAlert('Order not found', 'error');
         return;
     }
     
     if (!order.driverId) {
-        alert('✘ No driver assigned to this order yet');
+        uiAlert('No driver assigned to this order yet', 'error');
         return;
     }
     
     // Check if order is still out for delivery
     if (order.status === 'completed') {
-        alert('✓ This order has been delivered!');
+        uiAlert('This order has been delivered!', 'success');
         return;
     }
     
@@ -832,7 +832,7 @@ function startLocationUpdates(order, driver) {
             // Auto-close tracking modal if order is done
             if (currentOrder && (currentOrder.status === 'completed' || currentOrder.status === 'cancelled')) {
                 closeTrackingModal();
-                alert(currentOrder.status === 'completed' ? 'Your order has been delivered!' : 'Order was cancelled');
+                uiAlert(currentOrder.status === 'completed' ? 'Your order has been delivered!' : 'Order was cancelled', currentOrder.status === 'completed' ? 'success' : 'info');
             }
             return;
         }
@@ -891,7 +891,7 @@ function refreshDriverLocation() {
             initTrackingMap(order, driver);
         }
     }
-    alert('Location refreshed!');
+    uiAlert('Location refreshed!', 'info');
 }
 
 function closeTrackingModal() {
@@ -927,7 +927,7 @@ function openDriverRating(orderId, driverId, driverName, autoPopup = false) {
     const order = orderHistory.find(o => o.id === orderId);
     if (order && order.driverRated) {
         if (!autoPopup) {
-            alert(`⚠ You have already rated this driver!\n\nRating: ${order.driverRating}/5 stars`);
+            uiAlert(`You have already rated this driver!<br><br><strong>Rating:</strong> ${order.driverRating}/5 stars`, 'warning');
         }
         return;
     }
@@ -1003,7 +1003,7 @@ function resetPreview() {
 
 function submitDriverRating() {
     if (currentRating < 1) {
-        alert('⚠ Please select a rating (1-5 stars)');
+        uiAlert('Please select a rating (1-5 stars)', 'warning');
         return;
     }
     
@@ -1044,7 +1044,7 @@ function submitDriverRating() {
     
     closeModal('driverRatingModal');
     
-    alert(`Thank you for your ${currentRating}-star rating!${comment ? '\n\nYour feedback has been saved.' : ''}`);
+    uiAlert(`Thank you for your ${currentRating}-star rating!${comment ? '<br><br>Your feedback has been saved.' : ''}`, 'success');
     
     // Refresh account page if open
     if (document.getElementById('accountModal')?.style.display === 'flex') {
