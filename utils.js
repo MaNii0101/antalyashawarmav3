@@ -27,7 +27,7 @@ function smoothScrollTo(element) {
 
 // Format price consistently
 function formatPrice(price) {
-    return 'Â£' + parseFloat(price).toFixed(2);
+    return '£' + parseFloat(price).toFixed(2);
 }
 
 // Format phone number for display
@@ -185,7 +185,7 @@ function showAddToHomeScreen() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isIOS) {
-            showToast('Tip: Tap Share â†’ Add to Home Screen for quick access!', 'info', 5000);
+            showToast('Tip: Tap Share → Add to Home Screen for quick access!', 'info', 5000);
         }
     }
 }
@@ -271,12 +271,13 @@ function measurePerformance() {
 window.addEventListener('load', measurePerformance);
 
 // ============================================
-// SWEETALERT2 ALERT SYSTEM
-// Replaces all native alert() with modern UI
+// LUXURY MODERN ALERT SYSTEM
+// Premium glassmorphism design with base64 SVG icons
+// Fixes GitHub Pages SVG loading issues
 // ============================================
 
 /**
- * Unified alert system with SVG icons
+ * Luxury alert system with base64 SVG icons (works everywhere including GitHub Pages)
  * @param {string} message - Alert message (supports HTML)
  * @param {string} type - 'warning', 'error', 'success', or 'info'
  * @param {string} title - Optional custom title
@@ -286,85 +287,92 @@ function uiAlert(message, type = 'info', title = null) {
     // Fallback to native alert if SweetAlert2 failed to load
     if (typeof Swal === 'undefined') {
         console.warn('SweetAlert2 not loaded, falling back to native alert');
-        alert(message.replace(/<[^>]*>/g, '')); // Strip HTML tags for native alert
+        alert(message.replace(/<[^>]*>/g, ''));
         return Promise.resolve();
     }
     
-    // Icon configurations with inline SVG
+    // Base64 encoded SVG icons (fixes GitHub Pages loading issue)
     const icons = {
         warning: {
-            svg: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+            // Orange warning triangle - base64 encoded
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTAuMjkgMy44NkwxLjgyIDE4YTIgMiAwIDAgMCAxLjcxIDNoMTYuOTRhMiAyIDAgMCAwIDEuNzEtM0wxMy43MSAzLjg2YTIgMiAwIDAgMC0zLjQyIDB6Ij48L3BhdGg+PGxpbmUgeDE9IjEyIiB5MT0iOSIgeDI9IjEyIiB5Mj0iMTMiPjwvbGluZT48bGluZSB4MT0iMTIiIHkxPSIxNyIgeDI9IjEyLjAxIiB5Mj0iMTciPjwvbGluZT48L3N2Zz4=',
             title: title || 'Warning',
-            color: '#f59e0b',
-            bg: 'rgba(251, 191, 36, 0.15)'
+            gradient: 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)',
+            glow: 'rgba(245, 158, 11, 0.4)'
         },
         error: {
-            svg: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+            // Red X circle - base64 encoded
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlZjQ0NDQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCI+PC9jaXJjbGU+PGxpbmUgeDE9IjE1IiB5MT0iOSIgeDI9IjkiIHkyPSIxNSI+PC9saW5lPjxsaW5lIHgxPSI5IiB5MT0iOSIgeDI9IjE1IiB5Mj0iMTUiPjwvbGluZT48L3N2Zz4=',
             title: title || 'Error',
-            color: '#ef4444',
-            bg: 'rgba(239, 68, 68, 0.15)'
+            gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            glow: 'rgba(239, 68, 68, 0.4)'
         },
         success: {
-            svg: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>',
+            // Green checkmark circle - base64 encoded
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCI+PC9jaXJjbGU+PHBvbHlsaW5lIHBvaW50cz0iOSAxMiAxMSAxNCAxNSAxMCI+PC9wb2x5bGluZT48L3N2Zz4=',
             title: title || 'Success',
-            color: '#10b981',
-            bg: 'rgba(16, 185, 129, 0.15)'
+            gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            glow: 'rgba(16, 185, 129, 0.4)'
         },
         info: {
-            svg: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+            // Blue info circle - base64 encoded
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCI+PC9jaXJjbGU+PGxpbmUgeDE9IjEyIiB5MT0iMTYiIHgyPSIxMiIgeTI9IjEyIj48L2xpbmU+PGxpbmUgeDE9IjEyIiB5MT0iOCIgeDI9IjEyLjAxIiB5Mj0iOCI+PC9saW5lPjwvc3ZnPg==',
             title: title || 'Info',
-            color: '#3b82f6',
-            bg: 'rgba(59, 130, 246, 0.15)'
+            gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            glow: 'rgba(59, 130, 246, 0.4)'
         }
     };
     
     const config = icons[type] || icons.info;
     
-    // CRITICAL FIX: Force SweetAlert2 to append to body and use maximum z-index
-    // This ensures alerts appear above ALL modals, forms, and transformed containers
     return Swal.fire({
-        target: document.body, // Always append to body, not nested containers
+        target: document.body,
         title: config.title,
         html: `
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.2rem; padding: 0.5rem;">
-                <div style="background: ${config.bg}; padding: 1.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                    ${config.svg}
+            <div class="luxury-alert-content">
+                <div class="luxury-icon-wrapper">
+                    <img src="${config.icon}" alt="${type}" class="luxury-icon" />
                 </div>
-                <div style="color: #e2e8f0; line-height: 1.6; font-size: 0.95rem; text-align: center; max-width: 400px;">
+                <div class="luxury-message">
                     ${message}
                 </div>
             </div>
         `,
-        background: '#1e293b',
+        background: 'rgba(15, 23, 42, 0.95)',
+        backdrop: 'rgba(0, 0, 0, 0.75)',
         color: '#f1f5f9',
-        confirmButtonColor: config.color,
         confirmButtonText: 'OK',
         buttonsStyling: false,
         customClass: {
-            container: 'swal-top-container',
-            popup: 'swal-modern-popup',
-            title: 'swal-modern-title',
-            htmlContainer: 'swal-modern-html',
-            confirmButton: 'swal-modern-button',
-            actions: 'swal-modern-actions'
+            container: 'luxury-alert-container',
+            popup: 'luxury-alert-popup',
+            title: 'luxury-alert-title',
+            htmlContainer: 'luxury-alert-html',
+            confirmButton: 'luxury-alert-button',
+            actions: 'luxury-alert-actions'
         },
         didOpen: () => {
-            // CRITICAL: Force maximum z-index after opening
-            // This overrides any stacking context issues from modals
+            // Force maximum z-index
             const container = document.querySelector('.swal2-container');
             if (container) {
                 container.style.zIndex = '999999';
             }
+            
+            // Apply gradient to button dynamically
+            const button = document.querySelector('.luxury-alert-button');
+            if (button) {
+                button.style.background = config.gradient;
+                button.style.boxShadow = `0 8px 32px ${config.glow}`;
+            }
         },
         showClass: {
-            popup: 'swal2-show',
+            popup: 'swal2-show luxury-alert-show',
             backdrop: 'swal2-backdrop-show'
         },
         hideClass: {
-            popup: 'swal2-hide',
+            popup: 'swal2-hide luxury-alert-hide',
             backdrop: 'swal2-backdrop-hide'
-        },
-        backdrop: 'rgba(0, 0, 0, 0.6)'
+        }
     });
 }
 
@@ -384,92 +392,253 @@ window.utils = {
     formatDate,
     markFormDirty,
     markFormClean,
-    uiAlert  // Modern alert system
+    uiAlert
 };
 
 // Make uiAlert globally available for all scripts
 window.uiAlert = uiAlert;
 
 // ============================================
-// SWEETALERT2 CUSTOM STYLES
-// Ensures alerts always appear on top with modern appearance
+// LUXURY ALERT CUSTOM STYLES
+// Glassmorphism design with premium animations
 // ============================================
 (function() {
-    const swalStyles = document.createElement('style');
-    swalStyles.id = 'swal-custom-styles';
-    swalStyles.textContent = `
-        /* CRITICAL: Maximum z-index for SweetAlert2 container and backdrop */
-        /* This ensures alerts appear above ALL modals, forms, and overlays */
-        .swal2-container {
+    const luxuryStyles = document.createElement('style');
+    luxuryStyles.id = 'luxury-alert-styles';
+    luxuryStyles.textContent = `
+        /* ========================================
+           CRITICAL Z-INDEX - Always on top
+           ======================================== */
+        .swal2-container.luxury-alert-container {
             z-index: 999999 !important;
         }
         
-        .swal2-container.swal-top-container {
-            z-index: 999999 !important;
+        /* ========================================
+           LUXURY POPUP - Glassmorphism
+           ======================================== */
+        .luxury-alert-popup {
+            border-radius: 24px !important;
+            padding: 2.5rem 2rem !important;
+            min-width: 380px;
+            max-width: 480px;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                0 0 100px rgba(59, 130, 246, 0.1) !important;
         }
         
-        /* Modern popup styling */
-        .swal-modern-popup {
-            border-radius: 16px !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
-            padding: 2rem 1.5rem !important;
-            min-width: 340px;
-            max-width: 500px;
+        /* Title with premium font */
+        .luxury-alert-title {
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 1rem !important;
+            color: #f8fafc !important;
+            letter-spacing: -0.02em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
         }
         
-        .swal-modern-title {
-            font-size: 1.25rem !important;
-            font-weight: 600 !important;
-            margin-bottom: 0.5rem !important;
-            color: #f1f5f9 !important;
-        }
-        
-        .swal-modern-html {
+        /* Content wrapper */
+        .luxury-alert-html {
             margin: 0 !important;
             padding: 0 !important;
         }
         
-        /* Custom button styling */
-        .swal-modern-button {
-            padding: 0.75rem 2rem !important;
-            border-radius: 8px !important;
+        .luxury-alert-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        /* Icon wrapper with glow effect */
+        .luxury-icon-wrapper {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: luxuryIconPulse 2s ease-in-out infinite;
+        }
+        
+        .luxury-icon-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.4));
+            opacity: 0.5;
+            animation: luxuryIconRotate 3s linear infinite;
+        }
+        
+        .luxury-icon {
+            width: 56px;
+            height: 56px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.4));
+        }
+        
+        /* Message text */
+        .luxury-message {
+            color: #cbd5e1;
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: center;
+            max-width: 380px;
+            font-weight: 400;
+        }
+        
+        .luxury-message strong {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+        
+        /* Button container */
+        .luxury-alert-actions {
+            margin-top: 2rem !important;
+        }
+        
+        /* Premium button */
+        .luxury-alert-button {
+            padding: 0.875rem 2.5rem !important;
+            border-radius: 12px !important;
             font-weight: 600 !important;
-            font-size: 0.95rem !important;
+            font-size: 1rem !important;
             border: none !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
             color: white !important;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.02em;
         }
         
-        .swal-modern-button:hover {
-            transform: translateY(-1px) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        .luxury-alert-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
-        .swal-modern-button:active {
+        .luxury-alert-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5) !important;
+        }
+        
+        .luxury-alert-button:hover::before {
+            opacity: 1;
+        }
+        
+        .luxury-alert-button:active {
             transform: translateY(0) !important;
         }
         
-        .swal-modern-actions {
-            margin-top: 1.5rem !important;
+        /* ========================================
+           ANIMATIONS
+           ======================================== */
+        @keyframes luxuryIconPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
         
-        /* Mobile responsive */
+        @keyframes luxuryIconRotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .luxury-alert-show {
+            animation: luxurySlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+        }
+        
+        .luxury-alert-hide {
+            animation: luxurySlideOut 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards !important;
+        }
+        
+        @keyframes luxurySlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes luxurySlideOut {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+        }
+        
+        /* ========================================
+           MOBILE RESPONSIVE
+           ======================================== */
         @media (max-width: 500px) {
-            .swal-modern-popup {
+            .luxury-alert-popup {
                 min-width: 90vw !important;
-                padding: 1.5rem 1rem !important;
+                padding: 2rem 1.5rem !important;
+                border-radius: 20px !important;
             }
             
-            .swal-modern-title {
-                font-size: 1.1rem !important;
+            .luxury-alert-title {
+                font-size: 1.25rem !important;
+            }
+            
+            .luxury-icon-wrapper {
+                width: 72px;
+                height: 72px;
+            }
+            
+            .luxury-icon {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .luxury-message {
+                font-size: 0.95rem;
+            }
+            
+            .luxury-alert-button {
+                padding: 0.75rem 2rem !important;
+                font-size: 0.95rem !important;
+            }
+        }
+        
+        /* High-DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .luxury-alert-popup {
+                backdrop-filter: blur(30px) saturate(200%) !important;
+                -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
             }
         }
     `;
     
     // Inject styles only once
-    if (!document.getElementById('swal-custom-styles')) {
-        document.head.appendChild(swalStyles);
+    if (!document.getElementById('luxury-alert-styles')) {
+        document.head.appendChild(luxuryStyles);
     }
 })();
-
