@@ -185,7 +185,7 @@ function showAddToHomeScreen() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
         if (isIOS) {
-            showToast('💡 Tap Share → Add to Home Screen for quick access!', 'info', 5000);
+            showToast('Tip: Tap Share → Add to Home Screen for quick access!', 'info', 5000);
         }
     }
 }
@@ -197,7 +197,7 @@ setTimeout(showAddToHomeScreen, 10000);
 function copyToClipboard(text) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast('✅ Copied to clipboard!', 'success');
+            showToast('Copied to clipboard!', 'success');
         });
     } else {
         // Fallback for older browsers
@@ -209,7 +209,7 @@ function copyToClipboard(text) {
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        showToast('✅ Copied!', 'success');
+        showToast('Copied!', 'success');
     }
 }
 

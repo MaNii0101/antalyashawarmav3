@@ -34,7 +34,7 @@ function handleRestaurantLogin(event) {
             showRestaurantDashboard();
         }, 300);
     } else {
-        alert('❌ Invalid credentials!');
+        alert('✘ Invalid credentials!');
     }
 }
 
@@ -83,7 +83,7 @@ function showRestaurantDashboard() {
         if (visibleOrders.length === 0) {
             ordersContainer.innerHTML = `
                 <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
-                    <div style="font-size: 4rem;">📦</div>
+                    <div style="font-size: 4rem;">${svgIcon("package", 48, "icon-muted")}</div>
                     <p>No pending orders</p>
                 </div>
             `;
@@ -93,7 +93,7 @@ function showRestaurantDashboard() {
                 const user = userDatabase.find(u => u.email === order.userId);
                 const profilePic = user && user.profilePicture 
                     ? `<img src="${user.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
-                    : '👤';
+                    : svgIcon('user-circle', 40, 'icon-muted');
                 
                 return `
                 <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 4px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'accepted' ? '#10b981' : '#3b82f6'};">
@@ -108,16 +108,16 @@ function showRestaurantDashboard() {
                         </div>
                         <div style="flex: 1; font-size: 0.95rem;">
                             <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem;">${order.userName}</div>
-                            <div style="color: rgba(255,255,255,0.7);">📞 ${order.userPhone || 'N/A'}</div>
-                            <div style="color: rgba(255,255,255,0.7);">📍 ${order.address || 'N/A'}</div>
+                            <div style="color: rgba(255,255,255,0.7);">${svgIcon("phone", 14, "icon-teal")} ${order.userPhone || 'N/A'}</div>
+                            <div style="color: rgba(255,255,255,0.7);">${svgIcon("map-pin", 14, "icon-blue")} ${order.address || 'N/A'}</div>
                             ${user && user.dob ? `<div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">DOB: ${new Date(user.dob).toLocaleDateString()}</div>` : ''}
                         </div>
                     </div>
                     
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">🕐 ${new Date(order.createdAt).toLocaleString()}</div>
+                    <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">${svgIcon("clock", 14, "icon-muted")} ${new Date(order.createdAt).toLocaleString()}</div>
                     
                     <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.2)' : order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                        ${order.paymentMethod === 'cash' ? '💵 CASH' : order.paymentMethod === 'applepay' ? ' Apple Pay' : '💳 CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
+                        ${order.paymentMethod === 'cash' ? svgIcon('cash', 14, 'icon-success') + ' CASH' : order.paymentMethod === 'applepay' ? ' Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
                     </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -136,19 +136,19 @@ function showRestaurantDashboard() {
                     
                     ${order.status === 'pending' ? `
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                            <button onclick="acceptOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">✅ Accept</button>
-                            <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">❌ Reject</button>
+                            <button onclick="acceptOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("check-circle", 14, "icon-success")} Accept</button>
+                            <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("x-circle", 14, "icon-danger")} Reject</button>
                         </div>
                     ` : order.status === 'accepted' ? `
                         <div style="display: grid; gap: 0.5rem;">
                             <button onclick="notifyAllAvailableDrivers('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                                📢 Notify All Drivers
+                                ${svgIcon("megaphone", 14)} Notify All Drivers
                             </button>
-                            <button onclick="assignDriver('${order.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">🚗 Assign Specific Driver</button>
+                            <button onclick="assignDriver('${order.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("car", 14, "icon-teal")} Assign Driver</button>
                         </div>
                     ` : order.status === 'driver_assigned' || order.status === 'out_for_delivery' ? `
                         <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
-                            <div style="font-weight: 600; color: #10b981;">🚗 Driver: ${order.driverName || 'Assigned'}</div>
+                            <div style="font-weight: 600; color: #10b981;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
                             ${order.estimatedTime ? `<div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">ETA: ${order.estimatedTime} mins</div>` : ''}
                         </div>
                     ` : ''}
@@ -174,7 +174,7 @@ function acceptOrder(orderId) {
     
     // FIX: Guard against cancelled orders
     if (order.status === 'cancelled') {
-        alert('❌ Cannot accept: This order was cancelled by the user.');
+        alert('✘ Cannot accept: This order was cancelled by the user.');
         showRestaurantDashboard(); // Refresh view to remove it
         return;
     }
@@ -186,7 +186,7 @@ function acceptOrder(orderId) {
     // Send notification to customer
     addNotification(order.userId, {
         type: 'order_accepted',
-        title: '✅ Order Accepted!',
+        title: 'Order Accepted!',
         message: `Your order #${orderId} has been accepted and is being prepared.`,
         orderId: orderId
     });
@@ -194,7 +194,7 @@ function acceptOrder(orderId) {
     playNotificationSound();
     showRestaurantDashboard();
     
-    alert(`✅ Order #${orderId} accepted!\n\nClick "Notify All Drivers" to alert available drivers.`);
+    alert(`✓ Order #${orderId} accepted!\n\nClick "Notify All Drivers" to alert available drivers.`);
 }
 
 function notifyAllAvailableDrivers(orderId) {
@@ -202,14 +202,14 @@ function notifyAllAvailableDrivers(orderId) {
     if (!order) return;
     
     if (order.driverId) {
-        alert('⚠️ This order already has a driver assigned!');
+        alert('⚠ This order already has a driver assigned!');
         return;
     }
     
     const availableDrivers = window.driverSystem.getAvailable();
     
     if (availableDrivers.length === 0) {
-        alert('⚠️ No available drivers at the moment!');
+        alert('⚠ No available drivers at the moment!');
         return;
     }
     
@@ -232,9 +232,9 @@ function notifyAllAvailableDrivers(orderId) {
     // Save to localStorage
     localStorage.setItem('availableOrdersForDrivers', JSON.stringify(window.availableOrdersForDrivers));
     
-    let notifiedList = '📢 Notification sent to available drivers:\n\n';
+    let notifiedList = 'Notification sent to available drivers:\n\n';
     availableDrivers.forEach(driver => {
-        notifiedList += `✅ ${driver.name} (${driver.phone})\n`;
+        notifiedList += `${driver.name} (${driver.phone})\n`;
     });
     
     playNotificationSound();
@@ -267,7 +267,7 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
 function driverAcceptOrder(orderId) {
     const driverId = sessionStorage.getItem('loggedInDriver');
     if (!driverId) {
-        alert('❌ Please login first');
+        alert('✘ Please login first');
         return;
     }
     
@@ -277,13 +277,13 @@ function driverAcceptOrder(orderId) {
     // Check if order is still available
     const availableOrder = window.availableOrdersForDrivers?.[orderId];
     if (!availableOrder) {
-        alert('❌ This order is no longer available!');
+        alert('✘ This order is no longer available!');
         showDriverDashboard();
         return;
     }
     
     if (availableOrder.claimedBy && availableOrder.claimedBy !== driverId) {
-        alert('❌ Sorry, another driver already accepted this order!');
+        alert('✘ Sorry, another driver already accepted this order!');
         showDriverDashboard();
         return;
     }
@@ -291,7 +291,7 @@ function driverAcceptOrder(orderId) {
     // Find the actual order
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) {
-        alert('❌ Order not found!');
+        alert('✘ Order not found!');
         return;
     }
     
@@ -333,8 +333,8 @@ function driverAcceptOrder(orderId) {
     // Notify customer with driver info and ETA
     addNotification(order.userId, {
         type: 'driver_on_way',
-        title: '🚗 Driver On The Way!',
-        message: `${driver.name} is delivering your order #${orderId}.\n📞 ${driver.phone}\n⏱️ Estimated arrival: ${estimatedTime} minutes\n📍 Distance: ${distanceMiles.toFixed(1)} miles`,
+        title: 'Driver On The Way!',
+        message: `${driver.name} is delivering your order #${orderId}.\nPhone: ${driver.phone}\nEst. Estimated arrival: ${estimatedTime} minutes\nDistance: Distance: ${distanceMiles.toFixed(1)} miles`,
         orderId: orderId,
         driverName: driver.name,
         driverPhone: driver.phone,
@@ -343,7 +343,7 @@ function driverAcceptOrder(orderId) {
     
     playNotificationSound();
     
-    alert(`✅ Order #${orderId} accepted!\n\n📍 Distance: ${distanceMiles.toFixed(1)} miles\n⏱️ Estimated time: ${estimatedTime} minutes\n\nClick "Directions" to navigate to customer.`);
+    alert(`✓ Order #${orderId} accepted!\n\nDistance: Distance: ${distanceMiles.toFixed(1)} miles\nEst. Estimated time: ${estimatedTime} minutes\n\nClick "Directions" to navigate to customer.`);
     
     showDriverDashboard();
 }
@@ -369,13 +369,13 @@ function rejectOrder(orderId) {
     // 4. Send notification to customer
     addNotification(orderHistory.find(o => o.id === orderId)?.userId, {
         type: 'order_rejected',
-        title: '❌ Order Rejected',
+        title: 'Order Rejected',
         message: `Your order #${orderId} has been rejected.${reason ? ' Reason: ' + reason : ''}`,
         orderId: orderId
     });
     
     showRestaurantDashboard();
-    alert(`❌ Order #${orderId} rejected`);
+    alert(`✘ Order #${orderId} rejected`);
 }
 
 function assignDriver(orderId) {
@@ -385,14 +385,14 @@ function assignDriver(orderId) {
     const availableDrivers = window.driverSystem.getAvailable();
     
     if (availableDrivers.length === 0) {
-        alert('❌ No available drivers at the moment!\n\nAll drivers are either offline or inactive.');
+        alert('✘ No available drivers at the moment!\n\nAll drivers are either offline or inactive.');
         return;
     }
     
     // Create a nice selection dialog
-    let driverList = '🚗 Available Drivers:\n\n';
+    let driverList = 'Available Drivers:\n\n';
     availableDrivers.forEach((d, i) => {
-        driverList += `${i + 1}. ${d.name}\n   📦 ${d.deliveries} deliveries | ⭐ ${d.rating}\n   📞 ${d.phone}\n\n`;
+        driverList += `${i + 1}. ${d.name}\n   ${d.deliveries} deliveries | Rating: ${d.rating}\n   Tel: ${d.phone}\n\n`;
     });
     
     const selection = prompt(driverList + 'Enter driver number (or 0 to notify all):');
@@ -406,7 +406,7 @@ function assignDriver(orderId) {
     
     const driverIndex = parseInt(selection) - 1;
     if (isNaN(driverIndex) || driverIndex < 0 || driverIndex >= availableDrivers.length) {
-        alert('❌ Invalid selection');
+        alert('✘ Invalid selection');
         return;
     }
     
@@ -420,14 +420,14 @@ function assignDriver(orderId) {
     // Send notification to customer
     addNotification(order.userId, {
         type: 'driver_assigned',
-        title: '🚗 Driver Assigned!',
+        title: 'Driver Assigned!',
         message: `${selectedDriver.name} is on the way with your order #${orderId}.`,
         orderId: orderId
     });
     
     playNotificationSound();
     showRestaurantDashboard();
-    alert(`✅ Driver ${selectedDriver.name} assigned to order #${orderId}\n\n📞 Driver phone: ${selectedDriver.phone}`);
+    alert(`✓ Driver ${selectedDriver.name} assigned to order #${orderId}\n\nPhone: Driver phone: ${selectedDriver.phone}`);
 }
 
 function completeOrder(orderId) {
@@ -451,14 +451,14 @@ function completeOrder(orderId) {
     // Send notification to customer
     addNotification(order.userId, {
         type: 'order_completed',
-        title: '✅ Order Delivered!',
+        title: 'Order Delivered!',
         message: `Your order #${orderId} has been delivered. Enjoy your meal!`,
         orderId: orderId
     });
     
     showRestaurantDashboard();
     playNotificationSound();
-    alert(`✅ Order #${orderId} completed!`);
+    alert(`✓ Order #${orderId} completed!`);
 }
 
 function closeRestaurantDashboard() {
@@ -481,7 +481,7 @@ function closeRestaurantDashboard() {
 // ========================================
 function showDriverManagementModal() {
     if (!isOwnerLoggedIn) {
-        alert('❌ Owner access required!');
+        alert('✘ Owner access required!');
         return;
     }
     
@@ -495,7 +495,7 @@ function toggleAddDriverForm() {
     
     if (formContent && toggleIcon) {
         formContent.classList.toggle('collapsed');
-        toggleIcon.textContent = formContent.classList.contains('collapsed') ? '▶' : '▼';
+        toggleIcon.textContent = formContent.classList.contains('collapsed') ? svgIcon('chevron-right', 14) : svgIcon('chevron-down', 14);
     }
 }
 
@@ -508,7 +508,7 @@ function renderDriverList() {
     if (allDrivers.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚗</div>
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${svgIcon("car", 40, "icon-teal")}</div>
                 <p style="margin: 0;">No drivers registered yet</p>
             </div>
         `;
@@ -518,8 +518,9 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-            : '🚗';
-        const isActive = driver.active;
+:        `<img src="assets/delivery/driver-motorcycle.svg" 
+        alt="Driver" 
+        class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;
         
         return `
@@ -532,23 +533,23 @@ function renderDriverList() {
                     <div class="driver-card-name">${driver.name}</div>
                     <div class="driver-card-code">Code: <strong>${driver.secretCode}</strong></div>
                     <div class="driver-card-badges">
-                        <span class="driver-badge ${isActive ? 'active' : 'inactive'}">${isActive ? '🟢 Active' : '🔴 Inactive'}</span>
-                        <span class="driver-badge ${isAvailable ? 'available' : 'unavailable'}">${isAvailable ? '✅ Available' : '⏸️ Busy'}</span>
+                        <span class="driver-badge ${isActive ? 'active' : 'inactive'}">${isActive ? svgIcon('circle-green', 12) + ' Active' : svgIcon('circle-red', 12) + ' Inactive'}</span>
+                        <span class="driver-badge ${isAvailable ? 'available' : 'unavailable'}">${isAvailable ? svgIcon('check-circle', 12, 'icon-success') + ' Available' : svgIcon('pause', 12, 'icon-warning') + ' Busy'}</span>
                     </div>
                 </div>
             </div>
             
             <div class="driver-stats-row">
-                <div>📧 ${driver.email}</div>
-                <div>📞 ${driver.phone}</div>
-                <div>📦 ${driver.deliveries || 0} deliveries</div>
-                <div>⭐ ${(driver.rating || 5.0).toFixed(1)} rating</div>
+                <div>${svgIcon("mail", 12, "icon-blue")} ${driver.email}</div>
+                <div>${svgIcon("phone", 12, "icon-teal")} ${driver.phone}</div>
+                <div>${svgIcon("package", 12, "icon-orange")} ${driver.deliveries || 0} deliveries</div>
+                <div>${svgIcon("star", 12)} ${(driver.rating || 5.0).toFixed(1)} rating</div>
             </div>
             
             <div class="driver-card-actions">
-                <button onclick="editDriver('${driver.id}')" class="driver-action-btn edit">✏️ Edit</button>
-                <button onclick="toggleDriverStatus('${driver.id}')" class="driver-action-btn toggle ${isActive ? '' : 'activate'}">${isActive ? '⏸️ Disable' : '▶️ Enable'}</button>
-                <button onclick="deleteDriver('${driver.id}')" class="driver-action-btn delete">🗑️ Remove</button>
+                <button onclick="editDriver('${driver.id}')" class="driver-action-btn edit">${svgIcon("edit", 12)} Edit</button>
+                <button onclick="toggleDriverStatus('${driver.id}')" class="driver-action-btn toggle ${isActive ? '' : 'activate'}">${isActive ? svgIcon('pause', 12) + ' Disable' : svgIcon('play', 12) + ' Enable'}</button>
+                <button onclick="deleteDriver('${driver.id}')" class="driver-action-btn delete">${svgIcon("trash", 12, "icon-danger")} Remove</button>
             </div>
         </div>
     `}).join('');
@@ -581,7 +582,7 @@ function editDriver(driverId) {
         if (driver.profilePicture) {
             preview.innerHTML = `<img src="${driver.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">`;
         } else {
-            preview.innerHTML = '🚗';
+            preview.innerHTML = svgIcon('car', 40, 'icon-teal');
         }
         preview.dataset.newPic = '';
     }
@@ -629,7 +630,7 @@ function saveDriverChanges() {
     const newPic = preview.dataset.newPic;
     
     if (!name || !email || !phone) {
-        alert('❌ Name, email and phone are required');
+        alert('✘ Name, email and phone are required');
         return;
     }
     
@@ -656,7 +657,7 @@ function saveDriverChanges() {
     renderDriverList();
     updateOwnerStats();
     
-    alert('✅ Driver updated successfully!');
+    alert('✓ Driver updated successfully!');
 }
 
 function toggleDriverStatus(driverId) {
@@ -667,7 +668,7 @@ function toggleDriverStatus(driverId) {
     window.driverSystem.update(driverId, { active: newStatus, available: newStatus });
     
     renderDriverList();
-    alert(`✅ Driver ${driver.name} is now ${newStatus ? 'Active' : 'Inactive'}`);
+    alert(`✓ Driver ${driver.name} is now ${newStatus ? 'Active' : 'Inactive'}`);
 }
 
 function addNewDriver() {
@@ -681,13 +682,13 @@ function addNewDriver() {
     const profilePic = preview.dataset ? preview.dataset.newPic : null;
     
     if (!name || !email || !phone || !password) {
-        alert('❌ Please fill in name, email, phone and password');
+        alert('✘ Please fill in name, email, phone and password');
         return;
     }
     
     // Check if email already exists
     if (window.driverSystem.getByEmail(email)) {
-        alert('❌ A driver with this email already exists');
+        alert('✘ A driver with this email already exists');
         return;
     }
     
@@ -724,7 +725,7 @@ function addNewDriver() {
     document.getElementById('newDriverBirth').value = '';
     document.getElementById('newDriverGender').value = '';
     if (preview) {
-        preview.innerHTML = '🚗';
+        preview.innerHTML = svgIcon('car', 40, 'icon-teal');
         preview.dataset.newPic = '';
     }
     
@@ -732,7 +733,7 @@ function addNewDriver() {
     renderDriverList();
     updateOwnerStats();
     
-    alert(`✅ Driver ${name} added!\n\nSecret Code: ${secretCode}\nPassword: ${password}\n\nDriver can login with either the code or email+password.`);
+    alert(`✓ Driver ${name} added!\n\nSecret Code: ${secretCode}\nPassword: ${password}\n\nDriver can login with either the code or email+password.`);
 }
 
 function deleteDriver(driverId) {
@@ -742,7 +743,7 @@ function deleteDriver(driverId) {
     renderDriverList();
     updateOwnerStats();
     
-    alert('✅ Driver removed');
+    alert('✓ Driver removed');
 }
 
 // ========================================
@@ -750,7 +751,7 @@ function deleteDriver(driverId) {
 // ========================================
 function showBankSettingsModal() {
     if (!isOwnerLoggedIn) {
-        alert('❌ Owner access required!');
+        alert('✘ Owner access required!');
         return;
     }
     
@@ -785,7 +786,7 @@ function saveBankSettings(event) {
     localStorage.setItem('ownerBankDetails', JSON.stringify(ownerBankDetails));
     
     closeModal('bankSettingsModal');
-    alert('✅ Bank details saved successfully!');
+    alert('✓ Bank details saved successfully!');
 }
 
 // Load bank details on init
@@ -811,7 +812,7 @@ function handleOwnerLogin() {
     if (email !== OWNER_CREDENTIALS.email || 
         password !== OWNER_CREDENTIALS.password || 
         pin !== OWNER_CREDENTIALS.pin) {
-        alert('❌ Invalid credentials');
+        alert('✘ Invalid credentials');
         return;
     }
     
@@ -839,7 +840,7 @@ function handleOwnerLogin() {
     
     updateOwnerStats();
     
-    alert('✅ Owner access granted!');
+    alert('✓ Owner access granted!');
     
 }
 // Add to your DOMContentLoaded event
@@ -931,7 +932,7 @@ function updateOwnerStats() {
                         const key = item.name || item.id;
                         if (key) {
                             if (!itemCounts[key]) {
-                                itemCounts[key] = { name: item.name, icon: item.icon || '🍽️', count: 0 };
+                                itemCounts[key] = { name: item.name, icon: item.icon || 'utensils', count: 0 };
                             }
                             itemCounts[key].count += (item.quantity || 1);
                         }
@@ -984,14 +985,14 @@ function renderMenuManagerList() {
     container.innerHTML = `
         <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
             <button onclick="openAddCategory()" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                ➕ Add Category
+                ${svgIcon("plus", 14, "icon-success")} Add Category
             </button>
             <button onclick="openAddFood()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                🍽️ Add Food Item
+                ${svgIcon("utensils", 14, "icon-accent")} Add Food Item
             </button>
         </div>
         
-        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">💡 Use ⬆️ ⬇️ arrows to reorder categories</p>
+        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">${svgIcon("lightbulb", 14, "icon-warning")} Use arrows to reorder categories</p>
         
         ${categoryKeys.map((catKey, index) => {
             const cat = categories[catKey];
@@ -1000,15 +1001,15 @@ function renderMenuManagerList() {
                 <div style="background: rgba(139,92,246,0.2); padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.8rem;">
                         <div style="display: flex; flex-direction: column; gap: 0.2rem;">
-                            <button onclick="moveCategoryUp('${catKey}')" ${index === 0 ? 'disabled' : ''} style="background: ${index === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === 0 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === 0 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">⬆️</button>
-                            <button onclick="moveCategoryDown('${catKey}')" ${index === categoryKeys.length - 1 ? 'disabled' : ''} style="background: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === categoryKeys.length - 1 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">⬇️</button>
+                            <button onclick="moveCategoryUp('${catKey}')" ${index === 0 ? 'disabled' : ''} style="background: ${index === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === 0 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === 0 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">${svgIcon("arrows-up-down", 12)} ↑</button>
+                            <button onclick="moveCategoryDown('${catKey}')" ${index === categoryKeys.length - 1 ? 'disabled' : ''} style="background: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === categoryKeys.length - 1 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">↓</button>
                         </div>
                         ${cat.image ? `<img src="${cat.image}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">` : `<span style="font-size: 1.5rem;">${cat.icon}</span>`}
                         <span style="font-weight: 700;">${cat.name}</span>
                         <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">(${menuData[catKey]?.length || 0} items)</span>
                     </div>
                     <button onclick="openEditCategory('${catKey}')" style="background: rgba(255,255,255,0.1); color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
-                        ✏️ Edit
+                        ${svgIcon("edit",12)} Edit
                     </button>
                 </div>
                 
@@ -1024,13 +1025,13 @@ function renderMenuManagerList() {
                             </div>
                             <div style="display: flex; gap: 0.3rem;">
                                 <button onclick="toggleFoodAvailability('${catKey}', ${item.id})" style="background: ${item.available !== false ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${item.available !== false ? '#10b981' : '#ef4444'}; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                    ${item.available !== false ? '✅' : '❌'}
+                                    ${item.available !== false ? svgIcon('check-circle', 14, 'icon-success') : svgIcon('x-circle', 14, 'icon-danger')}
                                 </button>
                                 <button onclick="openEditFood('${catKey}', ${item.id})" style="background: rgba(59,130,246,0.2); color: #3b82f6; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                    ✏️
+                                    ${svgIcon("edit",12)}
                                 </button>
                                 <button onclick="deleteFood('${catKey}', ${item.id})" style="background: rgba(239,68,68,0.2); color: #ef4444; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                    🗑️
+                                    ${svgIcon("trash",12,"icon-danger")}
                                 </button>
                             </div>
                         </div>
@@ -1131,7 +1132,7 @@ function openAddFood() {
         document.getElementById('foodEditCategory').value = '';
         document.getElementById('foodEditName').value = '';
         document.getElementById('foodEditPrice').value = '';
-        document.getElementById('foodEditIcon').value = '🍽️';
+        document.getElementById('foodEditIcon').value = 'utensils';
         document.getElementById('foodEditDesc').value = '';
         document.getElementById('foodEditOptions').value = '';
         document.getElementById('foodEditImage').value = '';
@@ -1153,7 +1154,7 @@ function openEditFood(catKey, foodId) {
         document.getElementById('foodEditCategory').value = catKey;
         document.getElementById('foodEditName').value = item.name;
         document.getElementById('foodEditPrice').value = item.price;
-        document.getElementById('foodEditIcon').value = item.icon || '🍽️';
+        document.getElementById('foodEditIcon').value = item.icon || 'utensils';
         document.getElementById('foodEditDesc').value = item.desc || '';
         document.getElementById('foodEditOptions').value = item.options ? item.options.map(o => `${o.name}:${o.price}`).join('\n') : '';
         document.getElementById('foodEditImage').value = item.image || '';
@@ -1166,13 +1167,13 @@ function saveFoodItem() {
     const category = document.getElementById('foodEditCategory').value;
     const name = document.getElementById('foodEditName').value.trim();
     const price = parseFloat(document.getElementById('foodEditPrice').value);
-    const icon = document.getElementById('foodEditIcon').value || '🍽️';
+    const icon = document.getElementById('foodEditIcon').value || 'utensils';
     const desc = document.getElementById('foodEditDesc').value.trim();
     const optionsText = document.getElementById('foodEditOptions').value.trim();
     const image = document.getElementById('foodEditImage').value.trim();
     
     if (!category || !name || isNaN(price)) {
-        alert('❌ Please fill category, name and price');
+        alert('✘ Please fill category, name and price');
         return;
     }
     
@@ -1221,7 +1222,7 @@ function saveFoodItem() {
     renderMenuManagerList();
     renderCategories();
     displayMenu(currentCategory);
-    alert('✅ Food item saved!');
+    alert('✓ Food item saved!');
 }
 
 function deleteFood(catKey, foodId) {
@@ -1263,7 +1264,7 @@ function openAddCategory() {
         document.getElementById('categoryEditKey').value = '';
         document.getElementById('categoryEditKey').disabled = false;
         document.getElementById('categoryEditName').value = '';
-        document.getElementById('categoryEditIcon').value = '🍽️';
+        document.getElementById('categoryEditIcon').value = 'utensils';
         document.getElementById('categoryEditImage').value = '';
         document.getElementById('categoryEditImagePreview').innerHTML = '';
         document.getElementById('deleteCategoryBtn').style.display = 'none';
@@ -1283,7 +1284,7 @@ function openEditCategory(catKey) {
         document.getElementById('categoryEditKey').value = catKey;
         document.getElementById('categoryEditKey').disabled = true;
         document.getElementById('categoryEditName').value = cat.name;
-        document.getElementById('categoryEditIcon').value = cat.icon || '🍽️';
+        document.getElementById('categoryEditIcon').value = cat.icon || 'utensils';
         document.getElementById('categoryEditImage').value = cat.image || '';
         document.getElementById('categoryEditImagePreview').innerHTML = cat.image ? `<img src="${cat.image}" style="max-width: 100px; max-height: 100px; border-radius: 8px;">` : '';
         document.getElementById('deleteCategoryBtn').style.display = 'block';
@@ -1323,7 +1324,7 @@ function deleteCategory() {
     }
     
     updateFavoritesBadge();
-    alert('✅ Category deleted');
+    alert('✓ Category deleted');
 }
 
 // Image upload handlers
@@ -1332,7 +1333,7 @@ function handleFoodImageUpload(event) {
     if (!file) return;
     
     if (file.size > 2 * 1024 * 1024) {
-        alert('❌ Image must be less than 2MB');
+        alert('✘ Image must be less than 2MB');
         return;
     }
     
@@ -1349,7 +1350,7 @@ function handleCategoryImageUpload(event) {
     if (!file) return;
     
     if (file.size > 2 * 1024 * 1024) {
-        alert('❌ Image must be less than 2MB');
+        alert('✘ Image must be less than 2MB');
         return;
     }
     
@@ -1364,11 +1365,11 @@ function handleCategoryImageUpload(event) {
 function saveCategory() {
     const key = document.getElementById('categoryEditKey').value.trim().toLowerCase().replace(/\s+/g, '_');
     const name = document.getElementById('categoryEditName').value.trim();
-    const icon = document.getElementById('categoryEditIcon').value || '🍽️';
+    const icon = document.getElementById('categoryEditIcon').value || 'utensils';
     const image = document.getElementById('categoryEditImage').value.trim();
     
     if (!key || !name) {
-        alert('❌ Please fill key and name');
+        alert('✘ Please fill key and name');
         return;
     }
     
@@ -1380,7 +1381,7 @@ function saveCategory() {
     } else {
         // Add new
         if (categories[key]) {
-            alert('❌ Category key already exists');
+            alert('✘ Category key already exists');
             return;
         }
         categories[key] = { name, icon, image };
@@ -1391,7 +1392,7 @@ function saveCategory() {
     closeCategoryEditor();
     renderMenuManagerList();
     renderCategories();
-    alert('✅ Category saved!');
+    alert('✓ Category saved!');
 }
 
 function closeCategoryEditor() {

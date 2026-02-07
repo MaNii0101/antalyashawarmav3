@@ -31,7 +31,7 @@ const SVG_ICONS = {
     phone: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
     
     // Transport & Delivery
-    car: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>',
+    car: '<img class="svg-icon car-icon" src="assets/delivery/driver-motorcycle.svg" alt="driver" />',
     motorcycle: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 12c-.93 0-1.78.28-2.5.76V11c0-1.1-.9-2-2-2h-2V7h1c.55 0 1-.45 1-1s-.45-1-1-1h-4c-.55 0-1 .45-1 1s.45 1 1 1h1v2H8c-1.1 0-2 .9-2 2v1.76c-.72-.48-1.57-.76-2.5-.76C1.57 12 0 13.57 0 15.5S1.57 19 3.5 19s3.5-1.57 3.5-3.5c0-.59-.15-1.15-.41-1.64L8 12.2V15c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-2.8l1.41 1.66c-.26.49-.41 1.05-.41 1.64 0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5zm-16 5c-.83 0-1.5-.67-1.5-1.5S2.67 14 3.5 14s1.5.67 1.5 1.5S4.33 17 3.5 17zm16 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>',
     
     // Checks & Confirmations  
@@ -77,19 +77,19 @@ function handleDriverCodeLogin(event) {
     const code = document.getElementById('driverSecretCode').value.trim().toUpperCase();
     
     if (!code) {
-        alert('❌ Please enter your secret code!');
+        alert('✘ Please enter your secret code!');
         return;
     }
     
     const driver = window.driverSystem.getByCode(code);
     
     if (!driver) {
-        alert('❌ Invalid secret code!');
+        alert('✘ Invalid secret code!');
         return;
     }
     
     if (!driver.active) {
-        alert('❌ Your account is inactive. Please contact management.');
+        alert('✘ Your account is inactive. Please contact management.');
         return;
     }
     
@@ -103,24 +103,24 @@ function handleDriverEmailPasswordLogin(event) {
     const password = document.getElementById('driverLoginPassword').value;
     
     if (!email || !password) {
-        alert('❌ Please enter email and password!');
+        alert('✘ Please enter email and password!');
         return;
     }
     
     const driver = window.driverSystem.getByEmail(email);
     
     if (!driver) {
-        alert('❌ Driver not found with this email!');
+        alert('✘ Driver not found with this email!');
         return;
     }
     
     if (!driver.active) {
-        alert('❌ Your account is inactive. Please contact management.');
+        alert('✘ Your account is inactive. Please contact management.');
         return;
     }
     
     if (driver.password !== password) {
-        alert('❌ Incorrect password!');
+        alert('✘ Incorrect password!');
         return;
     }
     
@@ -167,7 +167,7 @@ function showDriverDashboard(driver = null) {
     }
     
     if (!driver) {
-        alert('❌ Driver session expired. Please login again.');
+        alert('✘ Driver session expired. Please login again.');
         logoutDriver();
         return;
     }
@@ -216,7 +216,7 @@ function showDriverDashboard(driver = null) {
                     <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                         <h2 style="margin: 0; color: white; font-size: 1.3rem; font-weight: 700;">${driver.name}</h2>
                         <span style="background: ${driver.available ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: white;">
-                            ${driver.available ? '● ONLINE' : '● OFFLINE'}
+                            ${driver.available ? svgIcon('circle-green', 10) + ' ONLINE' : svgIcon('circle-red', 10) + ' OFFLINE'}
                         </span>
                     </div>
                     <div style="display: flex; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.95rem; color: rgba(255,255,255,0.95); align-items: center;">
@@ -352,12 +352,12 @@ function callCustomer(phone) {
     if (phone && phone !== 'N/A') {
         window.location.href = 'tel:' + phone;
     } else {
-        alert('❌ Customer phone number not available');
+        alert('✘ Customer phone number not available');
     }
 }
 
 function confirmLogoutDriver() {
-    if (confirm('🚪 Are you sure you want to logout?\n\nYou will stop receiving new orders.')) {
+    if (confirm('Are you sure you want to logout?\n\nYou will stop receiving new orders.')) {
         logoutDriver();
     }
 }
@@ -373,18 +373,18 @@ function toggleDriverAvailability() {
     window.driverSystem.update(driverId, { available: newStatus });
     
     showDriverDashboard();
-    alert(`✅ You are now ${newStatus ? 'Online - Ready for deliveries!' : 'Offline'}`);
+    alert(`✓ You are now ${newStatus ? 'Online - Ready for deliveries!' : 'Offline'}`);
 }
 
 function updateDriverLocation() {
     if (!navigator.geolocation) {
-        alert('❌ Geolocation is not supported by your browser');
+        alert('✘ Geolocation is not supported by your browser');
         return;
     }
     
     const driverId = sessionStorage.getItem('loggedInDriver');
     if (!driverId) {
-        alert('❌ Please login first');
+        alert('✘ Please login first');
         return;
     }
     
@@ -406,11 +406,11 @@ function updateDriverLocation() {
             liveLocations[driverId] = locationData;
             localStorage.setItem('driverLiveLocations', JSON.stringify(liveLocations));
             
-            alert('✅ Location updated!\n\nCustomers can now see your live location.');
+            alert('✓ Location updated!\n\nCustomers can now see your live location.');
             showDriverDashboard();
         },
         (error) => {
-            alert('❌ Unable to get your location: ' + error.message);
+            alert('✘ Unable to get your location: ' + error.message);
         },
         {
             enableHighAccuracy: true,
@@ -495,7 +495,7 @@ function openDirections(address, lat, lng) {
     }
     
     if (!destination) {
-        alert('❌ No delivery address available');
+        alert('✘ No delivery address available');
         return;
     }
     
@@ -532,7 +532,7 @@ function markOrderDelivered(orderId) {
     // Notify customer (without driver details for completed orders)
     addNotification(order.userId, {
         type: 'order_completed',
-        title: '🎉 Order Delivered!',
+        title: 'Order Delivered!',
         message: `Your order #${orderId} has been delivered. Enjoy your meal!`,
         orderId: orderId
     });
@@ -541,7 +541,7 @@ function markOrderDelivered(orderId) {
     playNotificationSound();
     showDriverDashboard();
     
-    alert('✅ Order marked as delivered!');
+    alert('✓ Order marked as delivered!');
     
     // Trigger rating popup for customer if they're logged in
     if (currentUser && currentUser.email === order.userId) {
@@ -622,18 +622,18 @@ let trackingOrderId = null;
 function trackDriver(orderId) {
     const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
     if (!order) {
-        alert('❌ Order not found');
+        alert('✘ Order not found');
         return;
     }
     
     if (!order.driverId) {
-        alert('❌ No driver assigned to this order yet');
+        alert('✘ No driver assigned to this order yet');
         return;
     }
     
     // Check if order is still out for delivery
     if (order.status === 'completed') {
-        alert('✅ This order has been delivered!');
+        alert('✓ This order has been delivered!');
         return;
     }
     
@@ -659,23 +659,23 @@ function trackDriver(orderId) {
         infoPanel.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                 <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; border: 3px solid #10b981;">
-                    ${driverImage ? `<img src="${driverImage}" style="width: 100%; height: 100%; object-fit: cover;">` : '🚗'}
+                    ${driverImage ? `<img src="${driverImage}" style="width: 100%; height: 100%; object-fit: cover;">` : svgIcon('driver-marker', 48)}
                 </div>
                 <div style="flex: 1;">
                     <div style="font-weight: 700; color: white; font-size: 1.1rem;">${order.driverName || 'Driver'}</div>
-                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">📞 ${order.driverPhone || 'N/A'}</div>
-                    ${driver?.rating ? `<div style="color: #f59e0b; font-size: 0.85rem;">⭐ ${driver.rating.toFixed(1)} rating</div>` : ''}
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">${svgIcon("phone", 14, "icon-teal")} ${order.driverPhone || 'N/A'}</div>
+                    ${driver?.rating ? `<div style="color: #f59e0b; font-size: 0.85rem;">${svgIcon("star", 14)} ${driver.rating.toFixed(1)} rating</div>` : ''}
                 </div>
                 <div style="text-align: right;">
-                    ${order.distanceMiles ? `<div style="color: #3b82f6; font-weight: 700; font-size: 1.1rem;">📍 ${order.distanceMiles} mi</div>` : ''}
+                    ${order.distanceMiles ? `<div style="color: #3b82f6; font-weight: 700; font-size: 1.1rem;">${svgIcon("map-pin", 14, "icon-blue")} ${order.distanceMiles} mi</div>` : ''}
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
                 <a href="tel:${order.driverPhone}" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; text-align: center; text-decoration: none;">
-                    📞 Call Driver
+                    ${svgIcon("phone", 14, "icon-teal")} Call Driver
                 </a>
                 <button onclick="refreshDriverLocation()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600;">
-                    🔄 Refresh
+                    ${svgIcon("refresh", 14, "icon-blue")} Refresh
                 </button>
             </div>
         `;
@@ -761,7 +761,7 @@ function initTrackingMap(order, driver) {
             strokeWeight: 3
         },
         label: {
-            text: '🏠',
+            text: '',
             fontSize: '16px'
         }
     });
@@ -832,7 +832,7 @@ function startLocationUpdates(order, driver) {
             // Auto-close tracking modal if order is done
             if (currentOrder && (currentOrder.status === 'completed' || currentOrder.status === 'cancelled')) {
                 closeTrackingModal();
-                alert(currentOrder.status === 'completed' ? '🎉 Your order has been delivered!' : '❌ Order was cancelled');
+                alert(currentOrder.status === 'completed' ? 'Your order has been delivered!' : 'Order was cancelled');
             }
             return;
         }
@@ -891,7 +891,7 @@ function refreshDriverLocation() {
             initTrackingMap(order, driver);
         }
     }
-    alert('📍 Location refreshed!');
+    alert('Location refreshed!');
 }
 
 function closeTrackingModal() {
@@ -927,7 +927,7 @@ function openDriverRating(orderId, driverId, driverName, autoPopup = false) {
     const order = orderHistory.find(o => o.id === orderId);
     if (order && order.driverRated) {
         if (!autoPopup) {
-            alert(`⚠️ You have already rated this driver!\n\nRating: ${order.driverRating}/5 stars`);
+            alert(`⚠ You have already rated this driver!\n\nRating: ${order.driverRating}/5 stars`);
         }
         return;
     }
@@ -945,7 +945,7 @@ function openDriverRating(orderId, driverId, driverName, autoPopup = false) {
         if (driver && driver.profilePic) {
             driverImageContainer.innerHTML = `<img src="${driver.profilePic}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f59e0b;">`;
         } else {
-            driverImageContainer.innerHTML = `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">🚗</div>`;
+            driverImageContainer.innerHTML = `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">${svgIcon('user-circle', 50, 'icon-blue')}</div>`;
         }
     }
     
@@ -971,7 +971,7 @@ function renderStarRating() {
                 <div onclick="setRating(${i})" 
                      style="font-size: 2.8rem; cursor: pointer; opacity: ${i <= currentRating ? 1 : 0.3}; transition: all 0.2s; transform: ${i <= currentRating ? 'scale(1.1)' : 'scale(1)'};" 
                      onmouseover="previewRating(${i})" 
-                     onmouseout="resetPreview()">⭐</div>
+                     onmouseout="resetPreview()">${svgIcon("star", 22)}</div>
             `).join('')}
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; padding: 0 0.5rem;">
@@ -1003,7 +1003,7 @@ function resetPreview() {
 
 function submitDriverRating() {
     if (currentRating < 1) {
-        alert('⚠️ Please select a rating (1-5 stars)');
+        alert('⚠ Please select a rating (1-5 stars)');
         return;
     }
     
@@ -1044,7 +1044,7 @@ function submitDriverRating() {
     
     closeModal('driverRatingModal');
     
-    alert(`⭐ Thank you for your ${currentRating}-star rating!${comment ? '\n\nYour feedback has been saved.' : ''}`);
+    alert(`Thank you for your ${currentRating}-star rating!${comment ? '\n\nYour feedback has been saved.' : ''}`);
     
     // Refresh account page if open
     if (document.getElementById('accountModal')?.style.display === 'flex') {

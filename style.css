@@ -32,6 +32,12 @@ body {
     overflow-x: hidden;
 }
 
+.driver-avatar-svg {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 /* ========== SVG ICON SYSTEM ========== */
 .svg-icon {
     display: inline-block;
@@ -40,6 +46,10 @@ body {
     flex-shrink: 0;
     line-height: 1;
 }
+
+/* SVG file icons (external <img>) */
+img.svg-icon{width:20px;height:20px;display:inline-block;object-fit:contain;}
+
 /* Navigation icons inherit text color automatically */
 /* Action icons are bolder by design (2px stroke in sprite) */
 
