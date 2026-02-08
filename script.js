@@ -1150,10 +1150,12 @@ function renderCategories() {
         // Only show categories that have items
         if (!menuData[key] || menuData[key].length === 0) return;
         
-        // Determine category image display
-        const catImageDisplay = cat.image 
-            ? `<img src="${cat.image}" alt="${cat.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">` 
-            : cat.icon;
+        // ✅ If category has an image, use it. Otherwise use your inline SVG icon sprite (i-wrap, i-meat, etc.)
+            const catImageDisplay = cat.image
+                ? `<img src="${cat.image}" alt="${cat.name}" class="category-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
+                : svgIcon(cat.icon, 48, "category-svg"); // <-- THIS is how you replace text icon with SVG icon
+
         
         const catEl = document.createElement('div');
         catEl.className = `category-item ${index === 0 ? 'active' : ''}`;
