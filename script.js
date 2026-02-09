@@ -55,6 +55,41 @@ function svgIcon(name, size = 16, cls = '', style = '') {
     `;
 }
 
+// ========================================
+// FOOD EMOJI MAPPING - Replaces SVG icons for food/categories
+// ========================================
+const FOOD_EMOJI_MAP = {
+    'wrap': '🌯',
+    'sandwich': '🥙',
+    'meat': '🍗',
+    'drumstick': '🍗',
+    'fries': '🍟',
+    'rice': '🍚',
+    'potato': '🥔',
+    'salad': '🥗',
+    'cabbage': '🥬',
+    'bread': '🍞',
+    'naan': '🫓',
+    'garlic': '🧄',
+    'falafel': '🧆',
+    'dumpling': '🥟',
+    'cheese': '🧀',
+    'yogurt': '🥛',
+    'pizza': '🍕',
+    'cup': '🥤',
+    'droplet': '💧',
+    'juice': '🧃',
+    'sauce': '🥫',
+    'chili': '🌶️',
+    'utensils': '🍴',
+    '🫓': '🫓', // Allow direct emoji passthrough
+    '🫜': '🫜'  // Allow direct emoji passthrough
+};
+
+// Helper function: Get emoji for food icon name
+function getFoodEmoji(iconName) {
+    return FOOD_EMOJI_MAP[iconName] || FOOD_EMOJI_MAP['utensils'];
+}
 
 // ANTALYA SHAWARMA UK - COMPLETE SYSTEM
 // VERSION: 3.0.0 - FULLY FEATURED UK SYSTEM
@@ -1062,7 +1097,7 @@ function displayMenu(category) {
         } else if (categoryImage) {
             imageDisplay = `<img src="${categoryImage}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
         } else {
-            imageDisplay = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">${item.icon || categoryIcon}</div>`;
+            imageDisplay = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">${getFoodEmoji(item.icon || categoryIcon)}</div>`;
         }
         
         const row = document.createElement('div');
@@ -1150,11 +1185,11 @@ function renderCategories() {
         // Only show categories that have items
         if (!menuData[key] || menuData[key].length === 0) return;
         
-        // ✅ If category has an image, use it. Otherwise use your inline SVG icon sprite (i-wrap, i-meat, etc.)
+        // ✅ If category has an image, use it. Otherwise use EMOJI icon
             const catImageDisplay = cat.image
                 ? `<img src="${cat.image}" alt="${cat.name}" class="category-image"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
-                : svgIcon(cat.icon, 48, "category-svg"); // <-- THIS is how you replace text icon with SVG icon
+                : `<span style="font-size: 48px; line-height: 1;">${getFoodEmoji(cat.icon)}</span>`;
 
         
         const catEl = document.createElement('div');
