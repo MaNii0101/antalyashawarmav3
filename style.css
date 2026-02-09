@@ -319,6 +319,23 @@ td .svg-icon {
 .category-icon {
     font-size: clamp(2rem, 5vw, 2.8rem);
     transition: all 0.3s;
+    /* FIX: Ensure category icon container fits images properly */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* FIX: Category image styling for proper sizing and cropping */
+.category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    display: block;
 }
 
 .category-item.active {

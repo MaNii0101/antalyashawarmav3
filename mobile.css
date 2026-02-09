@@ -275,6 +275,17 @@ html {
         border: 2px solid rgba(230, 57, 70, 0.2) !important;
         transition: all 0.3s !important;
         margin-bottom: 0.3rem !important;
+        /* FIX: Ensure overflow hidden for images */
+        overflow: hidden !important;
+    }
+    
+    /* FIX: Mobile category image sizing */
+    .category-image {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        border-radius: 50% !important;
     }
     
     .category-item.active .category-icon {

@@ -4,6 +4,24 @@
 // ========================================
 
 // ========================================
+// EMOJI CONVERSION HELPERS
+// FIX: Auto-convert icon keywords to emoji
+// ========================================
+
+// Convert icon input to emoji when user types or pastes
+function normalizeIconToEmoji(iconValue) {
+    if (!iconValue) return '🍽️'; // Default emoji
+    
+    // If already an emoji (contains unicode emoji), return it
+    if (/[\u{1F300}-\u{1F9FF}]/u.test(iconValue)) {
+        return iconValue;
+    }
+    
+    // Convert keyword to emoji using FOOD_EMOJI_MAP from utils.js
+    return getFoodEmoji(iconValue.trim().toLowerCase());
+}
+
+// ========================================
 // RESTAURANT DASHBOARD (FOR EMPLOYERS)
 // ========================================
 function showRestaurantLogin() {
@@ -1004,7 +1022,10 @@ function renderMenuManagerList() {
                             <button onclick="moveCategoryUp('${catKey}')" ${index === 0 ? 'disabled' : ''} style="background: ${index === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === 0 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === 0 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">${svgIcon("arrows-up-down", 12)} ↑</button>
                             <button onclick="moveCategoryDown('${catKey}')" ${index === categoryKeys.length - 1 ? 'disabled' : ''} style="background: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.05)' : 'rgba(59,130,246,0.2)'}; color: ${index === categoryKeys.length - 1 ? 'rgba(255,255,255,0.3)' : '#3b82f6'}; border: none; padding: 0.2rem 0.4rem; border-radius: 4px; cursor: ${index === categoryKeys.length - 1 ? 'not-allowed' : 'pointer'}; font-size: 0.7rem;">↓</button>
                         </div>
-                        ${cat.image ? `<img src="${cat.image}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">` : `<span style="font-size: 1.5rem;">${cat.icon}</span>`}
+                        ${/* FIX: Use shared getCategoryVisual for consistent category icons/images */''}
+                        <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            ${getCategoryVisual(cat, 40, true)}
+                        </div>
                         <span style="font-weight: 700;">${cat.name}</span>
                         <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">(${menuData[catKey]?.length || 0} items)</span>
                     </div>
@@ -1017,7 +1038,16 @@ function renderMenuManagerList() {
                     ${(menuData[catKey] || []).map(item => `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 0.5rem;">
                             <div style="display: flex; align-items: center; gap: 0.8rem; flex: 1; min-width: 200px;">
-                                ${item.image ? `<img src="${item.image}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">` : (cat.image ? `<img src="${cat.image}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; opacity: 0.7;">` : `<span style="font-size: 1.3rem;">${item.icon || cat.icon}</span>`)}
+                                ${/* FIX: Use emoji for food items, fallback to category image/emoji */''}
+                                <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    ${item.image 
+                                        ? `<img src="${item.image}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; object-position: center;">` 
+                                        : (cat.image 
+                                            ? `<img src="${cat.image}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; object-position: center; opacity: 0.7;">` 
+                                            : `<span style="font-size: 1.3rem;">${getFoodEmoji(item.icon || cat.icon)}</span>`
+                                        )
+                                    }
+                                </div>
                                 <div>
                                     <div style="font-weight: 600; ${item.available === false ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${item.name}</div>
                                     <div style="font-size: 0.85rem; color: #10b981;">${formatPrice(item.price)}</div>
@@ -1132,7 +1162,8 @@ function openAddFood() {
         document.getElementById('foodEditCategory').value = '';
         document.getElementById('foodEditName').value = '';
         document.getElementById('foodEditPrice').value = '';
-        document.getElementById('foodEditIcon').value = 'utensils';
+        // FIX: Default to emoji, not keyword
+        document.getElementById('foodEditIcon').value = '🍽️';
         document.getElementById('foodEditDesc').value = '';
         document.getElementById('foodEditOptions').value = '';
         document.getElementById('foodEditImage').value = '';
@@ -1154,7 +1185,9 @@ function openEditFood(catKey, foodId) {
         document.getElementById('foodEditCategory').value = catKey;
         document.getElementById('foodEditName').value = item.name;
         document.getElementById('foodEditPrice').value = item.price;
-        document.getElementById('foodEditIcon').value = item.icon || 'utensils';
+        // FIX: Show emoji in input, not keyword
+        const foodIcon = normalizeIconToEmoji(item.icon || 'utensils');
+        document.getElementById('foodEditIcon').value = foodIcon;
         document.getElementById('foodEditDesc').value = item.desc || '';
         document.getElementById('foodEditOptions').value = item.options ? item.options.map(o => `${o.name}:${o.price}`).join('\n') : '';
         document.getElementById('foodEditImage').value = item.image || '';
@@ -1167,7 +1200,9 @@ function saveFoodItem() {
     const category = document.getElementById('foodEditCategory').value;
     const name = document.getElementById('foodEditName').value.trim();
     const price = parseFloat(document.getElementById('foodEditPrice').value);
-    const icon = document.getElementById('foodEditIcon').value || 'utensils';
+    const iconInput = document.getElementById('foodEditIcon').value || 'utensils';
+    // FIX: Convert keyword to emoji before saving
+    const icon = normalizeIconToEmoji(iconInput);
     const desc = document.getElementById('foodEditDesc').value.trim();
     const optionsText = document.getElementById('foodEditOptions').value.trim();
     const image = document.getElementById('foodEditImage').value.trim();
@@ -1264,7 +1299,8 @@ function openAddCategory() {
         document.getElementById('categoryEditKey').value = '';
         document.getElementById('categoryEditKey').disabled = false;
         document.getElementById('categoryEditName').value = '';
-        document.getElementById('categoryEditIcon').value = 'utensils';
+        // FIX: Default to emoji, not keyword
+        document.getElementById('categoryEditIcon').value = '🍽️';
         document.getElementById('categoryEditImage').value = '';
         document.getElementById('categoryEditImagePreview').innerHTML = '';
         document.getElementById('deleteCategoryBtn').style.display = 'none';
@@ -1284,7 +1320,9 @@ function openEditCategory(catKey) {
         document.getElementById('categoryEditKey').value = catKey;
         document.getElementById('categoryEditKey').disabled = true;
         document.getElementById('categoryEditName').value = cat.name;
-        document.getElementById('categoryEditIcon').value = cat.icon || 'utensils';
+        // FIX: Show emoji in input, not keyword
+        const categoryIcon = normalizeIconToEmoji(cat.icon || 'utensils');
+        document.getElementById('categoryEditIcon').value = categoryIcon;
         document.getElementById('categoryEditImage').value = cat.image || '';
         document.getElementById('categoryEditImagePreview').innerHTML = cat.image ? `<img src="${cat.image}" style="max-width: 100px; max-height: 100px; border-radius: 8px;">` : '';
         document.getElementById('deleteCategoryBtn').style.display = 'block';
@@ -1365,7 +1403,9 @@ function handleCategoryImageUpload(event) {
 function saveCategory() {
     const key = document.getElementById('categoryEditKey').value.trim().toLowerCase().replace(/\s+/g, '_');
     const name = document.getElementById('categoryEditName').value.trim();
-    const icon = document.getElementById('categoryEditIcon').value || 'utensils';
+    const iconInput = document.getElementById('categoryEditIcon').value || 'utensils';
+    // FIX: Convert keyword to emoji before saving
+    const icon = normalizeIconToEmoji(iconInput);
     const image = document.getElementById('categoryEditImage').value.trim();
     
     if (!key || !name) {
@@ -1459,3 +1499,39 @@ window.previewFoodImage = previewFoodImage;
 window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
+
+// ========================================
+// AUTO-CONVERT ICON INPUTS TO EMOJI
+// FIX: Add live icon preview when user types in icon field
+// ========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-convert category icon input to emoji
+    const categoryIconInput = document.getElementById('categoryEditIcon');
+    if (categoryIconInput) {
+        categoryIconInput.addEventListener('input', function() {
+            const currentValue = this.value;
+            const emojiValue = normalizeIconToEmoji(currentValue);
+            if (currentValue !== emojiValue) {
+                this.value = emojiValue;
+            }
+        });
+        categoryIconInput.addEventListener('blur', function() {
+            this.value = normalizeIconToEmoji(this.value);
+        });
+    }
+    
+    // Auto-convert food icon input to emoji
+    const foodIconInput = document.getElementById('foodEditIcon');
+    if (foodIconInput) {
+        foodIconInput.addEventListener('input', function() {
+            const currentValue = this.value;
+            const emojiValue = normalizeIconToEmoji(currentValue);
+            if (currentValue !== emojiValue) {
+                this.value = emojiValue;
+            }
+        });
+        foodIconInput.addEventListener('blur', function() {
+            this.value = normalizeIconToEmoji(this.value);
+        });
+    }
+});

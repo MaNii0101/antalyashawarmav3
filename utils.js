@@ -4,6 +4,78 @@
    Link this AFTER script.js in your HTML
    ============================================ */
 
+// ========================================
+// FOOD EMOJI MAPPING - Replaces SVG icons for food/categories
+// FIX: Moved from script.js to utils.js so it's available everywhere
+// ========================================
+const FOOD_EMOJI_MAP = {
+    'wrap': '🌯',
+    'sandwich': '🥙',
+    'meat': '🍗',
+    'drumstick': '🍗',
+    'fries': '🍟',
+    'rice': '🍚',
+    'potato': '🥔',
+    'salad': '🥗',
+    'cabbage': '🥬',
+    'bread': '🍞',
+    'naan': '🫓',
+    'garlic': '🧄',
+    'falafel': '🧆',
+    'dumpling': '🥟',
+    'cheese': '🧀',
+    'yogurt': '🥛',
+    'pizza': '🍕',
+    'cup': '🥤',
+    'droplet': '💧',
+    'juice': '🧃',
+    'sauce': '🥫',
+    'chili': '🌶️',
+    'utensils': '🍴',
+    '🫓': '🫓', // Allow direct emoji passthrough
+    '🫜': '🫜'  // Allow direct emoji passthrough
+};
+
+// Helper function: Get emoji for food icon name
+function getFoodEmoji(iconName) {
+    return FOOD_EMOJI_MAP[iconName] || FOOD_EMOJI_MAP['utensils'];
+}
+
+// ========================================
+// CATEGORY VISUAL HELPER - Unified rendering for customer UI + owner dashboard
+// FIX: Shared function ensures consistent category icon/image display everywhere
+// ========================================
+/**
+ * Returns HTML for category visual (image or emoji icon)
+ * @param {Object} category - Category object with .image and .icon properties
+ * @param {number} size - Size in pixels (default: 48 for customer UI, 40 for owner dashboard)
+ * @param {boolean} isOwnerDashboard - Whether rendering in owner dashboard (affects styling)
+ * @returns {string} HTML string for category visual
+ */
+function getCategoryVisual(category, size = 48, isOwnerDashboard = false) {
+    if (!category) {
+        // Fallback for missing category
+        return `<span style="font-size: ${size}px; line-height: 1;">${FOOD_EMOJI_MAP['utensils']}</span>`;
+    }
+    
+    if (category.image) {
+        // FIX: Category has uploaded image - show with proper sizing
+        const sizeStyle = isOwnerDashboard 
+            ? `width: ${size}px; height: ${size}px;` 
+            : `width: 100%; height: 100%;`;
+        
+        return `<img src="${category.image}" 
+                     alt="${category.name || 'Category'}" 
+                     class="category-image"
+                     style="${sizeStyle} object-fit: cover; object-position: center; border-radius: 8px;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <span style="font-size: ${size}px; line-height: 1; display: none;">${getFoodEmoji(category.icon)}</span>`;
+    } else {
+        // FIX: No image - show emoji icon
+        return `<span style="font-size: ${size}px; line-height: 1;">${getFoodEmoji(category.icon)}</span>`;
+    }
+}
+
 // Mobile detection
 function isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

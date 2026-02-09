@@ -55,41 +55,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
     `;
 }
 
-// ========================================
-// FOOD EMOJI MAPPING - Replaces SVG icons for food/categories
-// ========================================
-const FOOD_EMOJI_MAP = {
-    'wrap': '🌯',
-    'sandwich': '🥙',
-    'meat': '🍗',
-    'drumstick': '🍗',
-    'fries': '🍟',
-    'rice': '🍚',
-    'potato': '🥔',
-    'salad': '🥗',
-    'cabbage': '🥬',
-    'bread': '🍞',
-    'naan': '🫓',
-    'garlic': '🧄',
-    'falafel': '🧆',
-    'dumpling': '🥟',
-    'cheese': '🧀',
-    'yogurt': '🥛',
-    'pizza': '🍕',
-    'cup': '🥤',
-    'droplet': '💧',
-    'juice': '🧃',
-    'sauce': '🥫',
-    'chili': '🌶️',
-    'utensils': '🍴',
-    '🫓': '🫓', // Allow direct emoji passthrough
-    '🫜': '🫜'  // Allow direct emoji passthrough
-};
-
-// Helper function: Get emoji for food icon name
-function getFoodEmoji(iconName) {
-    return FOOD_EMOJI_MAP[iconName] || FOOD_EMOJI_MAP['utensils'];
-}
+// FIX: FOOD_EMOJI_MAP and getFoodEmoji moved to utils.js for global access
 
 // ANTALYA SHAWARMA UK - COMPLETE SYSTEM
 // VERSION: 3.0.0 - FULLY FEATURED UK SYSTEM
@@ -1185,11 +1151,8 @@ function renderCategories() {
         // Only show categories that have items
         if (!menuData[key] || menuData[key].length === 0) return;
         
-        // ✅ If category has an image, use it. Otherwise use EMOJI icon
-            const catImageDisplay = cat.image
-                ? `<img src="${cat.image}" alt="${cat.name}" class="category-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
-                : `<span style="font-size: 48px; line-height: 1;">${getFoodEmoji(cat.icon)}</span>`;
+        // FIX: Use shared getCategoryVisual helper for consistent rendering
+        const catImageDisplay = getCategoryVisual(cat, 48, false);
 
         
         const catEl = document.createElement('div');
@@ -1231,11 +1194,12 @@ function openFoodModal(foodId) {
     document.getElementById('modalFoodName').textContent = selectedFood.name;
     
     // Show image or icon
+    // FIX: Convert keyword to emoji, never show raw text like "utensils"
     const iconContainer = document.getElementById('modalFoodIcon');
     if (selectedFood.image) {
-        iconContainer.innerHTML = `<img src="${selectedFood.image}" alt="${selectedFood.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        iconContainer.innerHTML = `<img src="${selectedFood.image}" alt="${selectedFood.name}" style="width: 100%; height: 100%; object-fit: cover; display: block;">`;
     } else {
-        iconContainer.innerHTML = `<span style="font-size: 4rem;">${selectedFood.icon}</span>`;
+        iconContainer.innerHTML = `<span style="font-size: 4rem;">${getFoodEmoji(selectedFood.icon)}</span>`;
     }
     
     document.getElementById('modalFoodDesc').textContent = selectedFood.desc;
