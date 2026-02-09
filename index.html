@@ -32,7 +32,63 @@
 </script>
 
     
+<!-- PRINT BILL FEATURE: Print-only styles -->
+<style>
+@media print {
+    /* Hide everything except print content */
+    body * {
+        visibility: hidden;
+    }
+    
+    #printBillContent, #printBillContent * {
+        visibility: visible;
+    }
+    
+    #printBillContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+        background: white;
+        color: black;
+    }
+    
+    /* Hide all buttons, modals, navigation */
+    button, .modal, nav, header, footer, .no-print {
+        display: none !important;
+    }
+    
+    /* Clean print layout */
+    .print-bill-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+    }
+    
+    .print-bill-table th,
+    .print-bill-table td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    .print-bill-table th {
+        background: #f0f0f0;
+        font-weight: bold;
+    }
+    
+    .print-total {
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 20px;
+    }
+}
+</style>
+
 </head>
+
 <body>
 
     <!-- SVG ICONS (sprite) -->
@@ -58,6 +114,7 @@
         <symbol id="i-restaurant" viewBox="0 0 512 512">
                 <image href="assets/system/restaurant.png" width="512" height="512" />
         </symbol>
+        <symbol id="i-printer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
         <symbol id="i-bell" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
         <symbol id="i-heart" viewBox="0 0 24 24"><path fill="url(#grad-red)" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
         <symbol id="i-heart-outline" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
@@ -114,7 +171,6 @@
 </symbol>
         <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M12 9v4l2 2M10 2h4M21 5l-2 2"/></symbol>
         <symbol id="i-chart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M18 20V10M12 20V4M6 20v-6"/></symbol>
-        <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 6v12M18 6v12"/></symbol>
         <!-- DOMAIN SPECIFIC -->
         <symbol id="i-utensils" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></symbol>
         <symbol id="i-building" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M9 9h1M9 13h1M9 17h1"/></symbol>
@@ -1046,6 +1102,23 @@
         </div>
     </div>
 
+    <div class="form-group">
+    <label>Order Type *</label>
+    <select id="orderType" required onchange="toggleDeliveryFields()">
+        <option value="delivery">🚗 Delivery</option>
+        <option value="collection">🏪 Collection (Pick up from restaurant)</option>
+    </select>
+</div>
+
+<!-- COLLECTION ORDER SUPPORT: Hidden message for collection orders -->
+<div id="collectionMessage" style="display: none; background: rgba(16,185,129,0.15); border: 2px solid #10b981; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+    <p style="margin: 0; color: #10b981; font-weight: 600;">
+        📍 Please collect your order from:<br>
+        <strong>Antalya Shawarma</strong><br>
+        123 Restaurant Street, City
+    </p>
+</div>
+    
     <!-- BANK SETTINGS MODAL (OWNER ONLY) -->
     <div class="modal" id="bankSettingsModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 500px;">
@@ -1438,10 +1511,8 @@
                     <label>Payment Method *</label>
                     <select id="paymentMethod" required onchange="toggleCardFields()">
                         <option value="">Choose payment method</option>
-                        <option value="cash">Cash on Delivery</option>
                         <option value="card">Card Payment</option>
                         <option value="applepay"> Apple Pay</option>
-                        
                     </select>
                 </div>
                 <div id="cardFieldsSection" style="display: none;">

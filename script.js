@@ -1672,12 +1672,16 @@ function handlePayment(event) {
     if (window.isProcessingCheckout) return false;
     
     const paymentMethod = document.getElementById('paymentMethod').value;
+    // COLLECTION ORDER SUPPORT: Get order type
+    const orderType = document.getElementById('orderType')?.value || 'delivery';
     
     if (!paymentMethod) {
         // Error: No payment method selected
         uiAlert('Please select a payment method', 'error');
         return false;
     }
+    
+    // CASH PAYMENT REMOVED (business decision): No cash validation needed
     
     if (paymentMethod === 'card') {
         const cardNumber = document.getElementById('paymentCardNumber').value;
@@ -1686,22 +1690,18 @@ function handlePayment(event) {
         const cvv = document.getElementById('paymentCVV').value;
         
         if (!isValidCardNumber(cardNumber)) {
-            // Error: Card number validation failed
             uiAlert('Invalid card number', 'error');
             return false;
         }
         if (!cardName || cardName.length < 2) {
-            // Error: Card name validation
             uiAlert('Please enter name on card', 'error');
             return false;
         }
         if (!isValidExpiry(expiry)) {
-            // Error: Expiry date validation
             uiAlert('Invalid expiry date', 'error');
             return false;
         }
         if (!isValidCVV(cvv)) {
-            // Error: CVV validation
             uiAlert('Invalid CVV', 'error');
             return false;
         }
@@ -1715,9 +1715,9 @@ function handlePayment(event) {
     const subtotal = cart.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
     let deliveryFee = 0;
     
-    // Calculate distance
+    // COLLECTION ORDER SUPPORT: Only calculate delivery fee for delivery orders
     let distance = 0;
-    if (selectedLocation) {
+    if (orderType === 'delivery' && selectedLocation) {
         distance = calculateDistance(
             UK_CONFIG.restaurant.lat,
             UK_CONFIG.restaurant.lng,
@@ -1736,11 +1736,14 @@ function handlePayment(event) {
         subtotal: subtotal,
         deliveryFee: deliveryFee,
         total: subtotal + deliveryFee,
-        address: selectedLocation?.address || currentUser.address,
-        deliveryLocation: selectedLocation, 
+        address: orderType === 'delivery' ? (selectedLocation?.address || currentUser.address) : 'Collection',
+        deliveryLocation: orderType === 'delivery' ? selectedLocation : null, 
         distance: distance,
         paymentMethod: paymentMethod,
-        status: 'pending', // Initial status
+        // COLLECTION ORDER SUPPORT: Store order type
+        orderType: orderType,
+        isDelivery: orderType === 'delivery',
+        status: 'pending',
         createdAt: new Date().toISOString()
     };
     
@@ -2092,8 +2095,8 @@ function showOrderHistory() {
                                o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
-            const paymentIcon = o.paymentMethod === 'cash' ? svgIcon('cash',14,'icon-success') : o.paymentMethod === 'applepay' ? '' : svgIcon('credit-card',14,'icon-purple');
-            
+// CASH PAYMENT REMOVED (business decision)
+const paymentIcon = o.paymentMethod === 'applepay' ? '🍎' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2114,7 +2117,10 @@ function showOrderHistory() {
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">${new Date(o.createdAt).toLocaleString()}</span>
-                        <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${paymentIcon} ${o.paymentMethod || 'N/A'}</span>
+                        <!-- COLLECTION ORDER SUPPORT: Show order type -->
+                        <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">
+                             ${o.orderType === 'collection' ? '🏪' : '🚗'} ${o.orderType === 'collection' ? 'COLLECTION' : 'DELIVERY'} | ${paymentIcon} ${o.paymentMethod || 'N/A'}
+                        </span>
                     </div>
                     
                     ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">${svgIcon('star', 12)} Rated ${o.driverRating}/5</div>` : ''}
@@ -3474,6 +3480,33 @@ function toggleMobileMenu() {
     nav.classList.toggle('active');
     btn.classList.toggle('active');
     btn.innerHTML = nav.classList.contains('active') ? svgIcon('check', 16) : svgIcon('hamburger-menu', 16);
+}
+
+// COLLECTION ORDER SUPPORT: Toggle delivery fields based on order type
+function toggleDeliveryFields() {
+    const orderType = document.getElementById('orderType')?.value;
+    const deliverySection = document.querySelector('#checkoutModal .modal-content > div:first-of-type');
+    const collectionMessage = document.getElementById('collectionMessage');
+    
+    if (orderType === 'collection') {
+        // Hide delivery address section
+        if (deliverySection) {
+            deliverySection.style.display = 'none';
+        }
+        // Show collection message
+        if (collectionMessage) {
+            collectionMessage.style.display = 'block';
+        }
+    } else {
+        // Show delivery address section
+        if (deliverySection) {
+            deliverySection.style.display = 'block';
+        }
+        // Hide collection message
+        if (collectionMessage) {
+            collectionMessage.style.display = 'none';
+        }
+    }
 }
 
 // ========================================

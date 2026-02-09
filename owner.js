@@ -134,9 +134,15 @@ function showRestaurantDashboard() {
                     
                     <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">${svgIcon("clock", 14, "icon-muted")} ${new Date(order.createdAt).toLocaleString()}</div>
                     
-                    <div style="background: ${order.paymentMethod === 'cash' ? 'rgba(245,158,11,0.2)' : order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                        ${order.paymentMethod === 'cash' ? svgIcon('cash', 14, 'icon-success') + ' CASH' : order.paymentMethod === 'applepay' ? ' Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} ${order.paymentMethod === 'cash' ? '- Collect Payment' : '- PAID'}
-                    </div>
+                             <!-- COLLECTION ORDER SUPPORT: Show order type prominently -->
+                        <div style="background: ${order.orderType === 'collection' ? 'rgba(16,185,129,0.2)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                             ${order.orderType === 'collection' ? '🏪 COLLECTION' : '🚗 DELIVERY'}
+                        </div>
+
+                            <!-- CASH PAYMENT REMOVED (business decision): Show payment method without cash -->
+                        <div style="background: ${order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                              ${order.paymentMethod === 'applepay' ? '🍎 Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
+                        </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                         <div style="font-weight: 600; margin-bottom: 0.5rem;">Items:</div>
@@ -152,24 +158,43 @@ function showRestaurantDashboard() {
                         </div>
                     </div>
                     
-                    ${order.status === 'pending' ? `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                            <button onclick="acceptOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("check-circle", 14, "icon-success")} Accept</button>
-                            <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("x-circle", 14, "icon-danger")} Reject</button>
-                        </div>
-                    ` : order.status === 'accepted' ? `
-                        <div style="display: grid; gap: 0.5rem;">
-                            <button onclick="notifyAllAvailableDrivers('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                                ${svgIcon("megaphone", 14)} Notify All Drivers
-                            </button>
-                            <button onclick="assignDriver('${order.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("car", 14, "icon-teal")} Assign Driver</button>
-                        </div>
-                    ` : order.status === 'driver_assigned' || order.status === 'out_for_delivery' ? `
-                        <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
-                            <div style="font-weight: 600; color: #10b981;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
-                            ${order.estimatedTime ? `<div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">ETA: ${order.estimatedTime} mins</div>` : ''}
-                        </div>
-                    ` : ''}
+                 ${order.status === 'pending' ? `
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <button onclick="acceptOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("check-circle", 14, "icon-success")} Accept</button>
+        <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("x-circle", 14, "icon-danger")} Reject</button>
+    </div>
+` : order.status === 'accepted' ? `
+    <!-- COLLECTION ORDER SUPPORT: Different buttons for collection vs delivery -->
+    ${order.orderType === 'collection' ? `
+        <div style="display: grid; gap: 0.5rem;">
+            <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-weight: 600; color: #10b981;">✅ Ready for Collection</div>
+                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Customer will pick up from restaurant</div>
+            </div>
+            <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                ${svgIcon("printer", 14)} Print Bill
+            </button>
+        </div>
+    ` : `
+        <div style="display: grid; gap: 0.5rem;">
+            <button onclick="notifyAllAvailableDrivers('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                ${svgIcon("megaphone", 14)} Notify All Drivers
+            </button>
+            <button onclick="assignDriver('${order.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("car", 14, "icon-teal")} Assign Driver</button>
+            <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                ${svgIcon("printer", 14)} Print Bill
+            </button>
+        </div>
+    `}
+` : order.status === 'driver_assigned' || order.status === 'out_for_delivery' ? `
+    <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
+        <div style="font-weight: 600; color: #10b981; text-align: center;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
+        ${order.estimatedTime ? `<div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); text-align: center;">ETA: ${order.estimatedTime} mins</div>` : ''}
+    </div>
+    <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
+        ${svgIcon("printer", 14)} Print Bill
+    </button>
+` : ''}
                 </div>
             `}).join('');
         }
@@ -218,6 +243,12 @@ function acceptOrder(orderId) {
 function notifyAllAvailableDrivers(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
+    
+    // COLLECTION ORDER SUPPORT: Don't notify drivers for collection orders
+    if (order.orderType === 'collection') {
+        uiAlert('This is a COLLECTION order. No driver needed!', 'warning');
+        return;
+    }
     
     if (order.driverId) {
         uiAlert('This order already has a driver assigned!', 'warning');
@@ -400,6 +431,12 @@ function assignDriver(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
     
+    // COLLECTION ORDER SUPPORT: Don't assign driver for collection orders
+    if (order.orderType === 'collection') {
+        uiAlert('This is a COLLECTION order. No driver needed!', 'warning');
+        return;
+    }
+    
     const availableDrivers = window.driverSystem.getAvailable();
     
     if (availableDrivers.length === 0) {
@@ -478,6 +515,127 @@ function completeOrder(orderId) {
     playNotificationSound();
     uiAlert(`Order #${orderId} completed!`, 'success');
 }
+
+
+// PRINT BILL FEATURE: Generate and print order bill
+function printBill(orderId) {
+    const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
+    if (!order) {
+        uiAlert('Order not found!', 'error');
+        return;
+    }
+    
+    // Create print content
+    const printContent = `
+        <div id="printBillContent" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
+                <h1 style="margin: 0; font-size: 2em;">ANTALYA SHAWARMA</h1>
+                <p style="margin: 5px 0;">123 Restaurant Street, City</p>
+                <p style="margin: 5px 0;">Tel: +44 123 456 7890</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h2 style="margin: 0 0 10px 0;">ORDER RECEIPT</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Order ID:</strong></td>
+                        <td style="text-align: right;">${order.id}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Date & Time:</strong></td>
+                        <td style="text-align: right;">${new Date(order.createdAt).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Order Type:</strong></td>
+                        <td style="text-align: right;"><strong>${order.orderType === 'collection' ? '🏪 COLLECTION' : '🚗 DELIVERY'}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Customer:</strong></td>
+                        <td style="text-align: right;">${order.userName}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Phone:</strong></td>
+                        <td style="text-align: right;">${order.userPhone || 'N/A'}</td>
+                    </tr>
+                    ${order.orderType === 'delivery' ? `
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Delivery Address:</strong></td>
+                        <td style="text-align: right;">${order.address || 'N/A'}</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                        <td style="padding: 5px 0;"><strong>Payment Method:</strong></td>
+                        <td style="text-align: right;">${order.paymentMethod === 'applepay' ? 'Apple Pay' : 'Card'} (PAID)</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <table class="print-bill-table" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="border: 1px solid #000; padding: 10px; text-align: left;">Item</th>
+                        <th style="border: 1px solid #000; padding: 10px; text-align: center;">Qty</th>
+                        <th style="border: 1px solid #000; padding: 10px; text-align: right;">Price</th>
+                        <th style="border: 1px solid #000; padding: 10px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${order.items.map(item => `
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">
+                                ${item.name}
+                                ${item.extras && item.extras.length > 0 ? `<br><small>+ ${item.extras.map(e => e.name).join(', ')}</small>` : ''}
+                            </td>
+                            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.quantity}</td>
+                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">£${item.finalPrice.toFixed(2)}</td>
+                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #000;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="padding: 5px 0; text-align: right;"><strong>Subtotal:</strong></td>
+                        <td style="padding: 5px 0; width: 120px; text-align: right;">£${order.subtotal.toFixed(2)}</td>
+                    </tr>
+                    ${order.orderType === 'delivery' ? `
+                    <tr>
+                        <td style="padding: 5px 0; text-align: right;"><strong>Delivery Fee:</strong></td>
+                        <td style="padding: 5px 0; text-align: right;">£${order.deliveryFee.toFixed(2)}</td>
+                    </tr>
+                    ` : ''}
+                    <tr style="font-size: 1.3em; border-top: 2px solid #000;">
+                        <td style="padding: 10px 0; text-align: right;"><strong>TOTAL:</strong></td>
+                        <td style="padding: 10px 0; text-align: right;"><strong>£${order.total.toFixed(2)}</strong></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #000;">
+                <p style="margin: 5px 0;"><strong>Thank you for your order!</strong></p>
+                <p style="margin: 5px 0;">www.antalyashawarma.com</p>
+                ${order.orderType === 'collection' ? '<p style="margin: 10px 0; font-weight: bold;">Please collect from restaurant</p>' : ''}
+            </div>
+        </div>
+    `;
+    
+    // Create temporary container
+    const printContainer = document.createElement('div');
+    printContainer.innerHTML = printContent;
+    document.body.appendChild(printContainer);
+    
+    // Print
+    setTimeout(() => {
+        window.print();
+        // Remove container after printing
+        setTimeout(() => {
+            document.body.removeChild(printContainer);
+        }, 100);
+    }, 100);
+}
+
 
 function closeRestaurantDashboard() {
     isRestaurantLoggedIn = false;
@@ -1535,3 +1693,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+window.printBill = printBill;

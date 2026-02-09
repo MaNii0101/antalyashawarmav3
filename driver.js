@@ -186,21 +186,25 @@ function showDriverDashboard(driver = null) {
     const assignedOrders = pendingOrders.filter(o => o.driverId === driver.id);
     
     // Get available orders for this driver
-    const availableOrders = [];
-    if (window.availableOrdersForDrivers) {
-        Object.keys(window.availableOrdersForDrivers).forEach(orderId => {
-            const orderData = window.availableOrdersForDrivers[orderId];
-            if (!orderData.claimedBy) {
-                const order = pendingOrders.find(o => o.id === orderId);
-                if (order && order.status === 'waiting_driver') {
-                    availableOrders.push(order);
-                }
+  // Get available orders for this driver
+const availableOrders = [];
+if (window.availableOrdersForDrivers) {
+    Object.keys(window.availableOrdersForDrivers).forEach(orderId => {
+        const orderData = window.availableOrdersForDrivers[orderId];
+        if (!orderData.claimedBy) {
+            const order = pendingOrders.find(o => o.id === orderId);
+            if (order && order.status === 'waiting_driver') {
+                availableOrders.push(order);
             }
-        });
-    }
-    
-    const profilePic = driver.profilePicture 
-        ? `<img src="${driver.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
+        }
+    });
+}
+
+// COLLECTION ORDER SUPPORT: Filter out collection orders - drivers should not see them
+const deliveryOrdersOnly = availableOrders.filter(order => order.orderType !== 'collection');
+
+const profilePic = driver.profilePicture  // ← Line 202
+            ? `<img src="${driver.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
         : `<span style="color: white;">${SVG_ICONS.motorcycle}</span>`;
     
     content.innerHTML = `
@@ -241,10 +245,10 @@ function showDriverDashboard(driver = null) {
         </div>
         
         <!-- New Orders Alert -->
-        ${driver.available && availableOrders.length > 0 ? `
+        ${driver.available && deliveryOrdersOnly.length > 0 ? `
             <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; border: 2px solid #f59e0b;">
-                <div style="font-weight: 700; color: #92400e; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">${SVG_ICONS.bell} ${availableOrders.length} New Order${availableOrders.length > 1 ? 's' : ''}</div>
-                ${availableOrders.map(order => `
+               <div style="font-weight: 700; color: #92400e; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">${SVG_ICONS.bell} ${deliveryOrdersOnly.length} New Order${deliveryOrdersOnly.length > 1 ? 's' : ''}</div>
+                    ${deliveryOrdersOnly.map(order => `
                     <div style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                             <span style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">#${order.id}</span>
@@ -260,7 +264,7 @@ function showDriverDashboard(driver = null) {
         ` : ''}
         
         <!-- Status Message (when no orders) -->
-        ${driver.available && availableOrders.length === 0 && assignedOrders.length === 0 ? `
+        ${driver.available && deliveryOrdersOnly.length === 0 && assignedOrders.length === 0 ? `
             <div style="background: #f8fafc; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
                 <div style="margin-bottom: 0.5rem; color: #64748b;">${SVG_ICONS.signal}</div>
                 <p style="color: #64748b; margin: 0; font-size: 1.1rem; font-weight: 500;">Waiting for orders...</p>
@@ -305,9 +309,10 @@ function showDriverDashboard(driver = null) {
                             <!-- Payment & Distance -->
                             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: #f9fafb; border-radius: 12px; margin-bottom: 0.8rem;">
                                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                    <span style="background: ${order.paymentMethod === 'cash' ? '#fef3c7' : '#d1fae5'}; color: ${order.paymentMethod === 'cash' ? '#92400e' : '#065f46'}; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.3rem;">
-                                        ${order.paymentMethod === 'cash' ? SVG_ICONS.pound + ' £' + order.total.toFixed(2) : SVG_ICONS.checkCircle + ' PAID'}
-                                    </span>
+                                   <!-- CASH PAYMENT REMOVED (business decision) -->
+                                <span style="background: #d1fae5; color: #065f46; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.3rem;">
+                                      ${SVG_ICONS.checkCircle} PAID
+                                </span>
                                 </div>
                                 ${order.distanceMiles ? `
                                     <span style="color: #6b7280; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.ruler} ${order.distanceMiles} mi</span>
