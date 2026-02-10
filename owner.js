@@ -136,12 +136,12 @@ function showRestaurantDashboard() {
                     
                              <!-- COLLECTION ORDER SUPPORT: Show order type prominently -->
                         <div style="background: ${order.orderType === 'collection' ? 'rgba(16,185,129,0.2)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                             ${order.orderType === 'collection' ? '🏪 COLLECTION' : '🚗 DELIVERY'}
+                             ${order.orderType === 'collection' ? svgIcon('building', 16, 'icon-success') + ' COLLECTION' : svgIcon('truck', 16, 'icon-blue') + ' DELIVERY'}
                         </div>
 
                             <!-- CASH PAYMENT REMOVED (business decision): Show payment method without cash -->
                         <div style="background: ${order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                              ${order.paymentMethod === 'applepay' ? '🍎 Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
+                              ${order.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
                         </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -525,98 +525,105 @@ function printBill(orderId) {
         return;
     }
     
-    // Create print content
+    // Build payment method display (with Apple Pay logo for print)
+    const paymentDisplay = order.paymentMethod === 'applepay' 
+        ? '<img src="assets/system/apple-pay.png" style="height:14px;vertical-align:middle;"> Apple Pay (PAID)'
+        : 'Card (PAID)';
+    
+    // Build order type display - clean text, no emojis
+    const orderTypeDisplay = order.orderType === 'collection' ? 'COLLECTION' : 'DELIVERY';
+    
+    // Create compact print content that fits ONE page
     const printContent = `
-        <div id="printBillContent" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
-                <h1 style="margin: 0; font-size: 2em;">ANTALYA SHAWARMA</h1>
-                <p style="margin: 5px 0;">123 Restaurant Street, City</p>
-                <p style="margin: 5px 0;">Tel: +44 123 456 7890</p>
+        <div id="printBillContent" style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 8px; font-size: 12px; line-height: 1.35;">
+            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px;">
+                <h1 style="margin: 0; font-size: 1.6em;">ANTALYA SHAWARMA</h1>
+                <p style="margin: 2px 0; font-size: 0.9em;">181 Market Street, Hyde, SK14 1HF</p>
+                <p style="margin: 2px 0; font-size: 0.9em;">Tel: +44 161 536 1862</p>
             </div>
             
-            <div style="margin-bottom: 20px;">
-                <h2 style="margin: 0 0 10px 0;">ORDER RECEIPT</h2>
-                <table style="width: 100%; border-collapse: collapse;">
+            <div style="margin-bottom: 8px;">
+                <h2 style="margin: 0 0 6px 0; font-size: 1.2em;">ORDER RECEIPT</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Order ID:</strong></td>
+                        <td style="padding: 2px 0;"><strong>Order ID:</strong></td>
                         <td style="text-align: right;">${order.id}</td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Date & Time:</strong></td>
+                        <td style="padding: 2px 0;"><strong>Date:</strong></td>
                         <td style="text-align: right;">${new Date(order.createdAt).toLocaleString()}</td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Order Type:</strong></td>
-                        <td style="text-align: right;"><strong>${order.orderType === 'collection' ? '🏪 COLLECTION' : '🚗 DELIVERY'}</strong></td>
+                        <td style="padding: 2px 0;"><strong>Type:</strong></td>
+                        <td style="text-align: right;"><strong>${orderTypeDisplay}</strong></td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Customer:</strong></td>
+                        <td style="padding: 2px 0;"><strong>Customer:</strong></td>
                         <td style="text-align: right;">${order.userName}</td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Phone:</strong></td>
+                        <td style="padding: 2px 0;"><strong>Phone:</strong></td>
                         <td style="text-align: right;">${order.userPhone || 'N/A'}</td>
                     </tr>
                     ${order.orderType === 'delivery' ? `
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Delivery Address:</strong></td>
-                        <td style="text-align: right;">${order.address || 'N/A'}</td>
+                        <td style="padding: 2px 0;"><strong>Address:</strong></td>
+                        <td style="text-align: right; max-width: 250px; word-wrap: break-word;">${order.address || 'N/A'}</td>
                     </tr>
                     ` : ''}
                     <tr>
-                        <td style="padding: 5px 0;"><strong>Payment Method:</strong></td>
-                        <td style="text-align: right;">${order.paymentMethod === 'applepay' ? 'Apple Pay' : 'Card'} (PAID)</td>
+                        <td style="padding: 2px 0;"><strong>Payment:</strong></td>
+                        <td style="text-align: right;">${paymentDisplay}</td>
                     </tr>
                 </table>
             </div>
             
-            <table class="print-bill-table" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <table class="print-bill-table" style="width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px;">
                 <thead>
                     <tr style="background: #f0f0f0;">
-                        <th style="border: 1px solid #000; padding: 10px; text-align: left;">Item</th>
-                        <th style="border: 1px solid #000; padding: 10px; text-align: center;">Qty</th>
-                        <th style="border: 1px solid #000; padding: 10px; text-align: right;">Price</th>
-                        <th style="border: 1px solid #000; padding: 10px; text-align: right;">Total</th>
+                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: left;">Item</th>
+                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: center; width: 40px;">Qty</th>
+                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: right; width: 60px;">Price</th>
+                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: right; width: 60px;">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${order.items.map(item => `
                         <tr>
-                            <td style="border: 1px solid #000; padding: 8px;">
-                                ${item.name}
-                                ${item.extras && item.extras.length > 0 ? `<br><small>+ ${item.extras.map(e => e.name).join(', ')}</small>` : ''}
+                            <td style="border: 1px solid #000; padding: 3px 6px;">
+                                ${item.name}${item.extras && item.extras.length > 0 ? ` <small>(+ ${item.extras.map(e => e.name).join(', ')})</small>` : ''}
                             </td>
-                            <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.quantity}</td>
-                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">£${item.finalPrice.toFixed(2)}</td>
-                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
+                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">${item.quantity}</td>
+                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: right;">£${item.finalPrice.toFixed(2)}</td>
+                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
             
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #000;">
-                <table style="width: 100%;">
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 2px solid #000;">
+                <table style="width: 100%; font-size: 12px;">
                     <tr>
-                        <td style="padding: 5px 0; text-align: right;"><strong>Subtotal:</strong></td>
-                        <td style="padding: 5px 0; width: 120px; text-align: right;">£${order.subtotal.toFixed(2)}</td>
+                        <td style="padding: 2px 0; text-align: right;"><strong>Subtotal:</strong></td>
+                        <td style="padding: 2px 0; width: 80px; text-align: right;">£${order.subtotal.toFixed(2)}</td>
                     </tr>
                     ${order.orderType === 'delivery' ? `
                     <tr>
-                        <td style="padding: 5px 0; text-align: right;"><strong>Delivery Fee:</strong></td>
-                        <td style="padding: 5px 0; text-align: right;">£${order.deliveryFee.toFixed(2)}</td>
+                        <td style="padding: 2px 0; text-align: right;"><strong>Delivery:</strong></td>
+                        <td style="padding: 2px 0; text-align: right;">£${order.deliveryFee.toFixed(2)}</td>
                     </tr>
                     ` : ''}
-                    <tr style="font-size: 1.3em; border-top: 2px solid #000;">
-                        <td style="padding: 10px 0; text-align: right;"><strong>TOTAL:</strong></td>
-                        <td style="padding: 10px 0; text-align: right;"><strong>£${order.total.toFixed(2)}</strong></td>
+                    <tr style="font-size: 1.2em; border-top: 2px solid #000;">
+                        <td style="padding: 6px 0; text-align: right;"><strong>TOTAL:</strong></td>
+                        <td style="padding: 6px 0; text-align: right;"><strong>£${order.total.toFixed(2)}</strong></td>
                     </tr>
                 </table>
             </div>
             
-            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #000;">
-                <p style="margin: 5px 0;"><strong>Thank you for your order!</strong></p>
-                <p style="margin: 5px 0;">www.antalyashawarma.com</p>
-                ${order.orderType === 'collection' ? '<p style="margin: 10px 0; font-weight: bold;">Please collect from restaurant</p>' : ''}
+            <div style="text-align: center; margin-top: 12px; padding-top: 8px; border-top: 1px dashed #000; font-size: 11px;">
+                <p style="margin: 3px 0;"><strong>Thank you for your order!</strong></p>
+                <p style="margin: 3px 0;">www.antalyashawarma.com</p>
+                ${order.orderType === 'collection' ? '<p style="margin: 6px 0; font-weight: bold;">Please collect from restaurant</p>' : ''}
             </div>
         </div>
     `;

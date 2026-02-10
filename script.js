@@ -1555,9 +1555,9 @@ function proceedToCheckout() {
     }
     
     if (!currentUser.address && !selectedLocation) {
-        // Error: No delivery address set
-        uiAlert('Please set your delivery address first', 'error');
-        pickLocation();
+        // No address - show location modal, user can still pick Collection
+        closeModal('cartModal');
+        showLocationConfirmation();
         return;
     }
     
@@ -1583,16 +1583,90 @@ function showLocationConfirmation() {
     const modal = document.getElementById('locationConfirmModal');
     const addressDisplay = document.getElementById('confirmLocationAddress');
     
-    if (modal && addressDisplay) {
-        const currentAddress = selectedLocation?.address || currentUser.address || 'No address set';
-        addressDisplay.textContent = currentAddress;
+    if (modal) {
+        // Reset to delivery mode
+        selectOrderType('delivery');
+        
+        if (addressDisplay) {
+            const currentAddress = selectedLocation?.address || currentUser?.address || 'No address set';
+            addressDisplay.textContent = currentAddress;
+        }
+        
+        // If no address at all, auto-switch to show that delivery needs location
+        if (!selectedLocation && !currentUser?.address) {
+            // No address - show both options, delivery section will show "No address set"
+            if (addressDisplay) {
+                addressDisplay.textContent = 'No address set — please set a location or choose Collection';
+            }
+        }
+        
         openModal('locationConfirmModal');
     }
 }
 
 function confirmCurrentLocation() {
+    // Validate location exists for delivery
+    if (!selectedLocation && !currentUser?.address) {
+        uiAlert('Please set a delivery address first, or choose Collection', 'warning');
+        return;
+    }
     closeModal('locationConfirmModal');
+    // Set order type to delivery
+    const orderTypeInput = document.getElementById('orderType');
+    if (orderTypeInput) orderTypeInput.value = 'delivery';
     openCheckoutModal();
+}
+
+// A) COLLECTION ORDER: Confirm collection and proceed to checkout
+function confirmCollectionOrder() {
+    closeModal('locationConfirmModal');
+    // Set order type to collection
+    const orderTypeInput = document.getElementById('orderType');
+    if (orderTypeInput) orderTypeInput.value = 'collection';
+    openCheckoutModal();
+}
+
+// A) ORDER TYPE TOGGLE: Switch between delivery and collection in modal
+function selectOrderType(type) {
+    const deliveryBtn = document.getElementById('toggleDeliveryBtn');
+    const collectionBtn = document.getElementById('toggleCollectionBtn');
+    const deliverySection = document.getElementById('deliveryLocationSection');
+    const collectionSectionEl = document.getElementById('collectionSection');
+    const modalTitle = document.getElementById('locationModalTitle');
+    
+    if (type === 'collection') {
+        // Highlight collection button
+        if (collectionBtn) {
+            collectionBtn.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+            collectionBtn.style.color = 'white';
+        }
+        if (deliveryBtn) {
+            deliveryBtn.style.background = 'transparent';
+            deliveryBtn.style.color = 'rgba(255,255,255,0.5)';
+        }
+        if (deliverySection) deliverySection.style.display = 'none';
+        if (collectionSectionEl) collectionSectionEl.style.display = 'block';
+        if (modalTitle) {
+            modalTitle.textContent = 'Collection Order';
+            modalTitle.style.color = '#10b981';
+        }
+    } else {
+        // Highlight delivery button
+        if (deliveryBtn) {
+            deliveryBtn.style.background = 'linear-gradient(45deg, #3b82f6, #2563eb)';
+            deliveryBtn.style.color = 'white';
+        }
+        if (collectionBtn) {
+            collectionBtn.style.background = 'transparent';
+            collectionBtn.style.color = 'rgba(255,255,255,0.5)';
+        }
+        if (deliverySection) deliverySection.style.display = 'block';
+        if (collectionSectionEl) collectionSectionEl.style.display = 'none';
+        if (modalTitle) {
+            modalTitle.textContent = 'Confirm Delivery Location';
+            modalTitle.style.color = '#3b82f6';
+        }
+    }
 }
 
 function changeDeliveryLocation() {
@@ -1601,11 +1675,15 @@ function changeDeliveryLocation() {
 }
 
 function openCheckoutModal() {
+    // Get order type from hidden input
+    const orderType = document.getElementById('orderType')?.value || 'delivery';
+    
     // Calculate totals
     let subtotal = cart.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
     let deliveryFee = 0;
     
-    if (selectedLocation) {
+    // Only calculate delivery fee for delivery orders
+    if (orderType === 'delivery' && selectedLocation) {
         const distance = calculateDistance(
             UK_CONFIG.restaurant.lat,
             UK_CONFIG.restaurant.lng,
@@ -1614,7 +1692,6 @@ function openCheckoutModal() {
         );
         const deliveryInfo = getDeliveryCost(distance);
         if (!deliveryInfo.available) {
-            // Error: Delivery not available for this location
             uiAlert(deliveryInfo.message, 'error');
             return;
         }
@@ -1629,7 +1706,11 @@ function openCheckoutModal() {
     const paymentTotal = document.getElementById('paymentTotal');
     
     if (checkoutAddress) {
-        checkoutAddress.textContent = selectedLocation?.address || currentUser.address || 'No address set';
+        if (orderType === 'collection') {
+            checkoutAddress.innerHTML = '<span style="color: #10b981; font-weight: 600;">Collection — Antalya Shawarma, 181 Market St, Hyde SK14 1HF</span>';
+        } else {
+            checkoutAddress.textContent = selectedLocation?.address || currentUser.address || 'No address set';
+        }
     }
     
     if (checkoutItems) {
@@ -1646,8 +1727,8 @@ function openCheckoutModal() {
                     <span>${formatPrice(subtotal)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
-                    <span>Delivery</span>
-                    <span>${deliveryFee > 0 ? formatPrice(deliveryFee) : 'FREE'}</span>
+                    <span>${orderType === 'collection' ? 'Collection' : 'Delivery'}</span>
+                    <span>${orderType === 'collection' ? 'FREE' : (deliveryFee > 0 ? formatPrice(deliveryFee) : 'FREE')}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-top: 0.5rem; color: #ff6b6b;">
                     <span>Total</span>
@@ -2096,7 +2177,7 @@ function showOrderHistory() {
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '🍎' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2119,7 +2200,7 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '🍎' : svgIcon('credit-ca
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">${new Date(o.createdAt).toLocaleString()}</span>
                         <!-- COLLECTION ORDER SUPPORT: Show order type -->
                         <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">
-                             ${o.orderType === 'collection' ? '🏪' : '🚗'} ${o.orderType === 'collection' ? 'COLLECTION' : 'DELIVERY'} | ${paymentIcon} ${o.paymentMethod || 'N/A'}
+                             ${o.orderType === 'collection' ? svgIcon('building', 12, 'icon-success') : svgIcon('truck', 12, 'icon-blue')} ${o.orderType === 'collection' ? 'COLLECTION' : 'DELIVERY'} | ${paymentIcon} ${o.paymentMethod === 'applepay' ? '' : (o.paymentMethod || 'N/A')}
                         </span>
                     </div>
                     
@@ -3482,32 +3563,8 @@ function toggleMobileMenu() {
     btn.innerHTML = nav.classList.contains('active') ? svgIcon('check', 16) : svgIcon('hamburger-menu', 16);
 }
 
-// COLLECTION ORDER SUPPORT: Toggle delivery fields based on order type
-function toggleDeliveryFields() {
-    const orderType = document.getElementById('orderType')?.value;
-    const deliverySection = document.querySelector('#checkoutModal .modal-content > div:first-of-type');
-    const collectionMessage = document.getElementById('collectionMessage');
-    
-    if (orderType === 'collection') {
-        // Hide delivery address section
-        if (deliverySection) {
-            deliverySection.style.display = 'none';
-        }
-        // Show collection message
-        if (collectionMessage) {
-            collectionMessage.style.display = 'block';
-        }
-    } else {
-        // Show delivery address section
-        if (deliverySection) {
-            deliverySection.style.display = 'block';
-        }
-        // Hide collection message
-        if (collectionMessage) {
-            collectionMessage.style.display = 'none';
-        }
-    }
-}
+// COLLECTION ORDER SUPPORT: Order type is now handled in location confirmation modal
+// selectOrderType() and confirmCollectionOrder() manage the toggle
 
 // ========================================
 // INITIALIZATION
@@ -3683,6 +3740,8 @@ window.confirmLocation = confirmLocation;
 window.pickLocationForProfile = pickLocationForProfile;
 window.showLocationConfirmation = showLocationConfirmation;
 window.confirmCurrentLocation = confirmCurrentLocation;
+window.confirmCollectionOrder = confirmCollectionOrder;
+window.selectOrderType = selectOrderType;
 window.changeDeliveryLocation = changeDeliveryLocation;
 window.openCheckoutModal = openCheckoutModal;
 

@@ -35,13 +35,19 @@
 <!-- PRINT BILL FEATURE: Print-only styles -->
 <style>
 @media print {
-    /* Hide everything except print content */
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+    
+    /* Hide EVERYTHING by default */
     body * {
         visibility: hidden;
     }
     
+    /* Show only the print content */
     #printBillContent, #printBillContent * {
-        visibility: visible;
+        visibility: visible !important;
     }
     
     #printBillContent {
@@ -49,41 +55,83 @@
         left: 0;
         top: 0;
         width: 100%;
-        padding: 20px;
-        background: white;
-        color: black;
+        max-width: 100%;
+        padding: 8px;
+        background: white !important;
+        color: black !important;
+        font-size: 11px;
+        line-height: 1.3;
     }
     
-    /* Hide all buttons, modals, navigation */
-    button, .modal, nav, header, footer, .no-print {
+    /* Force hide all UI elements */
+    button, .modal, nav, header, footer, .no-print,
+    .header, .mobile-bottom-nav, .hero, .menu-grid,
+    .social-footer, .category-bar, .reviews-section {
         display: none !important;
     }
     
-    /* Clean print layout */
+    /* Compact print table */
     .print-bill-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 10px 0;
+        margin: 6px 0;
+        page-break-inside: avoid;
     }
     
     .print-bill-table th,
     .print-bill-table td {
         border: 1px solid #000;
-        padding: 8px;
+        padding: 4px 6px;
         text-align: left;
+        font-size: 11px;
     }
     
     .print-bill-table th {
-        background: #f0f0f0;
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
         font-weight: bold;
     }
     
     .print-total {
-        font-size: 1.2em;
+        font-size: 1.1em;
         font-weight: bold;
         text-align: right;
-        margin-top: 20px;
+        margin-top: 8px;
     }
+    
+    /* Prevent page breaks inside content */
+    #printBillContent > * {
+        page-break-inside: avoid;
+    }
+    
+    /* Force everything on one page */
+    #printBillContent {
+        page-break-after: avoid;
+        page-break-before: avoid;
+        overflow: hidden;
+    }
+    
+    /* Apple Pay logo in print */
+    .apple-pay-print-logo {
+        height: 14px;
+        width: auto;
+        vertical-align: middle;
+    }
+}
+
+/* Apple Pay logo styling for dark UI */
+.apple-pay-logo {
+    height: 18px;
+    width: auto;
+    vertical-align: middle;
+    display: inline-block;
+}
+.apple-pay-logo-sm {
+    height: 14px;
+    width: auto;
+    vertical-align: middle;
+    display: inline-block;
 }
 </style>
 
@@ -189,8 +237,8 @@
         <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></symbol>
         <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M4.93 4.93l14.14 14.14"/></symbol>
         <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></symbol>
-        <symbol id="i-apple-pay" viewbox="0 0 24 24">
-            <image href="assets/system/apple-pay.svg" width="24" height="24" />
+        <symbol id="i-apple-pay" viewBox="0 0 24 24">
+            <image href="assets/system/apple-pay.png" width="24" height="24" />
         </symbol>
         <symbol id="i-apple-logo" viewbox="0 0 24 24">
             <image href="assets/system/apple-logo.svg" width="24" height="24" />
@@ -1109,23 +1157,7 @@
         </div>
     </div>
 
-    <div class="form-group">
-    <label>Order Type *</label>
-    <select id="orderType" required onchange="toggleDeliveryFields()">
-        <option value="delivery">🚗 Delivery</option>
-        <option value="collection">🏪 Collection (Pick up from restaurant)</option>
-    </select>
-</div>
 
-<!-- COLLECTION ORDER SUPPORT: Hidden message for collection orders -->
-<div id="collectionMessage" style="display: none; background: rgba(16,185,129,0.15); border: 2px solid #10b981; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-    <p style="margin: 0; color: #10b981; font-weight: 600;">
-        📍 Please collect your order from:<br>
-        <strong>Antalya Shawarma</strong><br>
-        123 Restaurant Street, City
-    </p>
-</div>
-    
     <!-- BANK SETTINGS MODAL (OWNER ONLY) -->
     <div class="modal" id="bankSettingsModal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 500px;">
@@ -1514,12 +1546,13 @@
                 <div id="checkoutItems"></div>
             </div>
             <form onsubmit="handlePayment(event)">
+                <input type="hidden" id="orderType" value="delivery">
                 <div class="form-group">
                     <label>Payment Method *</label>
                     <select id="paymentMethod" required onchange="toggleCardFields()">
                         <option value="">Choose payment method</option>
                         <option value="card">Card Payment</option>
-                        <option value="applepay"> Apple Pay</option>
+                        <option value="applepay">Apple Pay</option>
                     </select>
                 </div>
                 <div id="cardFieldsSection" style="display: none;">
@@ -1553,20 +1586,49 @@
             <button class="close-btn" onclick="closeModal('locationConfirmModal')">×</button>
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="margin-bottom: 0.5rem;"><svg class="svg-icon icon-blue" width="48" height="48" aria-hidden="true"><use href="#i-map-pin"></use></svg></div>
-                <h2 style="color: #3b82f6;">Confirm Delivery Location</h2>
+                <h2 id="locationModalTitle" style="color: #3b82f6;">How would you like your order?</h2>
             </div>
             
-            <div id="currentLocationDisplay" style="background: rgba(59,130,246,0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(59,130,246,0.3);">
-                <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem; font-size: 0.9rem;">Current delivery address:</p>
-                <p id="confirmLocationAddress" style="color: white; margin: 0; font-weight: 600; font-size: 1.1rem;"></p>
-            </div>
-            
-            <div style="display: grid; gap: 1rem;">
-                <button onclick="confirmCurrentLocation()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                    <svg class="svg-icon icon-success" width="18" height="18" aria-hidden="true"><use href="#i-check-circle"></use></svg> Use This Location
+            <!-- ORDER TYPE TOGGLE -->
+            <div style="display: flex; gap: 0; margin-bottom: 1.5rem; background: rgba(255,255,255,0.06); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                <button id="toggleDeliveryBtn" onclick="selectOrderType('delivery')" style="flex: 1; padding: 0.9rem 1rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.25s ease; background: linear-gradient(45deg, #3b82f6, #2563eb); color: white;">
+                    <svg class="svg-icon" width="16" height="16" aria-hidden="true"><use href="#i-truck"></use></svg> Delivery
                 </button>
-                <button onclick="changeDeliveryLocation()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600;">
-                    <svg class="svg-icon" width="16" height="16" aria-hidden="true"><use href="#i-map-pin"></use></svg> Change Location
+                <button id="toggleCollectionBtn" onclick="selectOrderType('collection')" style="flex: 1; padding: 0.9rem 1rem; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.25s ease; background: transparent; color: rgba(255,255,255,0.5);">
+                    <svg class="svg-icon" width="16" height="16" aria-hidden="true"><use href="#i-building"></use></svg> Collection
+                </button>
+            </div>
+            
+            <!-- DELIVERY SECTION -->
+            <div id="deliveryLocationSection">
+                <div id="currentLocationDisplay" style="background: rgba(59,130,246,0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(59,130,246,0.3);">
+                    <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem; font-size: 0.9rem;">Current delivery address:</p>
+                    <p id="confirmLocationAddress" style="color: white; margin: 0; font-weight: 600; font-size: 1.1rem;"></p>
+                </div>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <button onclick="confirmCurrentLocation()" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                        <svg class="svg-icon icon-success" width="18" height="18" aria-hidden="true"><use href="#i-check-circle"></use></svg> Use This Location
+                    </button>
+                    <button onclick="changeDeliveryLocation()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <svg class="svg-icon" width="16" height="16" aria-hidden="true"><use href="#i-map-pin"></use></svg> Change Location
+                    </button>
+                </div>
+            </div>
+            
+            <!-- COLLECTION SECTION (hidden by default) -->
+            <div id="collectionSection" style="display: none;">
+                <div style="background: rgba(16,185,129,0.12); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(16,185,129,0.3);">
+                    <div style="text-align: center;">
+                        <svg class="svg-icon icon-success" width="32" height="32" aria-hidden="true"><use href="#i-building"></use></svg>
+                        <p style="color: #10b981; font-weight: 700; margin: 0.5rem 0 0.3rem; font-size: 1.05rem;">Collect from Restaurant</p>
+                        <p style="color: rgba(255,255,255,0.7); margin: 0; font-size: 0.9rem;">Antalya Shawarma</p>
+                        <p style="color: rgba(255,255,255,0.5); margin: 0.2rem 0 0; font-size: 0.85rem;">181 Market Street, Hyde, SK14 1HF</p>
+                    </div>
+                </div>
+                
+                <button onclick="confirmCollectionOrder()" style="width: 100%; background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    <svg class="svg-icon icon-success" width="18" height="18" aria-hidden="true"><use href="#i-check-circle"></use></svg> Continue to Checkout
                 </button>
             </div>
         </div>
