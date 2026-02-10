@@ -2177,7 +2177,7 @@ function showOrderHistory() {
             
             const statusText = o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
