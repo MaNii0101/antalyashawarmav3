@@ -141,7 +141,7 @@ function showRestaurantDashboard() {
 
                             <!-- CASH PAYMENT REMOVED (business decision): Show payment method without cash -->
                         <div style="background: ${order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                              ${order.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
+                              ${order.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
                         </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -527,7 +527,7 @@ function printBill(orderId) {
     
     // Build payment method display (with Apple Pay logo for print)
     const paymentDisplay = order.paymentMethod === 'applepay' 
-        ? '<img src="assets/system/apple-pay.png" style="height:14px;vertical-align:middle;"> Apple Pay (PAID)'
+        ? '<img src="apple-pay.png" style="height:14px;vertical-align:middle;"> Apple Pay (PAID)'
         : 'Card (PAID)';
     
     // Build order type display - clean text, no emojis
