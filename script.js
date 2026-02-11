@@ -13,7 +13,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: WARNING ICON -->
             <img
-                src="warning.svg"
+                src="assets/system/warning.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -28,7 +28,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
             <img
-                src="close.svg"
+                src="assets/system/close.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -1411,7 +1411,7 @@ function showFavorites() {
     if (favItems.length === 0) {
         content.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.5);">
-                <div style="font-size: 4rem;">' + svgIcon('heart', 48, 'icon-pink') + '</div>
+                <div style="font-size: 4rem;">${svgIcon('heart', 48, 'icon-pink')}</div> <!-- FIX: was broken quote concatenation inside template literal -->
                 <p>No favorites yet</p>
                 <p style="font-size: 0.9rem;">Tap the heart on items to add them here</p>
             </div>
@@ -1423,7 +1423,7 @@ function showFavorites() {
                     const isUnavailable = item.available === false;
                     const imageDisplay = item.image 
                         ? `<img src="${item.image}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 10px;">` 
-                        : `<span style="font-size: 2rem;">${item.icon}</span>`;
+                        : `<span style="font-size: 2rem;">${getFoodEmoji(item.icon)}</span>`; // FIX: was showing raw text like "wrap" instead of emoji
                     
                     return `
                     <div style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); ${isUnavailable ? 'opacity: 0.5;' : ''}">
@@ -2180,7 +2180,7 @@ function showOrderHistory() {
             // CHANGED: Show friendly status text for 'ready' status
             const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -4270,7 +4270,7 @@ function showPendingOnly() {
     
     const pendingOnly = pendingOrders.filter(o => o.status === 'pending');
     if (pendingOnly.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);"><div style="font-size: 2rem;">${svgIcon("check-circle", 32, "icon-success")}</div><p>No pending orders</p></div>';
+        container.innerHTML = `<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.4);"><div style="font-size: 2rem;">${svgIcon("check-circle", 32, "icon-success")}</div><p>No pending orders</p></div>`; // FIX: was single quotes, ${} not interpolated
     } else {
         showToast('Showing ' + pendingOnly.length + ' pending orders', 'info');
     }
