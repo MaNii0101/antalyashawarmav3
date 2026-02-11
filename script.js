@@ -2169,15 +2169,18 @@ function showOrderHistory() {
         `;
     } else {
         content.innerHTML = uniqueOrders.map(o => {
-            const statusColor = o.status === 'completed' ? '#2a9d8f' : 
-                               o.status === 'pending' ? '#f4a261' : 
+            // CHANGED: Added 'ready' status color for collection orders
+            const statusColor = o.status === 'completed' ? '#2a9d8f' :
+                               o.status === 'pending' ? '#f4a261' :
                                o.status === 'cancelled' ? '#ef4444' :
-                               o.status === 'out_for_delivery' ? '#3b82f6' : 
+                               o.status === 'ready' ? '#f59e0b' :
+                               o.status === 'out_for_delivery' ? '#3b82f6' :
                                o.status === 'accepted' || o.status === 'waiting_driver' ? '#2a9d8f' : '#ef4444';
             
-            const statusText = o.status.replace(/_/g, ' ').toUpperCase();
+            // CHANGED: Show friendly status text for 'ready' status
+            const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2204,6 +2207,21 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" c
                         </span>
                     </div>
                     
+                    ${/* CHANGED: Show estimated time for active orders */ ''}
+                    ${o.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'out_for_delivery'].includes(o.status) ? `
+                        <div style="font-size: 0.8rem; color: #3b82f6; margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
+                            ${svgIcon('clock', 12, 'icon-blue')} Estimated time: <strong>${o.estimatedTime} min</strong>
+                        </div>
+                    ` : ''}
+
+                    ${/* CHANGED: Show ready for pickup notice for collection orders */ ''}
+                    ${o.status === 'ready' && o.orderType === 'collection' ? `
+                        <div style="margin-top: 0.8rem; padding: 0.8rem; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; text-align: center;">
+                            <div style="font-weight: 600; color: #f59e0b; font-size: 0.95rem;">${svgIcon('check-circle', 14, 'icon-warning')} Your order is ready for pickup!</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 0.3rem;">Please come to the restaurant to collect your order</div>
+                        </div>
+                    ` : ''}
+
                     ${o.driverRated ? `<div style="font-size: 0.75rem; color: #f4a261; margin-top: 0.4rem;">${svgIcon('star', 12)} Rated ${o.driverRating}/5</div>` : ''}
                     
                     ${/* RATE DRIVER: Show for completed orders with driver that haven't been rated */ ''}
@@ -2230,9 +2248,12 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" c
                         </button>
                     ` : ''}
                     
+                    ${/* CHANGED: Hide Reorder button when order is PENDING */ ''}
+                    ${o.status !== 'pending' ? `
                     <button onclick="reorderFromHistory('${o.id}'); closeModal('orderHistoryModal');" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; font-size: 0.85rem;">
                         ${svgIcon("refresh", 14, "icon-blue")} Reorder
                     </button>
+                    ` : ''}
                 </div>
             `;
         }).join('');
@@ -2244,9 +2265,10 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" c
 function updateOrdersBadge() {
     const badge = document.getElementById('ordersBadge');
     if (badge && currentUser) {
-        const activeOrders = pendingOrders.filter(o => 
-            o.userId === currentUser.email && 
-            ['pending', 'accepted', 'waiting_driver', 'out_for_delivery'].includes(o.status)
+        // CHANGED: Added 'ready' status to active order count
+        const activeOrders = pendingOrders.filter(o =>
+            o.userId === currentUser.email &&
+            ['pending', 'accepted', 'ready', 'waiting_driver', 'out_for_delivery'].includes(o.status)
         ).length;
         badge.textContent = activeOrders;
         badge.style.display = activeOrders > 0 ? 'flex' : 'none';

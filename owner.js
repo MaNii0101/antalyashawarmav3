@@ -114,10 +114,11 @@ function showRestaurantDashboard() {
                     : svgIcon('user-circle', 40, 'icon-muted');
                 
                 return `
-                <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 4px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'accepted' ? '#10b981' : '#3b82f6'};">
+                <!-- CHANGED: Added ready status color support -->
+                <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 4px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'ready' ? '#f59e0b' : order.status === 'accepted' ? '#10b981' : '#3b82f6'};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <span style="font-weight: 700; font-size: 1.1rem;">#${order.id}</span>
-                        <span style="background: ${order.status === 'pending' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${order.status === 'pending' ? '#f59e0b' : '#10b981'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">${order.status.toUpperCase()}</span>
+                        <span style="background: ${order.status === 'pending' ? 'rgba(245,158,11,0.2)' : order.status === 'ready' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${order.status === 'pending' ? '#f59e0b' : order.status === 'ready' ? '#f59e0b' : '#10b981'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">${order.status === 'ready' ? 'READY FOR PICKUP' : order.status.toUpperCase()}</span>
                     </div>
                     
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
@@ -141,7 +142,7 @@ function showRestaurantDashboard() {
 
                             <!-- CASH PAYMENT REMOVED (business decision): Show payment method without cash -->
                         <div style="background: ${order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                              ${order.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
+                              ${order.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
                         </div>
                     
                     <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -164,13 +165,22 @@ function showRestaurantDashboard() {
         <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("x-circle", 14, "icon-danger")} Reject</button>
     </div>
 ` : order.status === 'accepted' ? `
-    <!-- COLLECTION ORDER SUPPORT: Different buttons for collection vs delivery -->
+    <!-- CHANGED: Collection orders get Ready + Complete buttons + estimated time -->
     ${order.orderType === 'collection' ? `
         <div style="display: grid; gap: 0.5rem;">
-            <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
-                <div style="font-weight: 600; color: #10b981;">✅ Ready for Collection</div>
-                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Customer will pick up from restaurant</div>
-            </div>
+            ${order.estimatedTime ? `
+                <div style="background: rgba(59,130,246,0.15); padding: 0.8rem 1rem; border-radius: 8px; text-align: center; font-size: 0.9rem;">
+                    ${svgIcon('clock', 14, 'icon-blue')} Est. time: <strong>${order.estimatedTime} min</strong>
+                    <button onclick="showEstimatedTimePrompt('${order.id}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.8rem; text-decoration: underline; margin-left: 0.5rem;">Change</button>
+                </div>
+            ` : `
+                <button onclick="showEstimatedTimePrompt('${order.id}')" style="background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    ${svgIcon('clock', 14, 'icon-blue')} Set Estimated Time
+                </button>
+            `}
+            <button onclick="markOrderReady('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                ${svgIcon('check-circle', 14, 'icon-success')} Ready for Pickup
+            </button>
             <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
                 ${svgIcon("printer", 14)} Print Bill
             </button>
@@ -186,6 +196,20 @@ function showRestaurantDashboard() {
             </button>
         </div>
     `}
+` : order.status === 'ready' ? `
+    <!-- CHANGED: Ready status - show Complete Order button for collection -->
+    <div style="display: grid; gap: 0.5rem;">
+        <div style="background: rgba(245,158,11,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-weight: 600; color: #f59e0b;">${svgIcon('check-circle', 16, 'icon-warning')} Ready for Pickup</div>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 0.3rem;">Waiting for customer to collect</div>
+        </div>
+        <button onclick="completeCollectionOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+            ${svgIcon('check-circle', 14, 'icon-success')} Complete Order
+        </button>
+        <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            ${svgIcon("printer", 14)} Print Bill
+        </button>
+    </div>
 ` : order.status === 'driver_assigned' || order.status === 'out_for_delivery' ? `
     <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
         <div style="font-weight: 600; color: #10b981; text-align: center;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
@@ -225,7 +249,7 @@ function acceptOrder(orderId) {
     order.status = 'accepted';
     order.acceptedAt = new Date().toISOString();
     saveData();
-    
+
     // Send notification to customer
     addNotification(order.userId, {
         type: 'order_accepted',
@@ -233,11 +257,104 @@ function acceptOrder(orderId) {
         message: `Your order #${orderId} has been accepted and is being prepared.`,
         orderId: orderId
     });
-    
+
+    playNotificationSound();
+
+    // CHANGED: Show estimated time prompt for collection orders after accepting
+    if (order.orderType === 'collection') {
+        showEstimatedTimePrompt(orderId);
+    } else {
+        showRestaurantDashboard();
+        uiAlert(`Order #${orderId} accepted!<br><br>Click "Notify All Drivers" to alert available drivers.`, 'success');
+    }
+}
+
+// CHANGED: New function - set estimated time for collection orders
+function showEstimatedTimePrompt(orderId) {
+    const order = pendingOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const time = prompt('Set estimated time for this order (minutes):\n\nSuggested: 10, 15, 20, 30', '15');
+    if (time !== null) {
+        const mins = parseInt(time);
+        if (!isNaN(mins) && mins > 0) {
+            order.estimatedTime = mins;
+            saveData();
+
+            // Notify customer of estimated time
+            addNotification(order.userId, {
+                type: 'order_estimated_time',
+                title: 'Estimated Time Set',
+                message: `Your order #${orderId} will be ready in approximately ${mins} minutes.`,
+                orderId: orderId
+            });
+        }
+    }
+
+    showRestaurantDashboard();
+    uiAlert(`Order #${orderId} accepted!`, 'success');
+}
+
+// CHANGED: New function - mark collection order as ready for pickup
+function markOrderReady(orderId) {
+    const order = pendingOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    order.status = 'ready';
+    order.readyAt = new Date().toISOString();
+    saveData();
+
+    // Update in order history too
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = 'ready';
+        historyOrder.readyAt = order.readyAt;
+    }
+
+    // Send notification to customer
+    addNotification(order.userId, {
+        type: 'order_ready',
+        title: 'Order Ready for Pickup!',
+        message: `Your order #${orderId} is ready for pickup. Please come to the restaurant.`,
+        orderId: orderId
+    });
+
     playNotificationSound();
     showRestaurantDashboard();
-    
-    uiAlert(`Order #${orderId} accepted!<br><br>Click "Notify All Drivers" to alert available drivers.`, 'success');
+    uiAlert(`Order #${orderId} is ready for pickup! Customer has been notified.`, 'success');
+}
+
+// CHANGED: New function - complete a collection order
+function completeCollectionOrder(orderId) {
+    const orderIndex = pendingOrders.findIndex(o => o.id === orderId);
+    if (orderIndex === -1) return;
+
+    const order = pendingOrders[orderIndex];
+    order.status = 'completed';
+    order.completedAt = new Date().toISOString();
+
+    // Update in order history
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = 'completed';
+        historyOrder.completedAt = order.completedAt;
+    }
+
+    // Remove from pending
+    pendingOrders.splice(orderIndex, 1);
+    saveData();
+
+    // Send notification to customer
+    addNotification(order.userId, {
+        type: 'order_completed',
+        title: 'Order Completed!',
+        message: `Your order #${orderId} has been completed. Thank you!`,
+        orderId: orderId
+    });
+
+    playNotificationSound();
+    showRestaurantDashboard();
+    uiAlert(`Order #${orderId} completed!`, 'success');
 }
 
 function notifyAllAvailableDrivers(orderId) {
@@ -526,8 +643,9 @@ function printBill(orderId) {
     }
     
     // Build payment method display (with Apple Pay logo for print)
-    const paymentDisplay = order.paymentMethod === 'applepay' 
-        ? '<img src="apple-pay.png" style="height:14px;vertical-align:middle;"> Apple Pay (PAID)'
+    // CHANGED: Use apple-pay-logo class for consistent sizing instead of inline 14px
+    const paymentDisplay = order.paymentMethod === 'applepay'
+        ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo" style="vertical-align:middle;"> Apple Pay (PAID)'
         : 'Card (PAID)';
     
     // Build order type display - clean text, no emojis
@@ -623,7 +741,7 @@ function printBill(orderId) {
             <div style="text-align: center; margin-top: 12px; padding-top: 8px; border-top: 1px dashed #000; font-size: 11px;">
                 <p style="margin: 3px 0;"><strong>Thank you for your order!</strong></p>
                 <p style="margin: 3px 0;">www.antalyashawarma.com</p>
-                ${order.orderType === 'collection' ? '<p style="margin: 6px 0; font-weight: bold;">Please collect from restaurant</p>' : ''}
+                ${order.orderType === 'collection' ? '<p style="margin: 6px 0; font-weight: bold;">you can come back in every time you like</p>' : ''}
             </div>
         </div>
     `;
@@ -675,12 +793,16 @@ function showDriverManagementModal() {
 function toggleAddDriverForm() {
     const formContent = document.getElementById('addDriverFormContent');
     const toggleIcon = document.getElementById('addDriverToggle');
-    
+
+    // CHANGED: Use innerHTML instead of textContent so SVG renders properly (not raw markup)
     if (formContent && toggleIcon) {
         formContent.classList.toggle('collapsed');
-        toggleIcon.textContent = formContent.classList.contains('collapsed') ? svgIcon('chevron-right', 14) : svgIcon('chevron-down', 14);
+        toggleIcon.innerHTML = formContent.classList.contains('collapsed')
+            ? '<svg class="svg-icon" width="14" height="14" aria-hidden="true"><use href="#i-chevron-right"></use></svg>'
+            : '<svg class="svg-icon" width="14" height="14" aria-hidden="true"><use href="#i-chevron-down"></use></svg>';
     }
 }
+
 
 function renderDriverList() {
     const container = document.getElementById('driverListContainer');
@@ -1101,12 +1223,13 @@ function updateOwnerStats() {
     if (newCustomersEl) newCustomersEl.textContent = newUsersToday;
     if (avgRatingEl) avgRatingEl.textContent = '5.0'; 
     
-    // Popular Food Stats - calculated from COMPLETED orders only
+    // CHANGED: Popular Food Stats - count from COMPLETED orders only (both delivery + collection)
+    // Excludes pending, accepted, ready, cancelled, rejected to avoid inflating stats
     const popularItemsList = document.getElementById('popularItemsList');
     if (popularItemsList) {
         const itemCounts = {};
-        
-        // Count items from completed orders only
+
+        // Count items from completed orders only (includes both delivery and collection completed)
         orderHistory
             .filter(o => o.status === 'completed')
             .forEach(order => {
@@ -1122,19 +1245,22 @@ function updateOwnerStats() {
                     });
                 }
             });
-        
+
         // Sort by count and get top 5
         const topItems = Object.values(itemCounts)
             .sort((a, b) => b.count - a.count)
             .slice(0, 5);
-        
+
         if (topItems.length > 0) {
-            popularItemsList.innerHTML = topItems.map(item => `
+            // CHANGED: Use getFoodEmoji to convert icon keywords to proper emoji
+            popularItemsList.innerHTML = topItems.map(item => {
+                const iconDisplay = typeof getFoodEmoji === 'function' ? getFoodEmoji(item.icon) : (item.icon || '🍽️');
+                return `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.85rem;">
-                    <span>${item.icon} ${item.name}</span>
+                    <span>${iconDisplay} ${item.name}</span>
                     <span style="color: #10b981; font-weight: 600;">${item.count}</span>
                 </div>
-            `).join('');
+            `}).join('');
         } else {
             popularItemsList.innerHTML = `
                 <div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; text-align: center; padding: 1rem;">
@@ -1644,6 +1770,10 @@ window.saveDriverChanges = saveDriverChanges;
 window.toggleDriverStatus = toggleDriverStatus;
 window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
 window.driverAcceptOrder = driverAcceptOrder;
+// CHANGED: Export new collection order functions
+window.showEstimatedTimePrompt = showEstimatedTimePrompt;
+window.markOrderReady = markOrderReady;
+window.completeCollectionOrder = completeCollectionOrder;
 window.showBankSettingsModal = showBankSettingsModal;
 window.saveBankSettings = saveBankSettings;
 window.updateOwnerStats = updateOwnerStats;
