@@ -316,25 +316,28 @@ td .svg-icon {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* FIX TASK 4: Category icon container - fixed dimensions for consistent image display */
 .category-icon {
     font-size: clamp(2rem, 5vw, 2.8rem);
     transition: all 0.3s;
-    /* FIX: Ensure category icon container fits images properly */
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    width: clamp(60px, 8vw, 80px);
+    height: clamp(60px, 8vw, 80px);
     position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    flex-shrink: 0;
 }
 
-/* FIX: Category image styling for proper sizing and cropping */
+/* FIX TASK 4: Category image - proper cover fit, no distortion, rounded corners */
 .category-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    border-radius: 12px;
+    border-radius: 14px;
     display: block;
 }
 
@@ -1343,3 +1346,244 @@ td .svg-icon {
 .mobile-menu-btn .ui-icon {
     flex: 0 0 auto;
 }
+
+/* ========================================
+   TASK 1 FIX: Restaurant Dashboard Order Cards
+   Redesigned for better mobile UX + cleaner layout
+   ======================================== */
+.rd-order-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.15s;
+}
+
+.rd-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.rd-order-id {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: white;
+}
+
+.rd-status-badge {
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.rd-status-pending { background: rgba(245,158,11,0.2); color: #f59e0b; }
+.rd-status-accepted { background: rgba(16,185,129,0.2); color: #10b981; }
+.rd-status-ready { background: rgba(245,158,11,0.2); color: #f59e0b; }
+.rd-status-driver { background: rgba(59,130,246,0.2); color: #3b82f6; }
+
+.rd-order-body {
+    padding: 0.8rem 1rem;
+}
+
+.rd-customer-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+}
+
+.rd-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.15);
+}
+
+.rd-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rd-customer-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rd-customer-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.15rem;
+}
+
+.rd-customer-detail {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.55);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rd-meta-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.7rem;
+}
+
+.rd-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.rd-tag-collection { background: rgba(16,185,129,0.15); color: #10b981; }
+.rd-tag-delivery { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.rd-tag-applepay { background: rgba(0,0,0,0.3); color: white; }
+.rd-tag-card { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.rd-tag-time { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); }
+
+.rd-items-box {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 0.7rem;
+}
+
+.rd-items-title {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rd-item-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 0.2rem 0;
+    color: rgba(255,255,255,0.85);
+}
+
+.rd-total-line {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 800;
+    font-size: 1rem;
+    padding-top: 0.5rem;
+    margin-top: 0.4rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.rd-total-amount {
+    color: #ff6b6b;
+}
+
+/* FIX: ETA display bar */
+.rd-eta-bar {
+    background: rgba(59,130,246,0.12);
+    padding: 0.55rem 0.8rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #60a5fa;
+    margin-bottom: 0.6rem;
+}
+
+.rd-eta-bar strong { color: #93bbfc; }
+.rd-eta-change {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    cursor: pointer;
+    font-size: 0.78rem;
+    text-decoration: underline;
+    padding: 0;
+    margin-left: 0.4rem;
+}
+
+/* FIX: Sticky action bar inside each order card */
+.rd-actions {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem 0.8rem;
+    background: rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.rd-actions-2col { grid-template-columns: 1fr 1fr; }
+.rd-actions-1col { grid-template-columns: 1fr; }
+
+.rd-btn {
+    border: none;
+    padding: 0.7rem 0.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: transform 0.1s, opacity 0.1s;
+    color: white;
+}
+
+.rd-btn:active { transform: scale(0.97); opacity: 0.9; }
+
+.rd-btn-accept { background: linear-gradient(135deg, #10b981, #059669); }
+.rd-btn-reject { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.rd-btn-eta { background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+.rd-btn-ready { background: linear-gradient(135deg, #f59e0b, #d97706); font-size: 0.95rem; padding: 0.8rem; }
+.rd-btn-complete { background: linear-gradient(135deg, #10b981, #059669); font-size: 0.95rem; padding: 0.8rem; }
+.rd-btn-notify { background: linear-gradient(135deg, #f59e0b, #d97706); font-size: 0.95rem; padding: 0.8rem; }
+.rd-btn-assign { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.rd-btn-print { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+.rd-ready-banner {
+    background: rgba(245,158,11,0.15);
+    border: 1px solid rgba(245,158,11,0.3);
+    padding: 0.7rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.rd-ready-banner-title {
+    font-weight: 700;
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+.rd-ready-banner-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 0.2rem;
+}
+
+/* Category icon desktop sizing handled in main .category-icon rule above */

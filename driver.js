@@ -318,7 +318,14 @@ const profilePic = driver.profilePicture  // ← Line 202
                                     <span style="color: #6b7280; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">${SVG_ICONS.ruler} ${order.distanceMiles} mi</span>
                                 ` : ''}
                             </div>
-                            
+
+                            ${/* FIX TASK 2: Show delivery ETA from restaurant */ ''}
+                            ${order.estimatedTime ? `
+                            <div style="background: #eff6ff; padding: 0.6rem 0.8rem; border-radius: 10px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid #bfdbfe;">
+                                <span style="color: #2563eb; font-size: 0.9rem; font-weight: 600;">${SVG_ICONS.timer || '⏱'} ETA: <strong>${order.estimatedTime} min</strong></span>
+                            </div>
+                            ` : ''}
+
                             <!-- Action Buttons -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
                                 <button onclick="openDirections('${encodeURIComponent(order.address)}', '${order.deliveryLocation?.lat || ''}', '${order.deliveryLocation?.lng || ''}')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">

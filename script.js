@@ -13,7 +13,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: WARNING ICON -->
             <img
-                src="warning.svg"
+                src="assets/system/warning.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -28,7 +28,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
             <img
-                src="close.svg"
+                src="assets/system/close.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -2180,7 +2180,7 @@ function showOrderHistory() {
             // CHANGED: Show friendly status text for 'ready' status
             const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2208,7 +2208,8 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" c
                     </div>
                     
                     ${/* CHANGED: Show estimated time for active orders */ ''}
-                    ${o.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'out_for_delivery'].includes(o.status) ? `
+                    ${/* FIX TASK 2: Show ETA for both collection + delivery active orders */ ''}
+                    ${o.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(o.status) ? `
                         <div style="font-size: 0.8rem; color: #3b82f6; margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
                             ${svgIcon('clock', 12, 'icon-blue')} Estimated time: <strong>${o.estimatedTime} min</strong>
                         </div>

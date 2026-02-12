@@ -106,119 +106,103 @@ function showRestaurantDashboard() {
                 </div>
             `;
         } else {
+            // FIX TASK 1+2: Redesigned order cards with CSS classes + delivery ETA support
             ordersContainer.innerHTML = visibleOrders.map(order => {
-                // Get user profile picture
                 const user = userDatabase.find(u => u.email === order.userId);
-                const profilePic = user && user.profilePicture 
-                    ? `<img src="${user.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
-                    : svgIcon('user-circle', 40, 'icon-muted');
-                
-                return `
-                <!-- CHANGED: Added ready status color support -->
-                <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 4px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'ready' ? '#f59e0b' : order.status === 'accepted' ? '#10b981' : '#3b82f6'};">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <span style="font-weight: 700; font-size: 1.1rem;">#${order.id}</span>
-                        <span style="background: ${order.status === 'pending' ? 'rgba(245,158,11,0.2)' : order.status === 'ready' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${order.status === 'pending' ? '#f59e0b' : order.status === 'ready' ? '#f59e0b' : '#10b981'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">${order.status === 'ready' ? 'READY FOR PICKUP' : order.status.toUpperCase()}</span>
-                    </div>
-                    
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; flex-shrink: 0; border: 3px solid rgba(255,255,255,0.2);">
-                            ${profilePic}
-                        </div>
-                        <div style="flex: 1; font-size: 0.95rem;">
-                            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem;">${order.userName}</div>
-                            <div style="color: rgba(255,255,255,0.7);">${svgIcon("phone", 14, "icon-teal")} ${order.userPhone || 'N/A'}</div>
-                            <div style="color: rgba(255,255,255,0.7);">${svgIcon("map-pin", 14, "icon-blue")} ${order.address || 'N/A'}</div>
-                            ${user && user.dob ? `<div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">DOB: ${new Date(user.dob).toLocaleDateString()}</div>` : ''}
-                        </div>
-                    </div>
-                    
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1rem;">${svgIcon("clock", 14, "icon-muted")} ${new Date(order.createdAt).toLocaleString()}</div>
-                    
-                             <!-- COLLECTION ORDER SUPPORT: Show order type prominently -->
-                        <div style="background: ${order.orderType === 'collection' ? 'rgba(16,185,129,0.2)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                             ${order.orderType === 'collection' ? svgIcon('building', 16, 'icon-success') + ' COLLECTION' : svgIcon('truck', 16, 'icon-blue') + ' DELIVERY'}
-                        </div>
+                const profilePic = user && user.profilePicture
+                    ? `<img src="${user.profilePicture}" alt="">`
+                    : svgIcon('user-circle', 28, 'icon-muted');
 
-                            <!-- CASH PAYMENT REMOVED (business decision): Show payment method without cash -->
-                        <div style="background: ${order.paymentMethod === 'applepay' ? 'rgba(0,0,0,0.3)' : 'rgba(59,130,246,0.2)'}; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-                              ${order.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo" alt="Apple Pay"> Apple Pay' : svgIcon('credit-card', 14, 'icon-purple') + ' CARD'} - PAID
+                const statusClass = order.status === 'pending' ? 'rd-status-pending'
+                    : order.status === 'ready' ? 'rd-status-ready'
+                    : order.status === 'accepted' ? 'rd-status-accepted'
+                    : 'rd-status-driver';
+
+                const statusLabel = order.status === 'ready' ? 'READY FOR PICKUP' : order.status.replace(/_/g, ' ').toUpperCase();
+                const isCollection = order.orderType === 'collection';
+                const typeClass = isCollection ? 'rd-tag-collection' : 'rd-tag-delivery';
+                const typeLabel = isCollection ? svgIcon('building', 13, 'icon-success') + ' COLLECTION' : svgIcon('truck', 13, 'icon-blue') + ' DELIVERY';
+                const payClass = order.paymentMethod === 'applepay' ? 'rd-tag-applepay' : 'rd-tag-card';
+                const payLabel = order.paymentMethod === 'applepay'
+                    ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
+                    : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
+
+                // FIX TASK 2: ETA display for BOTH collection and delivery
+                let etaHtml = '';
+                if (order.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(order.status)) {
+                    etaHtml = `<div class="rd-eta-bar">${svgIcon('clock', 13, 'icon-blue')} Est: <strong>${order.estimatedTime} min</strong>
+                        <button class="rd-eta-change" onclick="showEstimatedTimePrompt('${order.id}')">Change</button></div>`;
+                }
+
+                // Build action buttons based on status
+                let actionsHtml = '';
+                if (order.status === 'pending') {
+                    actionsHtml = `<div class="rd-actions rd-actions-2col">
+                        <button class="rd-btn rd-btn-accept" onclick="acceptOrder('${order.id}')">${svgIcon("check-circle", 13)} Accept</button>
+                        <button class="rd-btn rd-btn-reject" onclick="rejectOrder('${order.id}')">${svgIcon("x-circle", 13)} Reject</button>
+                    </div>`;
+                } else if (order.status === 'accepted') {
+                    if (isCollection) {
+                        actionsHtml = `<div class="rd-actions rd-actions-1col">
+                            ${!order.estimatedTime ? `<button class="rd-btn rd-btn-eta" onclick="showEstimatedTimePrompt('${order.id}')">${svgIcon('clock', 13, 'icon-blue')} Set Estimated Time</button>` : ''}
+                            <button class="rd-btn rd-btn-ready" onclick="markOrderReady('${order.id}')">${svgIcon('check-circle', 13)} Ready for Pickup</button>
+                            <button class="rd-btn rd-btn-print" onclick="printBill('${order.id}')">${svgIcon("printer", 13)} Print</button>
+                        </div>`;
+                    } else {
+                        // FIX TASK 2: Delivery orders also get ETA + driver controls
+                        actionsHtml = `<div class="rd-actions rd-actions-1col">
+                            ${!order.estimatedTime ? `<button class="rd-btn rd-btn-eta" onclick="showEstimatedTimePrompt('${order.id}')">${svgIcon('clock', 13, 'icon-blue')} Set Estimated Time</button>` : ''}
+                            <button class="rd-btn rd-btn-notify" onclick="notifyAllAvailableDrivers('${order.id}')">${svgIcon("megaphone", 13)} Notify All Drivers</button>
+                            <button class="rd-btn rd-btn-assign" onclick="assignDriver('${order.id}')">${svgIcon("car", 13)} Assign Driver</button>
+                            <button class="rd-btn rd-btn-print" onclick="printBill('${order.id}')">${svgIcon("printer", 13)} Print</button>
+                        </div>`;
+                    }
+                } else if (order.status === 'ready') {
+                    actionsHtml = `<div class="rd-actions rd-actions-1col">
+                        <div class="rd-ready-banner">
+                            <div class="rd-ready-banner-title">${svgIcon('check-circle', 14, 'icon-warning')} Ready for Pickup</div>
+                            <div class="rd-ready-banner-sub">Waiting for customer to collect</div>
                         </div>
-                    
-                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Items:</div>
-                        ${order.items.map(item => `
-                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem;">
-                                <span>${item.icon} ${item.name} x${item.quantity}</span>
-                                <span>${formatPrice(item.finalPrice * item.quantity)}</span>
+                        <button class="rd-btn rd-btn-complete" onclick="completeCollectionOrder('${order.id}')">${svgIcon('check-circle', 13)} Complete Order</button>
+                        <button class="rd-btn rd-btn-print" onclick="printBill('${order.id}')">${svgIcon("printer", 13)} Print</button>
+                    </div>`;
+                } else if (order.status === 'driver_assigned' || order.status === 'out_for_delivery') {
+                    actionsHtml = `<div class="rd-actions rd-actions-1col">
+                        <div class="rd-ready-banner" style="border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.15);">
+                            <div class="rd-ready-banner-title" style="color: #10b981;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
+                        </div>
+                        <button class="rd-btn rd-btn-print" onclick="printBill('${order.id}')">${svgIcon("printer", 13)} Print</button>
+                    </div>`;
+                }
+
+                return `
+                <div class="rd-order-card">
+                    <div class="rd-order-header">
+                        <span class="rd-order-id">#${order.id}</span>
+                        <span class="rd-status-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+                    <div class="rd-order-body">
+                        <div class="rd-customer-row">
+                            <div class="rd-avatar">${profilePic}</div>
+                            <div class="rd-customer-info">
+                                <div class="rd-customer-name">${order.userName}</div>
+                                <div class="rd-customer-detail">${svgIcon("phone", 12, "icon-teal")} ${order.userPhone || 'N/A'}</div>
+                                ${order.orderType === 'delivery' ? `<div class="rd-customer-detail">${svgIcon("map-pin", 12, "icon-blue")} ${order.address || 'N/A'}</div>` : ''}
                             </div>
-                        `).join('')}
-                        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem; margin-top: 0.5rem; font-weight: 700; display: flex; justify-content: space-between;">
-                            <span>Total:</span>
-                            <span style="color: #ff6b6b;">${formatPrice(order.total)}</span>
+                        </div>
+                        <div class="rd-meta-row">
+                            <span class="rd-tag ${typeClass}">${typeLabel}</span>
+                            <span class="rd-tag ${payClass}">${payLabel}</span>
+                            <span class="rd-tag rd-tag-time">${svgIcon("clock", 11, "icon-muted")} ${new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        ${etaHtml}
+                        <div class="rd-items-box">
+                            <div class="rd-items-title">Items</div>
+                            ${order.items.map(item => `<div class="rd-item-line"><span>${item.icon} ${item.name} x${item.quantity}</span><span>${formatPrice(item.finalPrice * item.quantity)}</span></div>`).join('')}
+                            <div class="rd-total-line"><span>Total</span><span class="rd-total-amount">${formatPrice(order.total)}</span></div>
                         </div>
                     </div>
-                    
-                 ${order.status === 'pending' ? `
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-        <button onclick="acceptOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("check-circle", 14, "icon-success")} Accept</button>
-        <button onclick="rejectOrder('${order.id}')" style="background: linear-gradient(45deg, #ef4444, #dc2626); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("x-circle", 14, "icon-danger")} Reject</button>
-    </div>
-` : order.status === 'accepted' ? `
-    <!-- CHANGED: Collection orders get Ready + Complete buttons + estimated time -->
-    ${order.orderType === 'collection' ? `
-        <div style="display: grid; gap: 0.5rem;">
-            ${order.estimatedTime ? `
-                <div style="background: rgba(59,130,246,0.15); padding: 0.8rem 1rem; border-radius: 8px; text-align: center; font-size: 0.9rem;">
-                    ${svgIcon('clock', 14, 'icon-blue')} Est. time: <strong>${order.estimatedTime} min</strong>
-                    <button onclick="showEstimatedTimePrompt('${order.id}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.8rem; text-decoration: underline; margin-left: 0.5rem;">Change</button>
-                </div>
-            ` : `
-                <button onclick="showEstimatedTimePrompt('${order.id}')" style="background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); padding: 0.7rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                    ${svgIcon('clock', 14, 'icon-blue')} Set Estimated Time
-                </button>
-            `}
-            <button onclick="markOrderReady('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                ${svgIcon('check-circle', 14, 'icon-success')} Ready for Pickup
-            </button>
-            <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                ${svgIcon("printer", 14)} Print Bill
-            </button>
-        </div>
-    ` : `
-        <div style="display: grid; gap: 0.5rem;">
-            <button onclick="notifyAllAvailableDrivers('${order.id}')" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-                ${svgIcon("megaphone", 14)} Notify All Drivers
-            </button>
-            <button onclick="assignDriver('${order.id}')" style="background: linear-gradient(45deg, #3b82f6, #2563eb); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">${svgIcon("car", 14, "icon-teal")} Assign Driver</button>
-            <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                ${svgIcon("printer", 14)} Print Bill
-            </button>
-        </div>
-    `}
-` : order.status === 'ready' ? `
-    <!-- CHANGED: Ready status - show Complete Order button for collection -->
-    <div style="display: grid; gap: 0.5rem;">
-        <div style="background: rgba(245,158,11,0.2); padding: 1rem; border-radius: 8px; text-align: center;">
-            <div style="font-weight: 600; color: #f59e0b;">${svgIcon('check-circle', 16, 'icon-warning')} Ready for Pickup</div>
-            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 0.3rem;">Waiting for customer to collect</div>
-        </div>
-        <button onclick="completeCollectionOrder('${order.id}')" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; padding: 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
-            ${svgIcon('check-circle', 14, 'icon-success')} Complete Order
-        </button>
-        <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            ${svgIcon("printer", 14)} Print Bill
-        </button>
-    </div>
-` : order.status === 'driver_assigned' || order.status === 'out_for_delivery' ? `
-    <div style="background: rgba(16,185,129,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
-        <div style="font-weight: 600; color: #10b981; text-align: center;">${svgIcon("car", 14, "icon-success")} Driver: ${order.driverName || 'Assigned'}</div>
-        ${order.estimatedTime ? `<div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); text-align: center;">ETA: ${order.estimatedTime} mins</div>` : ''}
-    </div>
-    <button onclick="printBill('${order.id}')" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
-        ${svgIcon("printer", 14)} Print Bill
-    </button>
-` : ''}
+                    ${actionsHtml}
                 </div>
             `}).join('');
         }
@@ -260,39 +244,47 @@ function acceptOrder(orderId) {
 
     playNotificationSound();
 
-    // CHANGED: Show estimated time prompt for collection orders after accepting
-    if (order.orderType === 'collection') {
-        showEstimatedTimePrompt(orderId);
-    } else {
-        showRestaurantDashboard();
-        uiAlert(`Order #${orderId} accepted!<br><br>Click "Notify All Drivers" to alert available drivers.`, 'success');
-    }
+    // FIX TASK 2: Show estimated time prompt for BOTH collection and delivery orders
+    showEstimatedTimePrompt(orderId);
 }
 
-// CHANGED: New function - set estimated time for collection orders
+// FIX TASK 2: Set estimated time for BOTH collection and delivery orders
 function showEstimatedTimePrompt(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
 
-    const time = prompt('Set estimated time for this order (minutes):\n\nSuggested: 10, 15, 20, 30', '15');
+    const isCollection = order.orderType === 'collection';
+    const label = isCollection ? 'collection' : 'delivery';
+
+    const time = prompt(`Set estimated ${label} time (minutes):\n\nSuggested: 15, 20, 30, 45, 60`, order.estimatedTime || '20');
     if (time !== null) {
         const mins = parseInt(time);
         if (!isNaN(mins) && mins > 0) {
             order.estimatedTime = mins;
             saveData();
 
+            // Sync to orderHistory too
+            const historyOrder = orderHistory.find(o => o.id === orderId);
+            if (historyOrder) historyOrder.estimatedTime = mins;
+
             // Notify customer of estimated time
+            const etaMsg = isCollection
+                ? `Your order #${orderId} will be ready for pickup in approximately ${mins} minutes.`
+                : `Your order #${orderId} estimated delivery time: approximately ${mins} minutes.`;
             addNotification(order.userId, {
                 type: 'order_estimated_time',
-                title: 'Estimated Time Set',
-                message: `Your order #${orderId} will be ready in approximately ${mins} minutes.`,
+                title: 'Estimated Time Updated',
+                message: etaMsg,
                 orderId: orderId
             });
         }
     }
 
     showRestaurantDashboard();
-    uiAlert(`Order #${orderId} accepted!`, 'success');
+    if (order.status === 'accepted') {
+        const extraMsg = isCollection ? '' : '<br><br>Click "Notify All Drivers" to alert available drivers.';
+        uiAlert(`Order #${orderId} accepted!${extraMsg}`, 'success');
+    }
 }
 
 // CHANGED: New function - mark collection order as ready for pickup
@@ -635,130 +627,83 @@ function completeOrder(orderId) {
 
 
 // PRINT BILL FEATURE: Generate and print order bill
+// FIX TASK 3: Receipt printing optimized for 80mm thermal paper
 function printBill(orderId) {
     const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
     if (!order) {
         uiAlert('Order not found!', 'error');
         return;
     }
-    
-    // Build payment method display (with Apple Pay logo for print)
-    // CHANGED: Use apple-pay-logo class for consistent sizing instead of inline 14px
-    const paymentDisplay = order.paymentMethod === 'applepay'
-        ? '<img src="apple-pay.png" class="apple-pay-logo" style="vertical-align:middle;"> Apple Pay (PAID)'
-        : 'Card (PAID)';
-    
-    // Build order type display - clean text, no emojis
+
     const orderTypeDisplay = order.orderType === 'collection' ? 'COLLECTION' : 'DELIVERY';
-    
-    // Create compact print content that fits ONE page
+    const paymentDisplay = order.paymentMethod === 'applepay' ? 'Apple Pay' : 'Card';
+    const d = new Date(order.createdAt);
+    const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+
+    // Build item rows - simple text receipt format
+    const itemRows = order.items.map(item => {
+        const extras = item.extras && item.extras.length > 0 ? ` +${item.extras.map(e => e.name).join(',')}` : '';
+        return `<tr>
+            <td style="padding:1px 0;">${item.quantity}x ${item.name}${extras}</td>
+            <td style="padding:1px 0; text-align:right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
+        </tr>`;
+    }).join('');
+
+    // FIX: Simple receipt layout - no images, monospace font, dashed lines
     const printContent = `
-        <div id="printBillContent" style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 8px; font-size: 12px; line-height: 1.35;">
-            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px;">
-                <h1 style="margin: 0; font-size: 1.6em;">ANTALYA SHAWARMA</h1>
-                <p style="margin: 2px 0; font-size: 0.9em;">181 Market Street, Hyde, SK14 1HF</p>
-                <p style="margin: 2px 0; font-size: 0.9em;">Tel: +44 161 536 1862</p>
+        <div id="printBillContent" style="font-family: 'Courier New', Courier, monospace; width: 72mm; max-width: 72mm; padding: 2mm; font-size: 10px; line-height: 1.35; color: #000; background: #fff;">
+            <div style="text-align: center; margin-bottom: 3px;">
+                <div style="font-size: 14px; font-weight: 900; letter-spacing: 1px;">ANTALYA SHAWARMA</div>
+                <div style="font-size: 9px;">181 Market St, Hyde, SK14 1HF</div>
+                <div style="font-size: 9px;">Tel: 0161 536 1862</div>
             </div>
-            
-            <div style="margin-bottom: 8px;">
-                <h2 style="margin: 0 0 6px 0; font-size: 1.2em;">ORDER RECEIPT</h2>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Order ID:</strong></td>
-                        <td style="text-align: right;">${order.id}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Date:</strong></td>
-                        <td style="text-align: right;">${new Date(order.createdAt).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Type:</strong></td>
-                        <td style="text-align: right;"><strong>${orderTypeDisplay}</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Customer:</strong></td>
-                        <td style="text-align: right;">${order.userName}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Phone:</strong></td>
-                        <td style="text-align: right;">${order.userPhone || 'N/A'}</td>
-                    </tr>
-                    ${order.orderType === 'delivery' ? `
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Address:</strong></td>
-                        <td style="text-align: right; max-width: 250px; word-wrap: break-word;">${order.address || 'N/A'}</td>
-                    </tr>
-                    ` : ''}
-                    <tr>
-                        <td style="padding: 2px 0;"><strong>Payment:</strong></td>
-                        <td style="text-align: right;">${paymentDisplay}</td>
-                    </tr>
-                </table>
-            </div>
-            
-            <table class="print-bill-table" style="width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px;">
-                <thead>
-                    <tr style="background: #f0f0f0;">
-                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: left;">Item</th>
-                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: center; width: 40px;">Qty</th>
-                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: right; width: 60px;">Price</th>
-                        <th style="border: 1px solid #000; padding: 4px 6px; text-align: right; width: 60px;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${order.items.map(item => `
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 3px 6px;">
-                                ${item.name}${item.extras && item.extras.length > 0 ? ` <small>(+ ${item.extras.map(e => e.name).join(', ')})</small>` : ''}
-                            </td>
-                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: center;">${item.quantity}</td>
-                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: right;">£${item.finalPrice.toFixed(2)}</td>
-                            <td style="border: 1px solid #000; padding: 3px 6px; text-align: right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
+            <hr class="rcpt-hr-double">
+            <table class="rcpt-table">
+                <tr><td>Order:</td><td style="text-align:right;font-weight:700;">#${order.id}</td></tr>
+                <tr><td>Date:</td><td style="text-align:right;">${dateStr}</td></tr>
+                <tr><td>Type:</td><td style="text-align:right;font-weight:700;">${orderTypeDisplay}</td></tr>
+                <tr><td>Customer:</td><td style="text-align:right;">${order.userName}</td></tr>
+                <tr><td>Phone:</td><td style="text-align:right;">${order.userPhone || '-'}</td></tr>
+                ${order.orderType === 'delivery' ? `<tr><td>Address:</td><td style="text-align:right;font-size:9px;max-width:35mm;word-wrap:break-word;">${order.address || '-'}</td></tr>` : ''}
+                <tr><td>Payment:</td><td style="text-align:right;">${paymentDisplay} (PAID)</td></tr>
+                ${order.estimatedTime ? `<tr><td>ETA:</td><td style="text-align:right;font-weight:700;">${order.estimatedTime} min</td></tr>` : ''}
             </table>
-            
-            <div style="margin-top: 8px; padding-top: 8px; border-top: 2px solid #000;">
-                <table style="width: 100%; font-size: 12px;">
-                    <tr>
-                        <td style="padding: 2px 0; text-align: right;"><strong>Subtotal:</strong></td>
-                        <td style="padding: 2px 0; width: 80px; text-align: right;">£${order.subtotal.toFixed(2)}</td>
-                    </tr>
-                    ${order.orderType === 'delivery' ? `
-                    <tr>
-                        <td style="padding: 2px 0; text-align: right;"><strong>Delivery:</strong></td>
-                        <td style="padding: 2px 0; text-align: right;">£${order.deliveryFee.toFixed(2)}</td>
-                    </tr>
-                    ` : ''}
-                    <tr style="font-size: 1.2em; border-top: 2px solid #000;">
-                        <td style="padding: 6px 0; text-align: right;"><strong>TOTAL:</strong></td>
-                        <td style="padding: 6px 0; text-align: right;"><strong>£${order.total.toFixed(2)}</strong></td>
-                    </tr>
-                </table>
-            </div>
-            
-            <div style="text-align: center; margin-top: 12px; padding-top: 8px; border-top: 1px dashed #000; font-size: 11px;">
-                <p style="margin: 3px 0;"><strong>Thank you for your order!</strong></p>
-                <p style="margin: 3px 0;">www.antalyashawarma.com</p>
-                ${order.orderType === 'collection' ? '<p style="margin: 6px 0; font-weight: bold;">you can come back in every time you like</p>' : ''}
+            <hr class="rcpt-hr-double">
+            <div style="font-weight:700; font-size:10px; margin-bottom:2px;">ITEMS</div>
+            <table class="rcpt-table">
+                ${itemRows}
+            </table>
+            <hr class="rcpt-hr">
+            <table class="rcpt-table">
+                <tr><td>Subtotal:</td><td style="text-align:right;">£${order.subtotal.toFixed(2)}</td></tr>
+                ${order.orderType === 'delivery' && order.deliveryFee ? `<tr><td>Delivery:</td><td style="text-align:right;">£${order.deliveryFee.toFixed(2)}</td></tr>` : ''}
+            </table>
+            <hr class="rcpt-hr-double">
+            <table class="rcpt-table">
+                <tr style="font-size:13px;font-weight:900;">
+                    <td>TOTAL</td>
+                    <td style="text-align:right;">£${order.total.toFixed(2)}</td>
+                </tr>
+            </table>
+            <hr class="rcpt-hr">
+            <div style="text-align:center; font-size:9px; margin-top:3px;">
+                <div style="font-weight:700;">Thank you for your order!</div>
+                <div>www.antalyashawarma.com</div>
             </div>
         </div>
     `;
-    
-    // Create temporary container
+
+    // Create temporary container, print, then remove
     const printContainer = document.createElement('div');
     printContainer.innerHTML = printContent;
     document.body.appendChild(printContainer);
-    
-    // Print
+
     setTimeout(() => {
         window.print();
-        // Remove container after printing
         setTimeout(() => {
             document.body.removeChild(printContainer);
-        }, 100);
-    }, 100);
+        }, 200);
+    }, 150);
 }
 
 
@@ -823,7 +768,7 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-:        `<img src="driver-motorcycle.svg" 
+:        `<img src="assets/delivery/driver-motorcycle.svg" 
         alt="Driver" 
         class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;

@@ -962,3 +962,70 @@ html {
         margin-right: 0.25rem !important;
     }
 
+    /* ========================================
+       TASK 1 FIX: Restaurant dashboard order cards mobile
+       ======================================== */
+    .rd-order-card {
+        margin-bottom: 0.6rem !important;
+        border-radius: 12px !important;
+    }
+
+    .rd-order-header {
+        padding: 0.6rem 0.8rem !important;
+    }
+
+    .rd-order-id {
+        font-size: 0.95rem !important;
+    }
+
+    .rd-order-body {
+        padding: 0.6rem 0.8rem !important;
+    }
+
+    .rd-avatar {
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    .rd-customer-name {
+        font-size: 0.9rem !important;
+    }
+
+    .rd-meta-row {
+        gap: 0.4rem !important;
+    }
+
+    .rd-tag {
+        font-size: 0.72rem !important;
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .rd-items-box {
+        padding: 0.55rem 0.7rem !important;
+    }
+
+    .rd-item-line {
+        font-size: 0.8rem !important;
+    }
+
+    .rd-actions {
+        padding: 0.55rem 0.8rem 0.65rem !important;
+    }
+
+    .rd-btn {
+        font-size: 0.8rem !important;
+        padding: 0.6rem 0.4rem !important;
+    }
+
+    .rd-btn-ready,
+    .rd-btn-complete,
+    .rd-btn-notify {
+        font-size: 0.88rem !important;
+        padding: 0.7rem !important;
+    }
+
+    /* FIX: Pending orders scroll container - remove max-height on mobile for natural scroll */
+    #restaurantPendingOrders {
+        max-height: none !important;
+    }
+

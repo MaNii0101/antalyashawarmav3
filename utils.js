@@ -64,10 +64,11 @@ function getCategoryVisual(category, size = 48, isOwnerDashboard = false) {
             ? `width: ${size}px; height: ${size}px;` 
             : `width: 100%; height: 100%;`;
         
-        return `<img src="${category.image}" 
-                     alt="${category.name || 'Category'}" 
+        // FIX TASK 4: Removed inline border-radius — let CSS class handle it for desktop/mobile
+        return `<img src="${category.image}"
+                     alt="${category.name || 'Category'}"
                      class="category-image"
-                     style="${sizeStyle} object-fit: cover; object-position: center; border-radius: 8px;"
+                     style="${sizeStyle} object-fit: cover; object-position: center;"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                 <span style="font-size: ${size}px; line-height: 1; display: none;">${getFoodEmoji(category.icon)}</span>`;
     } else {
