@@ -124,7 +124,7 @@ function showRestaurantDashboard() {
                 const typeLabel = isCollection ? svgIcon('building', 13, 'icon-success') + ' COLLECTION' : svgIcon('truck', 13, 'icon-blue') + ' DELIVERY';
                 const payClass = order.paymentMethod === 'applepay' ? 'rd-tag-applepay' : 'rd-tag-card';
                 const payLabel = order.paymentMethod === 'applepay'
-                    ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
+                    ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
                     : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
 
                 // UPGRADED TASK 2: ETA display with countdown for BOTH collection and delivery
@@ -876,7 +876,7 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-:        `<img src="assets/delivery/driver-motorcycle.svg" 
+:        `<img src="driver-motorcycle.svg" 
         alt="Driver" 
         class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;
