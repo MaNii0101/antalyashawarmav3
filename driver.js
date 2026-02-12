@@ -42,6 +42,9 @@ const SVG_ICONS = {
     pound: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="6" y2="20"/><path d="M8 20V9a4 4 0 1 1 8 0"/><line x1="6" y1="13" x2="14" y2="13"/></svg>',
     ruler: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>',
     
+    // Timer
+    timer: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+
     // Status Indicators
     signal: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>',
     moon: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
@@ -319,12 +322,16 @@ const profilePic = driver.profilePicture  // ← Line 202
                                 ` : ''}
                             </div>
 
-                            ${/* FIX TASK 2: Show delivery ETA from restaurant */ ''}
-                            ${order.estimatedTime ? `
-                            <div style="background: #eff6ff; padding: 0.6rem 0.8rem; border-radius: 10px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid #bfdbfe;">
-                                <span style="color: #2563eb; font-size: 0.9rem; font-weight: 600;">${SVG_ICONS.timer || '⏱'} ETA: <strong>${order.estimatedTime} min</strong></span>
-                            </div>
-                            ` : ''}
+                            ${/* UPGRADED TASK 2: Show delivery ETA with countdown from restaurant */ ''}
+                            ${(order.etaMinutes || order.estimatedTime) ? (() => {
+                                const etaMins = order.etaMinutes || order.estimatedTime;
+                                const readyByStr = order.readyBy ? new Date(order.readyBy).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+                                const countdownStr = order.readyBy && typeof formatEtaCountdown === 'function' ? formatEtaCountdown(order.readyBy) : '';
+                                return `<div class="driver-eta-block" data-readyby="${order.readyBy || ''}" style="background: #eff6ff; padding: 0.6rem 0.8rem; border-radius: 10px; margin-bottom: 0.8rem; border: 1px solid #bfdbfe; line-height: 1.6; text-align: center;">
+                                    <div style="color: #2563eb; font-size: 0.9rem; font-weight: 600;">${SVG_ICONS.timer || '⏱'} ETA: <strong>${etaMins} min</strong></div>
+                                    ${readyByStr ? `<div style="color: #2563eb; font-size: 0.85rem;">Ready by: <strong>${readyByStr}</strong> <span class="driver-eta-countdown">${countdownStr}</span></div>` : ''}
+                                </div>`;
+                            })() : ''}
 
                             <!-- Action Buttons -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
@@ -358,6 +365,30 @@ const profilePic = driver.profilePicture  // ← Line 202
     const header = document.querySelector('.header');
     if (mobileNav) mobileNav.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
     if (header) header.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;';
+
+    // UPGRADED TASK 2: Start driver countdown timer
+    startDriverEtaCountdown();
+}
+
+// Driver dashboard countdown timer
+let _driverEtaInterval = null;
+function startDriverEtaCountdown() {
+    if (_driverEtaInterval) clearInterval(_driverEtaInterval);
+    _driverEtaInterval = setInterval(() => {
+        const els = document.querySelectorAll('.driver-eta-countdown');
+        if (els.length === 0) {
+            clearInterval(_driverEtaInterval);
+            _driverEtaInterval = null;
+            return;
+        }
+        els.forEach(el => {
+            const parent = el.closest('.driver-eta-block');
+            if (!parent) return;
+            const readyBy = parent.getAttribute('data-readyby');
+            if (!readyBy || typeof formatEtaCountdown !== 'function') return;
+            el.innerHTML = formatEtaCountdown(readyBy);
+        });
+    }, 1000);
 }
 
 function callCustomer(phone) {

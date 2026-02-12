@@ -1029,3 +1029,14 @@ html {
         max-height: none !important;
     }
 
+    /* FIX TASK C: Password toggle mobile - slightly larger tap target */
+    .pw-toggle-btn {
+        padding: 0.4rem !important;
+        right: 0.4rem !important;
+    }
+
+    .pw-toggle-btn svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+

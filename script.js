@@ -772,7 +772,7 @@ function startOTPCountdown(email) {
             countdownElement.textContent = 'You can now request a new code';
             if (resendBtn) {
                 resendBtn.disabled = false;
-                resendBtn.textContent = svgIcon('send', 14) + ' Resend Code';
+                resendBtn.innerHTML = svgIcon('send', 14) + ' Resend Code';
             }
             clearInterval(timer.interval);
         }
@@ -1848,12 +1848,9 @@ function handlePayment(event) {
     updateCartBadge();
     updateOrdersBadge();
     
-    // Force close checkout modal
-    const checkoutModal = document.getElementById('checkoutModal');
-    if (checkoutModal) {
-        checkoutModal.style.display = 'none';
-        checkoutModal.classList.remove('active');
-    }
+    // FIX TASK B: Use closeModal() to properly restore navigation
+    // Bug was: manually hiding modal skipped showNavigation(), leaving nav hidden
+    closeModal('checkoutModal');
     
     playNotificationSound();
     
@@ -2207,13 +2204,18 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/ap
                         </span>
                     </div>
                     
-                    ${/* CHANGED: Show estimated time for active orders */ ''}
-                    ${/* FIX TASK 2: Show ETA for both collection + delivery active orders */ ''}
-                    ${o.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(o.status) ? `
-                        <div style="font-size: 0.8rem; color: #3b82f6; margin-top: 0.5rem; padding: 0.5rem 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px;">
-                            ${svgIcon('clock', 12, 'icon-blue')} Estimated time: <strong>${o.estimatedTime} min</strong>
-                        </div>
-                    ` : ''}
+                    ${/* UPGRADED TASK 2: Show ETA with countdown for active orders (both collection + delivery) */ ''}
+                    ${(o.etaMinutes || o.estimatedTime) && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(o.status) ? (() => {
+                        const etaMins = o.etaMinutes || o.estimatedTime;
+                        const acceptedStr = o.acceptedAt ? (typeof formatTimeHHMM === 'function' ? formatTimeHHMM(o.acceptedAt) : new Date(o.acceptedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})) : '';
+                        const readyByStr = o.readyBy ? (typeof formatTimeHHMM === 'function' ? formatTimeHHMM(o.readyBy) : new Date(o.readyBy).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})) : '';
+                        const countdownStr = o.readyBy && typeof formatEtaCountdown === 'function' ? formatEtaCountdown(o.readyBy) : '';
+                        return `<div class="cust-eta-block" data-readyby="${o.readyBy || ''}" style="font-size: 0.8rem; color: #3b82f6; margin-top: 0.5rem; padding: 0.6rem 0.8rem; background: rgba(59,130,246,0.1); border-radius: 8px; line-height: 1.6;">
+                            ${acceptedStr ? `<div>${svgIcon('clock', 12, 'icon-blue')} Accepted: <strong>${acceptedStr}</strong></div>` : ''}
+                            <div>${svgIcon('clock', 12, 'icon-blue')} Estimated: <strong>${etaMins} min</strong></div>
+                            ${readyByStr ? `<div>${svgIcon('clock', 12, 'icon-blue')} Ready by: <strong>${readyByStr}</strong> <span class="cust-eta-countdown">${countdownStr}</span></div>` : ''}
+                        </div>`;
+                    })() : ''}
 
                     ${/* CHANGED: Show ready for pickup notice for collection orders */ ''}
                     ${o.status === 'ready' && o.orderType === 'collection' ? `
@@ -2261,6 +2263,32 @@ const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/ap
     }
     
     openModal('orderHistoryModal');
+
+    // UPGRADED TASK 2: Start customer-side countdown timer
+    startCustomerEtaCountdown();
+}
+
+// Customer order history countdown timer
+let _custEtaInterval = null;
+function startCustomerEtaCountdown() {
+    if (_custEtaInterval) clearInterval(_custEtaInterval);
+    _custEtaInterval = setInterval(() => {
+        const els = document.querySelectorAll('.cust-eta-countdown');
+        if (els.length === 0) {
+            clearInterval(_custEtaInterval);
+            _custEtaInterval = null;
+            return;
+        }
+        els.forEach(el => {
+            const parent = el.closest('.cust-eta-block');
+            if (!parent) return;
+            const readyBy = parent.getAttribute('data-readyby');
+            if (!readyBy) return;
+            if (typeof formatEtaCountdown === 'function') {
+                el.innerHTML = formatEtaCountdown(readyBy);
+            }
+        });
+    }, 1000);
 }
 
 function updateOrdersBadge() {
@@ -2500,9 +2528,9 @@ function handleChangePassword(event) {
     }
     
     // Validate new password
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
         // Error: Password too short
-        uiAlert('New password must be at least 6 characters', 'error');
+        uiAlert('New password must be at least 8 characters', 'error');
         return;
     }
     
@@ -2643,9 +2671,9 @@ function verifyAndChangePassword(event) {
     }
     
     // Check password length
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
         // Error: Password too short
-        uiAlert('New password must be at least 6 characters', 'error');
+        uiAlert('New password must be at least 8 characters', 'error');
         return;
     }
     
@@ -2819,6 +2847,10 @@ async function sendPasswordResetCode() {
             <a href="#" onclick="location.reload(); return false;" style="color: #ff6b6b;">${svgIcon("arrow-right", 12)} Back to Login</a>
         </p>
     `;
+
+    // FIX TASK C: Init password toggles for dynamically-created password fields
+    const section = document.getElementById('forgotPasswordSection');
+    if (section) initPasswordToggles(section);
 }
 
 // NEW HELPER: Resend code specifically for Password Reset
@@ -2857,9 +2889,9 @@ function resetPassword() {
         return;
     }
     
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
         // Error: Password too short
-        uiAlert('Password must be at least 6 characters', 'error');
+        uiAlert('Password must be at least 8 characters', 'error');
         return;
     }
     
@@ -2899,9 +2931,9 @@ function handleEmailAuth(event) {
         uiAlert(emailValidation.message, 'error');
         return;
     }
-    if (password.length < 6) {
+    if (password.length < 8) {
         // Error: Password too short
-        uiAlert('Password must be at least 6 characters', 'error');
+        uiAlert('Password must be at least 8 characters', 'error');
         return;
     }
 
@@ -3509,13 +3541,16 @@ function openModal(modalId) {
     try {
         const modal = document.getElementById(modalId);
         if (!modal) return;
-        
-        // Show modal - both class and inline style for consistency  
+
+        // Show modal - both class and inline style for consistency
         modal.style.display = 'flex';
         modal.classList.add('active');
-        
+
         // HIDE NAVIGATION
         hideNavigation();
+
+        // FIX TASK C: Init password toggles for any new password inputs in this modal
+        setTimeout(() => { initPasswordToggles(modal); }, 50);
     } catch (e) {
         // Error opening modal - silently handled
     }
@@ -3687,8 +3722,57 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.value = value;
         });
     }
- 
+
+    // FIX TASK C: Init password toggles on page load
+    initPasswordToggles();
+
 });
+
+// ========================================
+// FIX TASK C: SHOW/HIDE PASSWORD TOGGLE
+// Reusable initializer — finds all password inputs, wraps with toggle button
+// Re-runs safely (skips already-wrapped inputs via data attribute)
+// ========================================
+function initPasswordToggles(container) {
+    const scope = container || document;
+    const inputs = scope.querySelectorAll('input[type="password"]:not([data-pw-toggle])');
+
+    inputs.forEach(input => {
+        // Mark as processed
+        input.setAttribute('data-pw-toggle', 'true');
+
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pw-toggle-wrap';
+
+        // Insert wrapper in place of input
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        // Create toggle button with SVG sprite icon
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pw-toggle-btn';
+        btn.setAttribute('aria-label', 'Show password');
+        btn.setAttribute('tabindex', '0');
+        btn.innerHTML = '<svg class="ui-icon" aria-hidden="true"><use href="#i-eye"></use></svg>';
+
+        wrapper.appendChild(btn);
+
+        // Toggle handler
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.innerHTML = isPassword
+                ? '<svg class="ui-icon" aria-hidden="true"><use href="#i-eye-off"></use></svg>'
+                : '<svg class="ui-icon" aria-hidden="true"><use href="#i-eye"></use></svg>';
+            btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            input.focus();
+        });
+    });
+}
 
 // Setup mobile bottom navigation with proper event listeners
 function setupMobileNavigation() {
@@ -3783,6 +3867,7 @@ window.deleteUserAccount = deleteUserAccount;
 window.showForgotPasswordSection = showForgotPasswordSection;
 window.sendPasswordResetCode = sendPasswordResetCode;
 window.resetPassword = resetPassword;
+window.resendPasswordResetOnly = resendPasswordResetOnly;
 
 // Order functions
 window.userCanOrder = userCanOrder;

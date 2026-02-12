@@ -1515,6 +1515,29 @@ td .svg-icon {
     color: #60a5fa;
     margin-bottom: 0.6rem;
 }
+/* UPGRADED TASK 2: Multi-line ETA display with countdown */
+.rd-eta-upgraded {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    position: relative;
+    padding-right: 4.5rem;
+}
+.rd-eta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.82rem;
+    color: #60a5fa;
+}
+.rd-eta-row strong { color: #93bbfc; }
+.rd-eta-countdown {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #f59e0b;
+    margin-left: 0.3rem;
+}
 
 .rd-eta-bar strong { color: #93bbfc; }
 .rd-eta-change {
@@ -1525,7 +1548,9 @@ td .svg-icon {
     font-size: 0.78rem;
     text-decoration: underline;
     padding: 0;
-    margin-left: 0.4rem;
+    position: absolute;
+    right: 0.6rem;
+    top: 0.55rem;
 }
 
 /* FIX: Sticky action bar inside each order card */
@@ -1587,3 +1612,49 @@ td .svg-icon {
 }
 
 /* Category icon desktop sizing handled in main .category-icon rule above */
+
+/* ========================================
+   FIX TASK C: Show/Hide Password Toggle
+   ======================================== */
+.pw-toggle-wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.pw-toggle-wrap input {
+    padding-right: 2.8rem !important;
+    width: 100%;
+}
+
+.pw-toggle-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+}
+
+.pw-toggle-btn:hover,
+.pw-toggle-btn:focus {
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.08);
+    outline: none;
+}
+
+.pw-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}

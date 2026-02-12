@@ -127,11 +127,20 @@ function showRestaurantDashboard() {
                     ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
                     : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
 
-                // FIX TASK 2: ETA display for BOTH collection and delivery
+                // UPGRADED TASK 2: ETA display with countdown for BOTH collection and delivery
                 let etaHtml = '';
-                if (order.estimatedTime && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(order.status)) {
-                    etaHtml = `<div class="rd-eta-bar">${svgIcon('clock', 13, 'icon-blue')} Est: <strong>${order.estimatedTime} min</strong>
-                        <button class="rd-eta-change" onclick="showEstimatedTimePrompt('${order.id}')">Change</button></div>`;
+                const hasEta = (order.etaMinutes || order.estimatedTime) && ['accepted', 'ready', 'waiting_driver', 'driver_assigned', 'out_for_delivery'].includes(order.status);
+                if (hasEta) {
+                    const etaMins = order.etaMinutes || order.estimatedTime;
+                    const acceptedStr = order.acceptedAt ? formatTimeHHMM(order.acceptedAt) : '--:--';
+                    const readyByStr = order.readyBy ? formatTimeHHMM(order.readyBy) : '--:--';
+                    const countdownStr = order.readyBy ? formatEtaCountdown(order.readyBy) : '';
+                    etaHtml = `<div class="rd-eta-bar rd-eta-upgraded" data-readyby="${order.readyBy || ''}">
+                        <div class="rd-eta-row">${svgIcon('clock', 13, 'icon-blue')} Accepted: <strong>${acceptedStr}</strong></div>
+                        <div class="rd-eta-row">${svgIcon('clock', 13, 'icon-blue')} Estimated: <strong>${etaMins} min</strong></div>
+                        <div class="rd-eta-row">${svgIcon('clock', 13, 'icon-blue')} Ready by: <strong>${readyByStr}</strong> <span class="rd-eta-countdown">${countdownStr}</span></div>
+                        <button class="rd-eta-change" onclick="showEstimatedTimePrompt('${order.id}')">Change</button>
+                    </div>`;
                 }
 
                 // Build action buttons based on status
@@ -217,6 +226,32 @@ function showRestaurantDashboard() {
     if (typeof updateRestaurantStats === 'function') {
         updateRestaurantStats();
     }
+
+    // Start live countdown timer for restaurant dashboard ETA elements
+    startEtaCountdownTimer();
+}
+
+// UPGRADED TASK 2: Global countdown timer — updates every second
+let _etaCountdownInterval = null;
+function startEtaCountdownTimer() {
+    // Clear any previous interval to avoid duplicates
+    if (_etaCountdownInterval) clearInterval(_etaCountdownInterval);
+    _etaCountdownInterval = setInterval(() => {
+        const countdownEls = document.querySelectorAll('.rd-eta-countdown');
+        if (countdownEls.length === 0) {
+            // No countdown elements visible, stop ticking
+            clearInterval(_etaCountdownInterval);
+            _etaCountdownInterval = null;
+            return;
+        }
+        countdownEls.forEach(el => {
+            const parent = el.closest('.rd-eta-upgraded');
+            if (!parent) return;
+            const readyBy = parent.getAttribute('data-readyby');
+            if (!readyBy) return;
+            el.innerHTML = formatEtaCountdown(readyBy);
+        });
+    }, 1000);
 }
 
 function acceptOrder(orderId) {
@@ -232,6 +267,14 @@ function acceptOrder(orderId) {
     
     order.status = 'accepted';
     order.acceptedAt = new Date().toISOString();
+
+    // Sync acceptedAt to orderHistory
+    const historyOrder = orderHistory.find(o => o.id === orderId);
+    if (historyOrder) {
+        historyOrder.status = 'accepted';
+        historyOrder.acceptedAt = order.acceptedAt;
+    }
+
     saveData();
 
     // Send notification to customer
@@ -249,6 +292,7 @@ function acceptOrder(orderId) {
 }
 
 // FIX TASK 2: Set estimated time for BOTH collection and delivery orders
+// UPGRADED: Now stores etaMinutes, readyBy, acceptedAt — supports live countdown
 function showEstimatedTimePrompt(orderId) {
     const order = pendingOrders.find(o => o.id === orderId);
     if (!order) return;
@@ -256,21 +300,32 @@ function showEstimatedTimePrompt(orderId) {
     const isCollection = order.orderType === 'collection';
     const label = isCollection ? 'collection' : 'delivery';
 
-    const time = prompt(`Set estimated ${label} time (minutes):\n\nSuggested: 15, 20, 30, 45, 60`, order.estimatedTime || '20');
+    const currentEta = order.etaMinutes || order.estimatedTime || '20';
+    const time = prompt(`Set estimated ${label} time (minutes):\n\nSuggested: 15, 20, 30, 45, 60`, currentEta);
     if (time !== null) {
         const mins = parseInt(time);
         if (!isNaN(mins) && mins > 0) {
-            order.estimatedTime = mins;
+            // Store new ETA fields
+            order.etaMinutes = mins;
+            order.estimatedTime = mins; // keep backward compat
+            if (!order.acceptedAt) order.acceptedAt = new Date().toISOString();
+            order.readyBy = new Date(new Date(order.acceptedAt).getTime() + mins * 60000).toISOString();
             saveData();
 
-            // Sync to orderHistory too
+            // Sync ALL ETA fields to orderHistory
             const historyOrder = orderHistory.find(o => o.id === orderId);
-            if (historyOrder) historyOrder.estimatedTime = mins;
+            if (historyOrder) {
+                historyOrder.etaMinutes = mins;
+                historyOrder.estimatedTime = mins;
+                historyOrder.acceptedAt = order.acceptedAt;
+                historyOrder.readyBy = order.readyBy;
+            }
 
             // Notify customer of estimated time
+            const readyTime = new Date(order.readyBy).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             const etaMsg = isCollection
-                ? `Your order #${orderId} will be ready for pickup in approximately ${mins} minutes.`
-                : `Your order #${orderId} estimated delivery time: approximately ${mins} minutes.`;
+                ? `Your order #${orderId} will be ready for pickup in ~${mins} minutes (by ${readyTime}).`
+                : `Your order #${orderId} estimated delivery: ~${mins} minutes (by ${readyTime}).`;
             addNotification(order.userId, {
                 type: 'order_estimated_time',
                 title: 'Estimated Time Updated',
@@ -285,6 +340,29 @@ function showEstimatedTimePrompt(orderId) {
         const extraMsg = isCollection ? '' : '<br><br>Click "Notify All Drivers" to alert available drivers.';
         uiAlert(`Order #${orderId} accepted!${extraMsg}`, 'success');
     }
+}
+
+// ETA COUNTDOWN HELPER: Formats remaining time or overdue message
+function formatEtaCountdown(readyBy) {
+    if (!readyBy) return '';
+    const now = Date.now();
+    const target = new Date(readyBy).getTime();
+    const diff = target - now;
+    if (diff > 0) {
+        const totalSec = Math.floor(diff / 1000);
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        return `in ${m}m ${s < 10 ? '0' + s : s}s`;
+    } else {
+        const overMin = Math.ceil(Math.abs(diff) / 60000);
+        return `<span style="color:#ef4444;font-weight:700;">Overdue by ${overMin}m</span>`;
+    }
+}
+
+// Format time from ISO string to HH:MM
+function formatTimeHHMM(iso) {
+    if (!iso) return '--:--';
+    return new Date(iso).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
 // CHANGED: New function - mark collection order as ready for pickup
@@ -626,8 +704,7 @@ function completeOrder(orderId) {
 }
 
 
-// PRINT BILL FEATURE: Generate and print order bill
-// FIX TASK 3: Receipt printing optimized for 80mm thermal paper
+// FIX TASK 1: Receipt printing via hidden iframe — no visible window/tab opens
 function printBill(orderId) {
     const order = pendingOrders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
     if (!order) {
@@ -640,70 +717,101 @@ function printBill(orderId) {
     const d = new Date(order.createdAt);
     const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
-    // Build item rows - simple text receipt format
+    // Build ETA info for receipt
+    let etaLine = '';
+    if (order.etaMinutes && order.acceptedAt) {
+        const readyByDate = new Date(new Date(order.acceptedAt).getTime() + order.etaMinutes * 60000);
+        etaLine = `<tr><td>ETA:</td><td class="right bold">${order.etaMinutes} min (by ${readyByDate.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})</td></tr>`;
+    } else if (order.estimatedTime) {
+        etaLine = `<tr><td>ETA:</td><td class="right bold">${order.estimatedTime} min</td></tr>`;
+    }
+
     const itemRows = order.items.map(item => {
         const extras = item.extras && item.extras.length > 0 ? ` +${item.extras.map(e => e.name).join(',')}` : '';
-        return `<tr>
-            <td style="padding:1px 0;">${item.quantity}x ${item.name}${extras}</td>
-            <td style="padding:1px 0; text-align:right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td>
-        </tr>`;
+        return `<tr><td style="padding:2px 0;">${item.quantity}x ${item.name}${extras}</td><td style="padding:2px 0;text-align:right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td></tr>`;
     }).join('');
 
-    // FIX: Simple receipt layout - no images, monospace font, dashed lines
-    const printContent = `
-        <div id="printBillContent" style="font-family: 'Courier New', Courier, monospace; width: 72mm; max-width: 72mm; padding: 2mm; font-size: 10px; line-height: 1.35; color: #000; background: #fff;">
-            <div style="text-align: center; margin-bottom: 3px;">
-                <div style="font-size: 14px; font-weight: 900; letter-spacing: 1px;">ANTALYA SHAWARMA</div>
-                <div style="font-size: 9px;">181 Market St, Hyde, SK14 1HF</div>
-                <div style="font-size: 9px;">Tel: 0161 536 1862</div>
-            </div>
-            <hr class="rcpt-hr-double">
-            <table class="rcpt-table">
-                <tr><td>Order:</td><td style="text-align:right;font-weight:700;">#${order.id}</td></tr>
-                <tr><td>Date:</td><td style="text-align:right;">${dateStr}</td></tr>
-                <tr><td>Type:</td><td style="text-align:right;font-weight:700;">${orderTypeDisplay}</td></tr>
-                <tr><td>Customer:</td><td style="text-align:right;">${order.userName}</td></tr>
-                <tr><td>Phone:</td><td style="text-align:right;">${order.userPhone || '-'}</td></tr>
-                ${order.orderType === 'delivery' ? `<tr><td>Address:</td><td style="text-align:right;font-size:9px;max-width:35mm;word-wrap:break-word;">${order.address || '-'}</td></tr>` : ''}
-                <tr><td>Payment:</td><td style="text-align:right;">${paymentDisplay} (PAID)</td></tr>
-                ${order.estimatedTime ? `<tr><td>ETA:</td><td style="text-align:right;font-weight:700;">${order.estimatedTime} min</td></tr>` : ''}
-            </table>
-            <hr class="rcpt-hr-double">
-            <div style="font-weight:700; font-size:10px; margin-bottom:2px;">ITEMS</div>
-            <table class="rcpt-table">
-                ${itemRows}
-            </table>
-            <hr class="rcpt-hr">
-            <table class="rcpt-table">
-                <tr><td>Subtotal:</td><td style="text-align:right;">£${order.subtotal.toFixed(2)}</td></tr>
-                ${order.orderType === 'delivery' && order.deliveryFee ? `<tr><td>Delivery:</td><td style="text-align:right;">£${order.deliveryFee.toFixed(2)}</td></tr>` : ''}
-            </table>
-            <hr class="rcpt-hr-double">
-            <table class="rcpt-table">
-                <tr style="font-size:13px;font-weight:900;">
-                    <td>TOTAL</td>
-                    <td style="text-align:right;">£${order.total.toFixed(2)}</td>
-                </tr>
-            </table>
-            <hr class="rcpt-hr">
-            <div style="text-align:center; font-size:9px; margin-top:3px;">
-                <div style="font-weight:700;">Thank you for your order!</div>
-                <div>www.antalyashawarma.com</div>
-            </div>
-        </div>
-    `;
+    const receiptHTML = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Receipt #${order.id}</title>
+<style>
+    @page { size: 80mm auto; margin: 2mm; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', Courier, monospace; width: 72mm; max-width: 72mm; padding: 2mm; font-size: 10px; line-height: 1.4; color: #000; background: #fff; }
+    .rcpt-table { width: 100%; border-collapse: collapse; }
+    .rcpt-table td { padding: 2px 0; font-size: 10px; vertical-align: top; }
+    .rcpt-hr { border: none; border-top: 1px dashed #000; margin: 4px 0; }
+    .rcpt-hr-double { border: none; border-top: 2px solid #000; margin: 4px 0; }
+    .center { text-align: center; }
+    .bold { font-weight: 900; }
+    .right { text-align: right; }
+</style></head><body>
+    <div class="center" style="margin-bottom:4px;">
+        <div style="font-size:14px;" class="bold">ANTALYA SHAWARMA</div>
+        <div style="font-size:9px;">181 Market St, Hyde, SK14 1HF</div>
+        <div style="font-size:9px;">Tel: 0161 536 1862</div>
+    </div>
+    <hr class="rcpt-hr-double">
+    <table class="rcpt-table">
+        <tr><td>Order:</td><td class="right bold">#${order.id}</td></tr>
+        <tr><td>Date:</td><td class="right">${dateStr}</td></tr>
+        <tr><td>Type:</td><td class="right bold">${orderTypeDisplay}</td></tr>
+        <tr><td>Customer:</td><td class="right">${order.userName}</td></tr>
+        <tr><td>Phone:</td><td class="right">${order.userPhone || '-'}</td></tr>
+        ${order.orderType === 'delivery' ? `<tr><td>Address:</td><td class="right" style="font-size:9px;max-width:35mm;word-wrap:break-word;">${order.address || '-'}</td></tr>` : ''}
+        <tr><td>Payment:</td><td class="right">${paymentDisplay} (PAID)</td></tr>
+        ${etaLine}
+    </table>
+    <hr class="rcpt-hr-double">
+    <div class="bold" style="margin-bottom:2px;">ITEMS</div>
+    <table class="rcpt-table">${itemRows}</table>
+    <hr class="rcpt-hr">
+    <table class="rcpt-table">
+        <tr><td>Subtotal:</td><td class="right">£${order.subtotal.toFixed(2)}</td></tr>
+        ${order.orderType === 'delivery' && order.deliveryFee ? `<tr><td>Delivery:</td><td class="right">£${order.deliveryFee.toFixed(2)}</td></tr>` : ''}
+    </table>
+    <hr class="rcpt-hr-double">
+    <table class="rcpt-table">
+        <tr style="font-size:13px;" class="bold"><td>TOTAL</td><td class="right">£${order.total.toFixed(2)}</td></tr>
+    </table>
+    <hr class="rcpt-hr">
+    <div class="center" style="font-size:9px;margin-top:4px;">
+        <div class="bold">Thank you for your order!</div>
+        <div>www.antalyashawarma.com</div>
+    </div>
+</body></html>`;
 
-    // Create temporary container, print, then remove
-    const printContainer = document.createElement('div');
-    printContainer.innerHTML = printContent;
-    document.body.appendChild(printContainer);
+    console.log('Receipt HTML length:', receiptHTML.length, '| Order:', order.id);
 
-    setTimeout(() => {
-        window.print();
-        setTimeout(() => {
-            document.body.removeChild(printContainer);
-        }, 200);
-    }, 150);
+    // Hidden iframe approach — no visible tab/window
+    let iframe = document.getElementById('printReceiptFrame');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'printReceiptFrame';
+        iframe.style.cssText = 'position:fixed;right:-9999px;bottom:-9999px;width:0;height:0;border:none;visibility:hidden;';
+        document.body.appendChild(iframe);
+    }
+
+    const iframeDoc = iframe.contentWindow || iframe.contentDocument;
+    const doc = iframeDoc.document || iframeDoc;
+
+    doc.open();
+    doc.write(receiptHTML);
+    doc.close();
+
+    // Wait for iframe content to render, then print
+    const tryPrint = () => {
+        try {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        } catch(e) {
+            console.warn('Print error:', e);
+        }
+    };
+
+    // Use iframe onload if supported, otherwise fallback to timeout
+    iframe.onload = () => { setTimeout(tryPrint, 200); };
+    // Fallback for browsers where onload doesn't fire on document.write
+    setTimeout(tryPrint, 500);
 }
 
 
@@ -1715,8 +1823,13 @@ window.saveDriverChanges = saveDriverChanges;
 window.toggleDriverStatus = toggleDriverStatus;
 window.notifyAllAvailableDrivers = notifyAllAvailableDrivers;
 window.driverAcceptOrder = driverAcceptOrder;
-// CHANGED: Export new collection order functions
+// HEALTH CHECK: Ensure all onclick-referenced functions are exported
+window.acceptOrder = acceptOrder;
+window.rejectOrder = rejectOrder;
+window.assignDriver = assignDriver;
 window.showEstimatedTimePrompt = showEstimatedTimePrompt;
+window.formatEtaCountdown = formatEtaCountdown;
+window.formatTimeHHMM = formatTimeHHMM;
 window.markOrderReady = markOrderReady;
 window.completeCollectionOrder = completeCollectionOrder;
 window.showBankSettingsModal = showBankSettingsModal;
@@ -1739,6 +1852,8 @@ window.previewFoodImage = previewFoodImage;
 window.previewCategoryImage = previewCategoryImage;
 window.handleFoodImageUpload = handleFoodImageUpload;
 window.handleCategoryImageUpload = handleCategoryImageUpload;
+window.moveCategoryUp = moveCategoryUp;
+window.moveCategoryDown = moveCategoryDown;
 
 // ========================================
 // AUTO-CONVERT ICON INPUTS TO EMOJI
