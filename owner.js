@@ -124,7 +124,7 @@ function showRestaurantDashboard() {
                 const typeLabel = isCollection ? svgIcon('building', 13, 'icon-success') + ' COLLECTION' : svgIcon('truck', 13, 'icon-blue') + ' DELIVERY';
                 const payClass = order.paymentMethod === 'applepay' ? 'rd-tag-applepay' : 'rd-tag-card';
                 const payLabel = order.paymentMethod === 'applepay'
-                    ? '<img src=" apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
+                    ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
                     : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
 
                 // UPGRADED TASK 2: ETA display with countdown for BOTH collection and delivery
@@ -207,7 +207,13 @@ function showRestaurantDashboard() {
                         ${etaHtml}
                         <div class="rd-items-box">
                             <div class="rd-items-title">Items</div>
-                            ${order.items.map(item => `<div class="rd-item-line"><span>${item.icon} ${item.name} x${item.quantity}</span><span>${formatPrice(item.finalPrice * item.quantity)}</span></div>`).join('')}
+                            ${order.items.map(item => {
+                                const extrasStr = item.extras && item.extras.length > 0
+                                    ? ' • ' + item.extras.map(e => typeof e === 'string' ? e : `${e.name} (+${formatPrice(e.price)})`).join(' • ')
+                                    : '';
+                                const noteStr = item.instructions ? `<div class="rd-item-note" style="font-size:0.75rem;color:rgba(255,255,255,0.45);font-style:italic;padding-left:1.2rem;">Note: ${item.instructions}</div>` : '';
+                                return `<div class="rd-item-line"><span>${item.icon} ${item.name} x${item.quantity}<span style="font-size:0.78rem;color:rgba(255,255,255,0.5);">${extrasStr}</span></span><span>${formatPrice(item.finalPrice * item.quantity)}</span></div>${noteStr}`;
+                            }).join('')}
                             <div class="rd-total-line"><span>Total</span><span class="rd-total-amount">${formatPrice(order.total)}</span></div>
                         </div>
                     </div>
@@ -230,14 +236,17 @@ function showRestaurantDashboard() {
     // Start live countdown timer for restaurant dashboard ETA elements
     startEtaCountdownTimer();
 
-    // Geocode any raw-coordinate addresses in order cards
+    // Geocode any unresolved addresses in order cards
     if (typeof formatLocationAddress === 'function') {
+        const _needsGeocode = typeof _isUnresolvedAddress === 'function' ? _isUnresolvedAddress : function(s) {
+            return !s || s === 'N/A' || s === 'Finding address...' || s === 'No address' ||
+                /^Location:\s*[\d.-]+,\s*[\d.-]+/.test(s) || /^-?[\d.]+,\s*-?[\d.]+$/.test(s);
+        };
         document.querySelectorAll('.rd-address-cell').forEach(cell => {
             const textEl = cell.querySelector('.rd-address-text');
             if (!textEl) return;
             const current = textEl.textContent.trim();
-            // Only geocode if looks like raw coords
-            if (current.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/) || current === 'N/A') {
+            if (_needsGeocode(current)) {
                 const lat = parseFloat(cell.getAttribute('data-lat'));
                 const lng = parseFloat(cell.getAttribute('data-lng'));
                 if (lat && lng) {
@@ -907,7 +916,7 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-:        `<img src=" driver-motorcycle.svg" 
+:        `<img src="assets/delivery/driver-motorcycle.svg" 
         alt="Driver" 
         class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;

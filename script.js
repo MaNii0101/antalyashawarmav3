@@ -13,7 +13,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: WARNING ICON -->
             <img
-                src=" warning.svg"
+                src="assets/system/warning.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -28,7 +28,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
             <img
-                src=" close.svg"
+                src="assets/system/close.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -1337,7 +1337,10 @@ function addToCart() {
     
     playNotificationSound();
     // Success: Item added to cart
-    uiAlert(`Added to cart!<br><br>${quantity}x ${selectedFood.name}<br>${extras.length > 0 ? 'Extras: ' + extras.join(', ') : ''}`, 'success');
+    const extrasText = extras.length > 0
+        ? 'Extras: ' + extras.map(e => typeof e === 'string' ? e : `${e.name} (+${formatPrice(e.price)})`).join(', ')
+        : 'No extras';
+    uiAlert(`Added to cart!<br><br>${quantity}x ${selectedFood.name}<br>${extrasText}`, 'success');
 }
 
 // ========================================
@@ -2181,7 +2184,7 @@ function showOrderHistory() {
             // CHANGED: Show friendly status text for 'ready' status
             const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src=" apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -3310,6 +3313,17 @@ function initMap() {
         selectedLocation = { lat, lng };
         updateDistanceInfo();
         googleMap.panTo(e.latLng);
+
+        // Geocode the clicked location and update UI
+        if (typeof formatLocationAddress === 'function') {
+            formatLocationAddress({ lat, lng }).then(addr => {
+                selectedLocation.address = addr;
+                const locText = document.getElementById('selectedLocationText');
+                if (locText) {
+                    locText.innerHTML = `${svgIcon("map-pin", 14, "icon-blue")} ${addr}`;
+                }
+            });
+        }
     });
 }
 
@@ -3329,44 +3343,44 @@ function pickLocationForProfile() {
 }
 
 function addMarker(location) {
-    if (mapMarker) mapMarker.setMap(null);
-    
+    // Clean up both marker references to prevent ghosts
+    if (mapMarker) { mapMarker.setMap(null); mapMarker = null; }
+    if (deliveryMarker) { deliveryMarker.setMap(null); deliveryMarker = null; }
+
+    const markerIcon = typeof buildMapIcon === 'function' ? buildMapIcon('user') : undefined;
     mapMarker = new google.maps.Marker({
         position: location,
         map: googleMap,
         title: 'Your Location',
-        icon: typeof buildMapIcon === 'function' ? buildMapIcon('user') : undefined
+        draggable: true,
+        icon: markerIcon
     });
-    
+    // Keep deliveryMarker in sync so click-handler reuses it
+    deliveryMarker = mapMarker;
+
     selectedLocation = {
         lat: location.lat(),
         lng: location.lng()
     };
     
-    // Try to get address via geocoding
-    if (window.google && google.maps.Geocoder) {
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ location: location }, (results, status) => {
-            if (status === 'OK' && results[0]) {
-                selectedLocation.address = results[0].formatted_address;
-                
-                // Update location display
-                document.getElementById('selectedLocationText').innerHTML = `
-                    ${svgIcon("map-pin", 14, "icon-blue")} ${selectedLocation.address}<br>
-                    <span style="color: ${deliveryInfo.available ? '#2a9d8f' : '#ef4444'};">${deliveryInfo.message}</span>
-                `;
-                
-                // Also update edit profile address field if it exists
-                const editAddressField = document.getElementById('editAddress');
-                if (editAddressField) {
-                    editAddressField.value = selectedLocation.address;
-                }
-                
-                // Update auth address field if it exists
-                const authAddressField = document.getElementById('authAddress');
-                if (authAddressField) {
-                    authAddressField.value = selectedLocation.address;
-                }
+    // Geocode the marker location and update UI
+    if (typeof formatLocationAddress === 'function') {
+        formatLocationAddress(selectedLocation).then(addr => {
+            selectedLocation.address = addr;
+
+            const locText = document.getElementById('selectedLocationText');
+            if (locText) {
+                locText.innerHTML = `${svgIcon("map-pin", 14, "icon-blue")} ${addr}`;
+            }
+
+            const editAddressField = document.getElementById('editAddress');
+            if (editAddressField) {
+                editAddressField.value = addr;
+            }
+
+            const authAddressField = document.getElementById('authAddress');
+            if (authAddressField) {
+                authAddressField.value = addr;
             }
         });
     }
@@ -3386,17 +3400,44 @@ function getCurrentLocation() {
     
     navigator.geolocation.getCurrentPosition(
         (position) => {
-            const location = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const location = { lat, lng };
+
             if (googleMap) {
                 googleMap.setCenter(location);
                 googleMap.setZoom(16);
+
+                // Place or move delivery marker at user's location
+                const latLng = new google.maps.LatLng(lat, lng);
+                if (deliveryMarker) {
+                    deliveryMarker.setPosition(latLng);
+                } else {
+                    deliveryMarker = new google.maps.Marker({
+                        position: latLng,
+                        map: googleMap,
+                        title: 'Delivery Location',
+                        draggable: true,
+                        animation: google.maps.Animation.DROP,
+                        icon: typeof buildMapIcon === 'function' ? buildMapIcon('user') : undefined
+                    });
+                }
+
+                selectedLocation = { lat, lng };
+                updateDistanceInfo();
+
+                // Try geocode for address and update UI
+                if (typeof formatLocationAddress === 'function') {
+                    formatLocationAddress({ lat, lng }).then(addr => {
+                        selectedLocation.address = addr;
+                        const locText = document.getElementById('selectedLocationText');
+                        if (locText) {
+                            locText.innerHTML = `${svgIcon("map-pin", 14, "icon-blue")} ${addr}`;
+                        }
+                    });
+                }
             }
-            
-            
+
             btn.innerHTML = originalText;
             btn.disabled = false;
             // Success: Location found
@@ -3441,60 +3482,56 @@ function confirmLocation() {
         return;
     }
     
-    // Generate fallback address if geocoding hasn't completed
-    if (!selectedLocation.address || selectedLocation.address.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/)) {
-        // Try async geocode, use placeholder for now
-        selectedLocation.address = 'Finding address...';
-        if (typeof formatLocationAddress === 'function') {
-            formatLocationAddress(selectedLocation).then(addr => {
-                selectedLocation.address = addr;
-                if (currentUser) {
-                    currentUser.address = addr;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                }
-            });
+    // Resolve address before saving — await geocode so we never persist "Finding address..."
+    const needsGeocode = !selectedLocation.address ||
+        (typeof _isUnresolvedAddress === 'function' && _isUnresolvedAddress(selectedLocation.address)) ||
+        selectedLocation.address.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/);
+
+    const resolveAddr = needsGeocode && typeof formatLocationAddress === 'function'
+        ? formatLocationAddress(selectedLocation)
+        : Promise.resolve(selectedLocation.address || selectedLocation.lat.toFixed(4) + ', ' + selectedLocation.lng.toFixed(4));
+
+    resolveAddr.then(addr => {
+        selectedLocation.address = addr;
+
+        if (currentUser) {
+            currentUser.location = selectedLocation;
+            currentUser.address = addr;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Also update in userDatabase
+            const userIndex = userDatabase.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) {
+                userDatabase[userIndex].location = selectedLocation;
+                userDatabase[userIndex].address = addr;
+                saveData();
+            }
+        }
+
+        // Close map modal
+        const mapModal = document.getElementById('mapModal');
+        if (mapModal) {
+            mapModal.style.display = 'none';
+        }
+
+        // If we were picking for profile, reopen edit profile modal
+        if (pickingForProfile) {
+            pickingForProfile = false;
+
+            // Update the edit address field
+            const editAddressField = document.getElementById('editAddress');
+            if (editAddressField && addr) {
+                editAddressField.value = addr;
+            }
+
+            openEditProfile();
+            // Success: Location set for profile
+            uiAlert(`Location set!<br><br>${addr || 'Location confirmed'}`, 'success');
         } else {
-            selectedLocation.address = `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`;
+            // Success: Location confirmed for checkout
+            uiAlert(`Location confirmed!<br><br>${addr || 'Location set'}<br>${deliveryInfo.message}`, 'success');
         }
-    }
-    
-    if (currentUser) {
-        currentUser.location = selectedLocation;
-        currentUser.address = selectedLocation.address;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        
-        // Also update in userDatabase
-        const userIndex = userDatabase.findIndex(u => u.email === currentUser.email);
-        if (userIndex !== -1) {
-            userDatabase[userIndex].location = selectedLocation;
-            userDatabase[userIndex].address = selectedLocation.address;
-            saveData();
-        }
-    }
-    
-    // Close map modal
-    const mapModal = document.getElementById('mapModal');
-    if (mapModal) {
-        mapModal.style.display = 'none';
-    }
-    
-    // If we were picking for profile, reopen edit profile modal
-    if (pickingForProfile) {
-        pickingForProfile = false;
-        
-        // Update the edit address field
-        const editAddressField = document.getElementById('editAddress');
-        if (editAddressField && selectedLocation.address) {
-            editAddressField.value = selectedLocation.address;
-        }
-        
-        openEditProfile();
-        // Success: Location set for profile
-        uiAlert(`Location set!<br><br>${selectedLocation.address || 'Location confirmed'}`, 'success');
-    } else {
-        // Success: Location confirmed for checkout
-        uiAlert(`Location confirmed!<br><br>${selectedLocation.address || 'Location set'}<br>${deliveryInfo.message}`, 'success');
-    }
+    });
 }
 
 // ========================================

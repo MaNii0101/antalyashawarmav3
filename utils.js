@@ -718,38 +718,65 @@ window.uiAlert = uiAlert;
 
 // ========================================
 // TASK D: MAP ICONS CONFIG — single place to swap map marker icons
+// To change icons, just update the url or svgData below.
 // ========================================
 const MAP_ICONS = {
-    user: { url: ' house-marker.svg', size: [40, 40] },
-    driver: { url: ' driver-motorcycle.png', size: [48, 48] },
-    restaurant: { url: null, size: [40, 40], color: '#e63946' }
+    user: {
+        // House icon — inline SVG data URI (most reliable for Google Maps)
+        svgData: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%2310b981" stroke="%23fff" stroke-width="3"/><path d="M20 11 L28 19 L26 19 L26 28 L22 28 L22 23 L18 23 L18 28 L14 28 L14 19 L12 19 Z" fill="%23fff"/></svg>',
+        size: [40, 40]
+    },
+    driver: {
+        url: 'assets/delivery/driver-motorcycle.png',
+        size: [44, 44]
+    },
+    restaurant: {
+        svgData: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%23e63946" stroke="%23fff" stroke-width="3"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="18">🍽</text></svg>',
+        size: [40, 40]
+    }
 };
 
 // Build a Google Maps icon config from MAP_ICONS entry
 function buildMapIcon(key) {
     const cfg = MAP_ICONS[key];
-    if (!cfg || !cfg.url) return null;
+    if (!cfg) return undefined;
     const w = cfg.size[0], h = cfg.size[1];
+    // Prefer inline svgData (data URI) for reliability, fall back to url
+    let iconUrl = cfg.url || null;
+    if (cfg.svgData) {
+        iconUrl = 'data:image/svg+xml;charset=UTF-8,' + cfg.svgData;
+    }
+    if (!iconUrl) return undefined;
     return {
-        url: cfg.url,
+        url: iconUrl,
         scaledSize: new google.maps.Size(w, h),
         anchor: new google.maps.Point(w / 2, h)
     };
 }
 
 // ========================================
-// TASK B: ADDRESS GEOCODING HELPER — replaces raw lat/lng everywhere
+// ADDRESS GEOCODING HELPER — replaces raw lat/lng everywhere
 // ========================================
 const _addressCache = {};
 
+// Strings that mean "no real address yet"
+function _isUnresolvedAddress(str) {
+    if (!str) return true;
+    if (str === 'Finding address...' || str === 'No address' || str === 'N/A') return true;
+    if (/^Location:\s*[\d.-]+,\s*[\d.-]+/.test(str)) return true;
+    // Pure coordinate like "53.4440, -2.0826"
+    if (/^-?[\d.]+,\s*-?[\d.]+$/.test(str)) return true;
+    return false;
+}
+
 // formatLocationAddress(locationObj) -> Promise<string>
-// locationObj can be: { address, lat, lng } or just { lat, lng }
-// Returns cached address or reverse-geocodes via Nominatim (free, no API key needed)
+// locationObj: { address?, lat, lng } — returns a human-readable address.
+// Has 8s timeout, in-memory + localStorage cache, coordinate fallback on failure.
 function formatLocationAddress(locationObj) {
     if (!locationObj) return Promise.resolve('No address');
 
-    // If already has a human-readable address (not raw coords), use it
-    if (locationObj.address && !locationObj.address.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/)) {
+    // If already has a real human-readable address, use it
+    if (locationObj.address && !_isUnresolvedAddress(locationObj.address)) {
         return Promise.resolve(locationObj.address);
     }
 
@@ -757,41 +784,56 @@ function formatLocationAddress(locationObj) {
     const lng = locationObj.lng;
     if (!lat || !lng) return Promise.resolve(locationObj.address || 'No address');
 
+    const coordFallback = lat.toFixed(4) + ', ' + lng.toFixed(4);
+
     // Cache key: rounded to 5 decimals
     const cacheKey = lat.toFixed(5) + ',' + lng.toFixed(5);
     if (_addressCache[cacheKey]) return Promise.resolve(_addressCache[cacheKey]);
 
     // Try localStorage cache
-    const stored = localStorage.getItem('geocache_' + cacheKey);
-    if (stored) {
-        _addressCache[cacheKey] = stored;
-        return Promise.resolve(stored);
-    }
+    try {
+        const stored = localStorage.getItem('geocache_' + cacheKey);
+        if (stored && !_isUnresolvedAddress(stored)) {
+            _addressCache[cacheKey] = stored;
+            return Promise.resolve(stored);
+        }
+    } catch(e) {}
 
-    // Reverse geocode via Nominatim (free, no key)
-    return fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`)
-        .then(r => r.json())
-        .then(data => {
-            const addr = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-            // Shorten: take first 3 parts (house number, road, area)
-            const parts = addr.split(', ');
-            const short = parts.slice(0, 3).join(', ');
-            _addressCache[cacheKey] = short;
-            try { localStorage.setItem('geocache_' + cacheKey, short); } catch(e) {}
-            return short;
-        })
-        .catch(() => {
-            const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-            _addressCache[cacheKey] = fallback;
-            return fallback;
-        });
+    // Reverse geocode via Nominatim with 8 second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    return fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+        { signal: controller.signal }
+    )
+    .then(r => r.json())
+    .then(data => {
+        clearTimeout(timeoutId);
+        if (!data || data.error) {
+            _addressCache[cacheKey] = coordFallback;
+            return coordFallback;
+        }
+        const addr = data.display_name || coordFallback;
+        // Shorten: take first 3 meaningful parts
+        const parts = addr.split(', ');
+        const short = parts.slice(0, 3).join(', ');
+        _addressCache[cacheKey] = short;
+        try { localStorage.setItem('geocache_' + cacheKey, short); } catch(e) {}
+        return short;
+    })
+    .catch(() => {
+        clearTimeout(timeoutId);
+        _addressCache[cacheKey] = coordFallback;
+        return coordFallback;
+    });
 }
 
-// Async helper: set element text to geocoded address
+// Async helper: resolve address and put it into a DOM element.
+// Shows placeholder immediately, then replaces when done.
 function setAddressText(element, locationObj, fallback) {
     if (!element) return;
-    const fb = fallback || 'Finding address...';
-    element.textContent = fb;
+    element.textContent = fallback || 'Loading...';
     formatLocationAddress(locationObj).then(addr => {
         element.textContent = addr;
     });
