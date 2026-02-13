@@ -727,7 +727,7 @@ const MAP_ICONS = {
         size: [40, 40]
     },
     driver: {
-        url: 'assets/delivery/driver-motorcycle.png',
+        url: ' driver-motorcycle.png',
         size: [44, 44]
     },
     restaurant: {
