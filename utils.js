@@ -720,8 +720,8 @@ window.uiAlert = uiAlert;
 // TASK D: MAP ICONS CONFIG — single place to swap map marker icons
 // ========================================
 const MAP_ICONS = {
-    user: { url: 'assets/system/house-marker.svg', size: [40, 40] },
-    driver: { url: 'assets/delivery/driver-motorcycle.png', size: [48, 48] },
+    user: { url: ' house-marker.svg', size: [40, 40] },
+    driver: { url: ' driver-motorcycle.png', size: [48, 48] },
     restaurant: { url: null, size: [40, 40], color: '#e63946' }
 };
 
