@@ -124,7 +124,7 @@ function showRestaurantDashboard() {
                 const typeLabel = isCollection ? svgIcon('building', 13, 'icon-success') + ' COLLECTION' : svgIcon('truck', 13, 'icon-blue') + ' DELIVERY';
                 const payClass = order.paymentMethod === 'applepay' ? 'rd-tag-applepay' : 'rd-tag-card';
                 const payLabel = order.paymentMethod === 'applepay'
-                    ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
+                    ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
                     : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
 
                 // UPGRADED TASK 2: ETA display with countdown for BOTH collection and delivery
@@ -196,7 +196,7 @@ function showRestaurantDashboard() {
                             <div class="rd-customer-info">
                                 <div class="rd-customer-name">${order.userName}</div>
                                 <div class="rd-customer-detail">${svgIcon("phone", 12, "icon-teal")} ${order.userPhone || 'N/A'}</div>
-                                ${order.orderType === 'delivery' ? `<div class="rd-customer-detail">${svgIcon("map-pin", 12, "icon-blue")} ${order.address || 'N/A'}</div>` : ''}
+                                ${order.orderType === 'delivery' ? `<div class="rd-customer-detail rd-address-cell" data-lat="${order.deliveryLocation?.lat || ''}" data-lng="${order.deliveryLocation?.lng || ''}">${svgIcon("map-pin", 12, "icon-blue")} <span class="rd-address-text">${order.address || 'N/A'}</span></div>` : ''}
                             </div>
                         </div>
                         <div class="rd-meta-row">
@@ -229,6 +229,24 @@ function showRestaurantDashboard() {
 
     // Start live countdown timer for restaurant dashboard ETA elements
     startEtaCountdownTimer();
+
+    // Geocode any raw-coordinate addresses in order cards
+    if (typeof formatLocationAddress === 'function') {
+        document.querySelectorAll('.rd-address-cell').forEach(cell => {
+            const textEl = cell.querySelector('.rd-address-text');
+            if (!textEl) return;
+            const current = textEl.textContent.trim();
+            // Only geocode if looks like raw coords
+            if (current.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/) || current === 'N/A') {
+                const lat = parseFloat(cell.getAttribute('data-lat'));
+                const lng = parseFloat(cell.getAttribute('data-lng'));
+                if (lat && lng) {
+                    textEl.textContent = 'Finding address...';
+                    formatLocationAddress({ lat, lng }).then(addr => { textEl.textContent = addr; });
+                }
+            }
+        });
+    }
 }
 
 // UPGRADED TASK 2: Global countdown timer — updates every second
@@ -727,8 +745,21 @@ function printBill(orderId) {
     }
 
     const itemRows = order.items.map(item => {
-        const extras = item.extras && item.extras.length > 0 ? ` +${item.extras.map(e => e.name).join(',')}` : '';
-        return `<tr><td style="padding:2px 0;">${item.quantity}x ${item.name}${extras}</td><td style="padding:2px 0;text-align:right;">£${(item.finalPrice * item.quantity).toFixed(2)}</td></tr>`;
+        let rows = `<tr><td style="padding:2px 0;">${item.quantity}x ${item.name}</td><td style="padding:2px 0;text-align:right;">£${(item.basePrice || item.finalPrice).toFixed(2)}</td></tr>`;
+        if (item.extras && item.extras.length > 0) {
+            item.extras.forEach(e => {
+                const eName = typeof e === 'string' ? e : e.name;
+                const ePrice = typeof e === 'object' && e.price ? `£${e.price.toFixed(2)}` : '';
+                rows += `<tr><td style="padding:1px 0;font-size:9px;padding-left:8px;">+ ${eName}</td><td style="padding:1px 0;text-align:right;font-size:9px;">${ePrice}</td></tr>`;
+            });
+        }
+        if (item.instructions) {
+            rows += `<tr><td colspan="2" style="padding:1px 0;font-size:8px;padding-left:8px;font-style:italic;">Note: ${item.instructions}</td></tr>`;
+        }
+        if (item.quantity > 1) {
+            rows += `<tr><td style="padding:1px 0;font-size:9px;padding-left:8px;">x${item.quantity} subtotal</td><td style="padding:1px 0;text-align:right;font-size:9px;font-weight:bold;">£${(item.finalPrice * item.quantity).toFixed(2)}</td></tr>`;
+        }
+        return rows;
     }).join('');
 
     const receiptHTML = `<!DOCTYPE html>
@@ -876,7 +907,7 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-:        `<img src="driver-motorcycle.svg" 
+:        `<img src="assets/delivery/driver-motorcycle.svg" 
         alt="Driver" 
         class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;

@@ -715,3 +715,112 @@ window.uiAlert = uiAlert;
         document.head.appendChild(luxuryStyles);
     }
 })();
+
+// ========================================
+// TASK D: MAP ICONS CONFIG — single place to swap map marker icons
+// ========================================
+const MAP_ICONS = {
+    user: { url: 'assets/system/house-marker.svg', size: [40, 40] },
+    driver: { url: 'assets/delivery/driver-motorcycle.png', size: [48, 48] },
+    restaurant: { url: null, size: [40, 40], color: '#e63946' }
+};
+
+// Build a Google Maps icon config from MAP_ICONS entry
+function buildMapIcon(key) {
+    const cfg = MAP_ICONS[key];
+    if (!cfg || !cfg.url) return null;
+    const w = cfg.size[0], h = cfg.size[1];
+    return {
+        url: cfg.url,
+        scaledSize: new google.maps.Size(w, h),
+        anchor: new google.maps.Point(w / 2, h)
+    };
+}
+
+// ========================================
+// TASK B: ADDRESS GEOCODING HELPER — replaces raw lat/lng everywhere
+// ========================================
+const _addressCache = {};
+
+// formatLocationAddress(locationObj) -> Promise<string>
+// locationObj can be: { address, lat, lng } or just { lat, lng }
+// Returns cached address or reverse-geocodes via Nominatim (free, no API key needed)
+function formatLocationAddress(locationObj) {
+    if (!locationObj) return Promise.resolve('No address');
+
+    // If already has a human-readable address (not raw coords), use it
+    if (locationObj.address && !locationObj.address.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/)) {
+        return Promise.resolve(locationObj.address);
+    }
+
+    const lat = locationObj.lat;
+    const lng = locationObj.lng;
+    if (!lat || !lng) return Promise.resolve(locationObj.address || 'No address');
+
+    // Cache key: rounded to 5 decimals
+    const cacheKey = lat.toFixed(5) + ',' + lng.toFixed(5);
+    if (_addressCache[cacheKey]) return Promise.resolve(_addressCache[cacheKey]);
+
+    // Try localStorage cache
+    const stored = localStorage.getItem('geocache_' + cacheKey);
+    if (stored) {
+        _addressCache[cacheKey] = stored;
+        return Promise.resolve(stored);
+    }
+
+    // Reverse geocode via Nominatim (free, no key)
+    return fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`)
+        .then(r => r.json())
+        .then(data => {
+            const addr = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            // Shorten: take first 3 parts (house number, road, area)
+            const parts = addr.split(', ');
+            const short = parts.slice(0, 3).join(', ');
+            _addressCache[cacheKey] = short;
+            try { localStorage.setItem('geocache_' + cacheKey, short); } catch(e) {}
+            return short;
+        })
+        .catch(() => {
+            const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            _addressCache[cacheKey] = fallback;
+            return fallback;
+        });
+}
+
+// Async helper: set element text to geocoded address
+function setAddressText(element, locationObj, fallback) {
+    if (!element) return;
+    const fb = fallback || 'Finding address...';
+    element.textContent = fb;
+    formatLocationAddress(locationObj).then(addr => {
+        element.textContent = addr;
+    });
+}
+
+// ========================================
+// TASK C: AUTH HELPERS — single source of truth for login state
+// ========================================
+function getCurrentUser() {
+    if (typeof currentUser !== 'undefined' && currentUser) return currentUser;
+    try {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return null;
+}
+
+function setCurrentUser(user) {
+    currentUser = user;
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+        localStorage.removeItem('currentUser');
+    }
+    if (typeof updateAuthUI === 'function') updateAuthUI();
+}
+
+function clearCurrentUser() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    if (typeof updateAuthUI === 'function') updateAuthUI();
+}

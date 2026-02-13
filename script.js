@@ -13,7 +13,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: WARNING ICON -->
             <img
-                src="warning.svg"
+                src="assets/system/warning.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -28,7 +28,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
             <img
-                src="close.svg"
+                src="assets/system/close.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -165,9 +165,8 @@ function resetSelectedData() {
     // Reset selected items
     if (resetUsers) {
         localStorage.removeItem('restaurantUsers');
-        localStorage.removeItem('currentUser');
         userDatabase = [];
-        currentUser = null;
+        clearCurrentUser();
         
         // Also delete all reviews since users are deleted
         localStorage.removeItem('restaurantReviews');
@@ -917,13 +916,12 @@ function loadData() {
     const savedCurrentUser = localStorage.getItem('currentUser');
     if (savedCurrentUser) {
         currentUser = JSON.parse(savedCurrentUser);
-        updateHeaderForLoggedInUser();
-        
+
         // Restore selectedLocation from user's saved location
         if (currentUser.location) {
             selectedLocation = currentUser.location;
         }
-        
+
         const savedCart = localStorage.getItem('cart_' + currentUser.email);
         if (savedCart) {
             cart = JSON.parse(savedCart);
@@ -933,6 +931,8 @@ function loadData() {
         updateNotificationBadge();
         updateOrdersBadge();
     }
+    // Always update auth UI after load (handles both logged-in and logged-out states)
+    updateAuthUI();
     
     window.driverSystem.load();
     updateOwnerButtonVisibility();
@@ -1300,7 +1300,7 @@ function addToCart() {
     if (selectedFood.options) {
         selectedCustomizations.forEach(i => {
             if (selectedFood.options[i]) {
-                extras.push(selectedFood.options[i].name);
+                extras.push({ name: selectedFood.options[i].name, price: selectedFood.options[i].price });
                 itemPrice += selectedFood.options[i].price;
             }
         });
@@ -1484,7 +1484,7 @@ function showCart() {
                         <span>${item.icon} ${item.name} x${item.quantity}</span>
                         <span style="color: #ff6b6b;">${formatPrice(itemTotal)}</span>
                     </div>
-                    ${item.extras.length > 0 ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">+ ${item.extras.join(', ')}</div>` : ''}
+                    ${item.extras.length > 0 ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">+ ${item.extras.map(e => typeof e === 'string' ? e : e.name).join(', ')}</div>` : ''}
                     ${item.instructions ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.5); font-style: italic;">Note: ${item.instructions}</div>` : ''}
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
                         <button onclick="updateCartItem(${index}, -1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">-</button>
@@ -1716,9 +1716,13 @@ function openCheckoutModal() {
     if (checkoutItems) {
         checkoutItems.innerHTML = `
             ${cart.map(item => `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>${item.icon} ${item.name} x${item.quantity}</span>
-                    <span>${formatPrice(item.finalPrice * item.quantity)}</span>
+                <div style="margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${item.icon} ${item.name} x${item.quantity}</span>
+                        <span>${formatPrice(item.finalPrice * item.quantity)}</span>
+                    </div>
+                    ${item.extras && item.extras.length > 0 ? item.extras.map(e => `<div style="font-size:0.8rem;color:rgba(255,255,255,0.5);padding-left:1.2rem;">+ ${typeof e === 'string' ? e : e.name}${typeof e === 'object' && e.price ? ' ' + formatPrice(e.price) : ''}</div>`).join('') : ''}
+                    ${item.instructions ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.4);font-style:italic;padding-left:1.2rem;">Note: ${item.instructions}</div>` : ''}
                 </div>
             `).join('')}
             <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem; margin-top: 0.5rem;">
@@ -2177,7 +2181,7 @@ function showOrderHistory() {
             // CHANGED: Show friendly status text for 'ready' status
             const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -2713,16 +2717,15 @@ function verifyAndChangePassword(event) {
 
 function logout() {
     if (!confirm('Are you sure you want to logout?')) return;
-    
-    currentUser = null;
+
+    clearCurrentUser();
     cart = [];
-    localStorage.removeItem('currentUser');
-    updateHeaderForLoggedInUser();
     updateCartBadge();
     updateFavoritesBadge();
     updateNotificationBadge();
+    updateOrdersBadge();
     closeModal('accountModal');
-    
+
     // Success: User logged out
     uiAlert('Logged out successfully', 'success');
 }
@@ -2975,10 +2978,9 @@ function handleEmailAuth(event) {
         // --- LOGIN ---
         const user = userDatabase.find(u => u.email === email && u.password === password);
         if (user) {
-            currentUser = user;
+            setCurrentUser(user);
             saveData();
             closeModal('loginModal');
-            updateAuthUI();
             // Success: Login successful
             uiAlert('Welcome back, ' + user.name + '!', 'success');
         } else {
@@ -3018,11 +3020,10 @@ function completeSignUp() {
     };
 
     userDatabase.push(newUser);
-    currentUser = newUser;
+    setCurrentUser(newUser);
     saveData();
-    
+
     closeModal('loginModal');
-    updateAuthUI();
     // Success: Account created
     uiAlert('Account created successfully! Welcome to Antalya Shawarma.', 'success');
 }
@@ -3301,7 +3302,8 @@ function initMap() {
                 map: googleMap,
                 title: 'Delivery Location',
                 draggable: true,
-                animation: google.maps.Animation.DROP
+                animation: google.maps.Animation.DROP,
+                icon: typeof buildMapIcon === 'function' ? buildMapIcon('user') : undefined
             });
         }
         
@@ -3332,15 +3334,8 @@ function addMarker(location) {
     mapMarker = new google.maps.Marker({
         position: location,
         map: googleMap,
-        icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="#2a9d8f" stroke="#fff" stroke-width="3"/>
-                    <use href="#i-home-marker" width="40" height="40"/>
-                </svg>
-            `),
-            scaledSize: new google.maps.Size(40, 40)
-        }
+        title: 'Your Location',
+        icon: typeof buildMapIcon === 'function' ? buildMapIcon('user') : undefined
     });
     
     selectedLocation = {
@@ -3447,8 +3442,20 @@ function confirmLocation() {
     }
     
     // Generate fallback address if geocoding hasn't completed
-    if (!selectedLocation.address) {
-        selectedLocation.address = `Location: ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)} (${distance.toFixed(1)} miles)`;
+    if (!selectedLocation.address || selectedLocation.address.match(/^Location:\s*[\d.-]+,\s*[\d.-]+/)) {
+        // Try async geocode, use placeholder for now
+        selectedLocation.address = 'Finding address...';
+        if (typeof formatLocationAddress === 'function') {
+            formatLocationAddress(selectedLocation).then(addr => {
+                selectedLocation.address = addr;
+                if (currentUser) {
+                    currentUser.address = addr;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            });
+        } else {
+            selectedLocation.address = `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`;
+        }
     }
     
     if (currentUser) {
@@ -4497,11 +4504,9 @@ function deleteUserAccount() {
     localStorage.setItem('restaurantUsers', JSON.stringify(userDatabase));
     
     // 5. Clear current user session
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    
+    clearCurrentUser();
+
     // 6. Update UI
-    updateHeaderForLoggedInUser();
     updateFavoritesBadge();
     updateNotificationBadge();
     displayReviews();
