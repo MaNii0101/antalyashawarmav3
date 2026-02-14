@@ -725,13 +725,13 @@ window.uiAlert = uiAlert;
 // RESTAURANT_MARKER = icon for the restaurant pin
 //
 // Each entry supports TWO formats (pick one):
-//   url:     path to PNG/SVG file  (e.g. 'assets/system/house.png')
+//   url:     path to PNG/SVG file  (e.g. ' house.png')
 //   svgData: inline SVG string     (encoded for data-URI — use %23 for #)
 //
 // size: [width, height] in pixels (Google Maps scaledSize)
 // ========================================
-const USER_MARKER_ICON_PATH     = 'assets/system/house-marker.svg';   // Change this to swap user icon
-const DRIVER_MARKER_ICON_PATH   = 'assets/delivery/driver-motorcycle.png'; // Change this to swap driver icon
+const USER_MARKER_ICON_PATH     = ' house-marker.svg';   // Change this to swap user icon
+const DRIVER_MARKER_ICON_PATH   = ' driver-motorcycle.png'; // Change this to swap driver icon
 
 const MAP_ICONS = {
     user: {
