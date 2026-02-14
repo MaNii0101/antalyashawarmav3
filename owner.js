@@ -124,7 +124,7 @@ function showRestaurantDashboard() {
                 const typeLabel = isCollection ? svgIcon('building', 13, 'icon-success') + ' COLLECTION' : svgIcon('truck', 13, 'icon-blue') + ' DELIVERY';
                 const payClass = order.paymentMethod === 'applepay' ? 'rd-tag-applepay' : 'rd-tag-card';
                 const payLabel = order.paymentMethod === 'applepay'
-                    ? '<img src="apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
+                    ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay"> PAID'
                     : svgIcon('credit-card', 12, 'icon-purple') + ' CARD PAID';
 
                 // UPGRADED TASK 2: ETA display with countdown for BOTH collection and delivery
@@ -250,7 +250,7 @@ function showRestaurantDashboard() {
                 const lat = parseFloat(cell.getAttribute('data-lat'));
                 const lng = parseFloat(cell.getAttribute('data-lng'));
                 if (lat && lng) {
-                    textEl.textContent = 'Finding address...';
+                    textEl.textContent = lat.toFixed(4) + ', ' + lng.toFixed(4);
                     formatLocationAddress({ lat, lng }).then(addr => { textEl.textContent = addr; });
                 }
             }
@@ -820,8 +820,6 @@ function printBill(orderId) {
     </div>
 </body></html>`;
 
-    console.log('Receipt HTML length:', receiptHTML.length, '| Order:', order.id);
-
     // Hidden iframe approach — no visible tab/window
     let iframe = document.getElementById('printReceiptFrame');
     if (!iframe) {
@@ -916,7 +914,7 @@ function renderDriverList() {
     container.innerHTML = allDrivers.map(driver => {
         const profilePic = driver.profilePicture 
             ? `<img src="${driver.profilePicture}" alt="${driver.name}">` 
-:        `<img src=" driver-motorcycle.svg" 
+:        `<img src="assets/delivery/driver-motorcycle.svg" 
         alt="Driver" 
         class="driver-avatar-svg">`;        const isActive = driver.active;
         const isAvailable = driver.available;
@@ -1314,7 +1312,15 @@ function updateOwnerStats() {
     if (todayOrdersEl) todayOrdersEl.textContent = todayOrders.length;
     if (avgOrderEl) avgOrderEl.textContent = formatPrice(avgOrderVal);
     if (newCustomersEl) newCustomersEl.textContent = newUsersToday;
-    if (avgRatingEl) avgRatingEl.textContent = '5.0'; 
+    // Calculate real average rating from restaurantReviews (same source as Customer Reviews page)
+    if (avgRatingEl) {
+        let realRating = '—';
+        if (typeof restaurantReviews !== 'undefined' && restaurantReviews.length > 0) {
+            const sum = restaurantReviews.reduce((s, r) => s + (r.rating || 0), 0);
+            realRating = (sum / restaurantReviews.length).toFixed(1);
+        }
+        avgRatingEl.textContent = realRating;
+    }
     
     // CHANGED: Popular Food Stats - count from COMPLETED orders only (both delivery + collection)
     // Excludes pending, accepted, ready, cancelled, rejected to avoid inflating stats

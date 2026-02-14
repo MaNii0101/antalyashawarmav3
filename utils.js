@@ -717,21 +717,38 @@ window.uiAlert = uiAlert;
 })();
 
 // ========================================
-// TASK D: MAP ICONS CONFIG — single place to swap map marker icons
-// To change icons, just update the url or svgData below.
 // ========================================
+// MAP MARKER ICONS — Change paths here to swap marker images everywhere
+// ========================================
+// USER_MARKER  = icon shown for customer location (house icon)
+// DRIVER_MARKER = icon shown for driver on tracking map
+// RESTAURANT_MARKER = icon for the restaurant pin
+//
+// Each entry supports TWO formats (pick one):
+//   url:     path to PNG/SVG file  (e.g. 'assets/system/house.png')
+//   svgData: inline SVG string     (encoded for data-URI — use %23 for #)
+//
+// size: [width, height] in pixels (Google Maps scaledSize)
+// ========================================
+const USER_MARKER_ICON_PATH     = 'assets/system/house-marker.svg';   // Change this to swap user icon
+const DRIVER_MARKER_ICON_PATH   = 'assets/delivery/driver-motorcycle.png'; // Change this to swap driver icon
+
 const MAP_ICONS = {
     user: {
-        // House icon — inline SVG data URI (most reliable for Google Maps)
+        // House icon — inline SVG (reliable across all browsers)
+        // To use an uploaded PNG instead, comment out svgData and uncomment the url line:
+        // url: USER_MARKER_ICON_PATH,
         svgData: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%2310b981" stroke="%23fff" stroke-width="3"/><path d="M20 11 L28 19 L26 19 L26 28 L22 28 L22 23 L18 23 L18 28 L14 28 L14 19 L12 19 Z" fill="%23fff"/></svg>',
         size: [40, 40]
     },
     driver: {
-        url: ' driver-motorcycle.png',
+        // Motorcycle PNG image
+        url: DRIVER_MARKER_ICON_PATH,
         size: [44, 44]
     },
     restaurant: {
-        svgData: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%23e63946" stroke="%23fff" stroke-width="3"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="18">🍽</text></svg>',
+        // Restaurant icon — red circle with fork/knife
+        svgData: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="%23e63946" stroke="%23fff" stroke-width="3"/><path d="M16 12v6c0 1.1.9 2 2 2h0v8h1v-8h0c1.1 0 2-.9 2-2v-6M16 15h5M24 12v4c0 2-1 3-2 3v9h-1v-9c-1 0-2-1-2-3v-4" fill="none" stroke="%23fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
         size: [40, 40]
     }
 };
@@ -799,34 +816,56 @@ function formatLocationAddress(locationObj) {
         }
     } catch(e) {}
 
-    // Reverse geocode via Nominatim with 8 second timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-    return fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
-        { signal: controller.signal }
-    )
-    .then(r => r.json())
-    .then(data => {
-        clearTimeout(timeoutId);
-        if (!data || data.error) {
-            _addressCache[cacheKey] = coordFallback;
-            return coordFallback;
-        }
-        const addr = data.display_name || coordFallback;
-        // Shorten: take first 3 meaningful parts
+    // Helper: cache and return an address string
+    function _cacheAndReturn(addr) {
         const parts = addr.split(', ');
         const short = parts.slice(0, 3).join(', ');
         _addressCache[cacheKey] = short;
         try { localStorage.setItem('geocache_' + cacheKey, short); } catch(e) {}
         return short;
-    })
-    .catch(() => {
+    }
+
+    // Try Google Maps Geocoder first (most reliable if API is loaded)
+    if (window.google && window.google.maps && window.google.maps.Geocoder) {
+        return new Promise(function(resolve) {
+            var timeout = setTimeout(function() { resolve(null); }, 8000);
+            try {
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
+                    clearTimeout(timeout);
+                    if (status === 'OK' && results && results[0]) {
+                        resolve(_cacheAndReturn(results[0].formatted_address));
+                    } else {
+                        resolve(null); // fall through to Nominatim
+                    }
+                });
+            } catch(e) { clearTimeout(timeout); resolve(null); }
+        }).then(function(googleResult) {
+            if (googleResult) return googleResult;
+            // Fallback: Nominatim
+            return _nominatimGeocode(lat, lng, coordFallback, cacheKey, _cacheAndReturn);
+        });
+    }
+
+    // Fallback: Nominatim reverse geocode with 8s timeout
+    return _nominatimGeocode(lat, lng, coordFallback, cacheKey, _cacheAndReturn);
+}
+
+// Nominatim fallback geocoder
+function _nominatimGeocode(lat, lng, coordFallback, cacheKey, _cacheAndReturn) {
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() { controller.abort(); }, 8000);
+    return fetch(
+        'https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json&addressdetails=1',
+        { signal: controller.signal }
+    )
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
         clearTimeout(timeoutId);
-        _addressCache[cacheKey] = coordFallback;
-        return coordFallback;
-    });
+        if (!data || data.error) { _addressCache[cacheKey] = coordFallback; return coordFallback; }
+        return _cacheAndReturn(data.display_name || coordFallback);
+    })
+    .catch(function() { clearTimeout(timeoutId); _addressCache[cacheKey] = coordFallback; return coordFallback; });
 }
 
 // Async helper: resolve address and put it into a DOM element.

@@ -13,7 +13,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: WARNING ICON -->
             <img
-                src=" warning.svg"
+                src="assets/system/warning.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -28,7 +28,7 @@ function svgIcon(name, size = 16, cls = '', style = '') {
         return `
             <!-- CUSTOM SVG FILE: X/CLOSE ICON -->
             <img
-                src=" close.svg"
+                src="assets/system/close.svg"
                 width="${size}"
                 height="${size}"
                 class="svg-icon ${cls}"
@@ -1487,7 +1487,7 @@ function showCart() {
                         <span>${item.icon} ${item.name} x${item.quantity}</span>
                         <span style="color: #ff6b6b;">${formatPrice(itemTotal)}</span>
                     </div>
-                    ${item.extras.length > 0 ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">+ ${item.extras.map(e => typeof e === 'string' ? e : e.name).join(', ')}</div>` : ''}
+                    ${item.extras.length > 0 ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">+ ${item.extras.map(e => typeof e === 'string' ? e : `${e.name} (+${formatPrice(e.price)})`).join(', ')}</div>` : ''}
                     ${item.instructions ? `<div style="font-size: 0.85rem; color: rgba(255,255,255,0.5); font-style: italic;">Note: ${item.instructions}</div>` : ''}
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
                         <button onclick="updateCartItem(${index}, -1)" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer;">-</button>
@@ -2184,7 +2184,7 @@ function showOrderHistory() {
             // CHANGED: Show friendly status text for 'ready' status
             const statusText = o.status === 'ready' ? 'READY FOR PICKUP' : o.status.replace(/_/g, ' ').toUpperCase();
 // CASH PAYMENT REMOVED (business decision)
-const paymentIcon = o.paymentMethod === 'applepay' ? '<img src=" apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
+const paymentIcon = o.paymentMethod === 'applepay' ? '<img src="assets/system/apple-pay.png" class="apple-pay-logo-sm" alt="Apple Pay">' : svgIcon('credit-card',14,'icon-purple');            
             const driver = o.status === 'out_for_delivery' && o.driverId ? window.driverSystem.get(o.driverId) : null;
             
             return `
@@ -3275,20 +3275,12 @@ function initMap() {
         streetViewControl: false
     });
     
-    // Restaurant marker
+    // Restaurant marker — uses MAP_ICONS.restaurant config
     new google.maps.Marker({
         position: center,
         map: googleMap,
         title: 'Antalya Shawarma',
-        icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="#e63946" stroke="#fff" stroke-width="3"/>
-                    <use href="#i-restaurant-marker" width="40" height="40"/>
-                </svg>
-            `),
-            scaledSize: new google.maps.Size(40, 40)
-        }
+        icon: typeof buildMapIcon === 'function' ? buildMapIcon('restaurant') : undefined
     });
     
     // Click to set delivery location
@@ -3944,11 +3936,7 @@ window.displayReviews = displayReviews; // CRITICAL FIX
 // Owner Access Button Logic
 window.showOwnerDashboardDirect = showOwnerDashboardDirect;
 window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
-// Note: handleOwnerLogin is removed here to avoid conflict with owner.js
-
-// Make confirmLocation globally accessible
-window.confirmLocation = confirmLocation;
-
+window.handleOwnerLogin = handleOwnerLogin;
 
 // ========================================
 // REVIEWS SYSTEM
@@ -4570,25 +4558,6 @@ setTimeout(() => {
 }, 100);
 
 
-// Review system exports
-window.openWriteReview = openWriteReview;
-window.setReviewRating = setReviewRating;
-window.submitReview = submitReview;
-window.openReplies = openReplies;
-window.submitOwnerReply = submitOwnerReply;
-window.deleteReview = deleteReview;
-window.deleteOwnerReply = deleteOwnerReply;
-window.loadReviews = loadReviews;
-window.toggleShowMoreReviews = toggleShowMoreReviews;
-window.showOwnerDashboardDirect = showOwnerDashboardDirect;
-window.openForgotPasswordFromChangePassword = openForgotPasswordFromChangePassword;
-window.confirmDeleteAccount = confirmDeleteAccount;
-window.deleteUserAccount = deleteUserAccount;
-window.updateOwnerButtonVisibility = updateOwnerButtonVisibility;
-window.handleOwnerLogin = handleOwnerLogin;
-window.loginWithGoogle = loginWithGoogle;
-window.loginWithApple = loginWithApple;
-
 // Update UI when login state changes
 function updateAuthUI() {
     const isLoggedIn = currentUser !== null;
@@ -4621,10 +4590,6 @@ function updateOwnerButtonVisibility() {
         mobileOwnerBtn.style.display = shouldShow ? 'flex' : 'none';
     }
 }
-
-// Make confirmLocation globally accessible
-window.confirmLocation = confirmLocation;
-window.displayReviews = displayReviews;
 
 // ========================================
 // ORDER CANCELLATION
