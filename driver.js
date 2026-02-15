@@ -31,7 +31,7 @@ const SVG_ICONS = {
     phone: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
     
     // Transport & Delivery
-    car: '<img class="svg-icon car-icon" src=" driver-motorcycle.svg" alt="driver" />',
+    car: '<img class="svg-icon car-icon" src="assets/delivery/driver-motorcycle.svg" alt="driver" />',
     motorcycle: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 12c-.93 0-1.78.28-2.5.76V11c0-1.1-.9-2-2-2h-2V7h1c.55 0 1-.45 1-1s-.45-1-1-1h-4c-.55 0-1 .45-1 1s.45 1 1 1h1v2H8c-1.1 0-2 .9-2 2v1.76c-.72-.48-1.57-.76-2.5-.76C1.57 12 0 13.57 0 15.5S1.57 19 3.5 19s3.5-1.57 3.5-3.5c0-.59-.15-1.15-.41-1.64L8 12.2V15c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-2.8l1.41 1.66c-.26.49-.41 1.05-.41 1.64 0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5zm-16 5c-.83 0-1.5-.67-1.5-1.5S2.67 14 3.5 14s1.5.67 1.5 1.5S4.33 17 3.5 17zm16 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>',
     
     // Checks & Confirmations  
